@@ -1,0 +1,46 @@
+body {
+background-color: black;
+}
+
+.background {
+max-width: 1800px;
+height: 800px;
+position: relative;
+background-color: transparent; no-repeat;
+background-size: cover;
+-webkit-transform-style: preserve-3d;
+transform-style: preserve-3d;
+margin: 0 auto;
+border: 0 transparent;
+image-rendering: -moz-crisp-edges;
+
+}
+
+.main-menu{
+max-width: 100%;
+height: 100%;
+position: absolute;
+left: 50%;
+top: 60%;
+border: 0 black;
+-webkit-transform: translate(-50%, -50%) translateZ(50px);
+-moz-transform: translate(-50%, -50%) translateZs(50px);
+-ms-transform: translate(-50%, -50%) translateZ(50px);
+-o-transform: translate(-50%, -50%) translateZ(50px);
+transform: translate(-50%, -50%) translateZ(50px);
+box-shadow: 0 0 20px #000;
+-moz-box-sizing: border-box; /*Firefox 1-3*/
+-webkit-box-sizing: border-box; /* Safari */
+}
+
+@media (max-width: 768px) {
+
+  .background {
+  height: 300px;
+  }
+  
+  .main-menu {
+  max-width: 100%;
+  }
+
+}
