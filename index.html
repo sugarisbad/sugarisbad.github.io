@@ -4,23 +4,23 @@
 <meta charset="UTF-8">
 <meta name="Артбук и шоппинг">
 <link rel="stylesheet" a href ="css\all.css">
-<link rel="stylesheet" a href ="css\preload.css">
+<!--<link rel="stylesheet" a href ="css\preload.css"> !!-->
 </head>
 <body>
 
-  <div id="overlayer"></div>
+  <!-- this is for preloading anitmation will be done later <div id="overlayer"></div>
 <span class="loader">
   <span class="loader-inner"></span>
-</span>
+</span> !!-->
 
 <div class="background" data-tilt data-tilt-max="10" data-tilt-speed="100" data-tilt-perspective="1000">
 <img src="https://imagizer.imageshack.com/img923/563/SXLRoc.jpg" class="main-menu" alt="soll">
 </div>
 <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/130527/vanilla-tilt.min.js"></script>
-<script $(window).load(function() {
+<!-- Code regarding preloading, Jquery, move to separate file later <script $(window).load(function() {
 	$(".loader").delay(2000).fadeOut("slow");
   $("#overlayer").delay(2000).fadeOut("slow");
-}) </script>
+}) </script> <!!-->
 </body>
 
 <footer>
