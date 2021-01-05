@@ -2,14 +2,25 @@
 <head>
 <title> Интернет-магазин </title>
 <meta charset="UTF-8">
-<meta name="Магазин Любви Соль">
+<meta name="Артбук и шоппинг">
 <link rel="stylesheet" a href ="css\all.css">
+<link rel="stylesheet" a href ="css\preload.css">
 </head>
 <body>
+
+  <div id="overlayer"></div>
+<span class="loader">
+  <span class="loader-inner"></span>
+</span>
+
 <div class="background" data-tilt data-tilt-max="10" data-tilt-speed="100" data-tilt-perspective="1000">
 <img src="https://imagizer.imageshack.com/img923/563/SXLRoc.jpg" class="main-menu" alt="soll">
 </div>
 <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/130527/vanilla-tilt.min.js"></script>
+<script $(window).load(function() {
+	$(".loader").delay(2000).fadeOut("slow");
+  $("#overlayer").delay(2000).fadeOut("slow");
+}) </script>
 </body>
 
 <footer>
