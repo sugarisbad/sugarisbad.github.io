@@ -1,16 +1,14 @@
 import { defineConfig } from 'astro/config';
 
 // ────────────────────────────────────────────────────────────────────────────
-// НАСТРОЙКА ПОД GITHUB PAGES — прочитайте перед первым деплоем:
+// НАСТРОЙКА ПОД GITHUB PAGES:
 //
-//  • Репозиторий вида  username.github.io/psycholofy  (проектная страница):
-//        site: 'https://username.github.io',  base: '/psycholofy/'
+//  • Проектная страница  username.github.io/<repo>:
+//        site: 'https://username.github.io',  base: '/<repo>/'
 //    ⚠️ base ДОЛЖЕН совпадать с именем репозитория, иначе не подгрузится CSS.
 //
 //  • Репозиторий  username.github.io  (личная страница) или свой домен:
 //        site: 'https://username.github.io',  base: '/'
-//
-// Замените значения ниже на свои.
 // ────────────────────────────────────────────────────────────────────────────
 export default defineConfig({
   site: 'https://sugarisbad.github.io',

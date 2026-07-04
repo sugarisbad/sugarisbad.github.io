@@ -33,10 +33,10 @@ npm run preview  # предпросмотр прод-сборки
 ## Деплой на GitHub Pages (без Node на вашей машине)
 
 1. **Настройте `astro.config.mjs`** под своё имя репозитория:
-   - репозиторий `psycholofy` → страница будет по адресу `https://<user>.github.io/psycholofy/`
+   - репозиторий `landing` → страница будет по адресу `https://<user>.github.io/landing/`
      ```js
      site: 'https://<user>.github.io',
-     base: '/psycholofy/',           // ⚠️ ДОЛЖНО совпадать с именем репозитория
+     base: '/landing/',              // ⚠️ ДОЛЖНО совпадать с именем репозитория
      ```
    - репозиторий `<user>.github.io` (личная страница) или свой домен → `base: '/'`.
 2. Создайте репозиторий на GitHub и запушьте проект в ветку **main**:
