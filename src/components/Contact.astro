@@ -1,0 +1,29 @@
+---
+import { contacts } from '../data/site';
+
+interface Props {
+  title?: string;
+  text?: string;
+}
+const {
+  title = 'Обсудим ваш проект?',
+  text = 'Опишите задачу в двух словах — вернусь с решением и оценкой в течение дня. Первичная консультация ни к чему не обязывает.',
+} = Astro.props;
+
+const mailto = `mailto:${contacts.email}?subject=${encodeURIComponent('Проект по DevOps')}`;
+---
+
+<section id="contact">
+  <div class="wrap">
+    <div class="cta-band reveal">
+      <h2>{title}</h2>
+      <p>{text}</p>
+      <div class="hero-cta">
+        {contacts.botUrl && <a href={contacts.botUrl} class="btn btn-primary">🤖 Оставить заявку в боте</a>}
+        <a href={contacts.telegramUrl} class={`btn ${contacts.botUrl ? 'btn-ghost' : 'btn-primary'}`}>✈ Telegram · @{contacts.telegram}</a>
+        <a href={contacts.phoneUrl} class="btn btn-ghost">📞 {contacts.phone}</a>
+        <a href={mailto} class="btn btn-ghost">✉ Почта</a>
+      </div>
+    </div>
+  </div>
+</section>

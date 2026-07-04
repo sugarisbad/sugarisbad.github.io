@@ -1,0 +1,110 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Contact from '../components/Contact.astro';
+import Footer from '../components/Footer.astro';
+import { contacts, process, guarantees, compare, faq } from '../data/site';
+
+const desc =
+  'Как я работаю: письменная смета и предоплата, фиксированная цена, 30 дней бесплатной поддержки после сдачи, все доступы принадлежат вам. Ответы на частые вопросы.';
+---
+
+<Base title={`Как я работаю — ${contacts.name} (${contacts.username}), DevOps-инженер`} description={desc}>
+  <Header />
+
+  <!-- HERO -->
+  <section class="hero hero-compact">
+    <div class="wrap">
+      <span class="eyebrow">// процесс и условия</span>
+      <h1>Как я работаю</h1>
+      <p class="sub">
+        Прозрачный процесс без сюрпризов: письменная смета до старта, работа по
+        предоплате, месяц бесплатной поддержки после сдачи.
+      </p>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section class="section-tight">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">// четыре шага</span>
+        <h2>Процесс без сюрпризов</h2>
+      </div>
+      <div class="steps reveal">
+        {process.map((s) => (
+          <div class="step"><h4>{s.title}</h4><p>{s.text}</p></div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- GUARANTEES -->
+  <section>
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">// почему со мной спокойно</span>
+        <h2>Гарантии, а не обещания</h2>
+        <p class="lead">
+          Главные страхи заказа у фрилансера — «пропадёт», «подорожает», «заберёт доступы».
+          Закрываю их до старта, письменно.
+        </p>
+      </div>
+      <div class="steps reveal">
+        {guarantees.map((g) => (
+          <div class="step guarantee">
+            <div class="ico">{g.icon}</div>
+            <h4>{g.title}</h4>
+            <p>{g.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARE -->
+  <section>
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">// форматы работы</span>
+        <h2>Почему инженер напрямую — выгоднее</h2>
+        <p class="lead">
+          Те же задачи можно отдать агентству или нанять админа в штат. Вот честное сравнение.
+        </p>
+      </div>
+      <div class="compare-wrap reveal">
+        <table class="compare">
+          <thead>
+            <tr>{compare.columns.map((c, i) => <th class={i === 1 ? 'me' : ''}>{c}</th>)}</tr>
+          </thead>
+          <tbody>
+            {compare.rows.map((row) => (
+              <tr>{row.map((cell, i) => i === 0 ? <th scope="row">{cell}</th> : <td class={i === 1 ? 'me' : ''}>{cell}</td>)}</tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section>
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">// вопросы</span>
+        <h2>Частые вопросы</h2>
+      </div>
+      <div class="faq reveal">
+        {faq.map((f) => (
+          <details class="faq-item">
+            <summary><span>{f.q}</span><b class="faq-plus" aria-hidden="true">+</b></summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <Contact />
+  <Footer />
+</Base>

@@ -1,0 +1,18 @@
+---
+import { contacts } from '../data/site';
+const base = import.meta.env.BASE_URL;
+---
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href={base}><span class="dot"></span> {contacts.name} <span class="brand-user mono">// {contacts.username}</span></a>
+    <nav class="nav-links" id="nav">
+      <a href={base}>Главная</a>
+      <a href={`${base}cases/`}>Кейсы</a>
+      <a href={`${base}services/`}>Услуги и цены</a>
+      <a href={`${base}work/`}>Как я работаю</a>
+      <a href="#contact" class="nav-cta">Связаться</a>
+    </nav>
+    <button class="burger" id="burger" aria-label="Меню">☰</button>
+  </div>
+</header>

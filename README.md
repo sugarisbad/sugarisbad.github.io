@@ -11,8 +11,11 @@ astro.config.mjs          конфиг (⚠️ здесь настраивает
 src/
   data/site.ts            весь контент и ЦЕНЫ (правьте здесь, а не в разметке)
   layouts/Base.astro      HTML-обёртка, SEO, фон, клиентский скрипт
-  pages/index.astro       главная — секции рендерятся из data/site.ts
-  pages/services.astro    страница прайса типовых услуг
+  components/             шапка, футер, контактный блок (общие для страниц)
+  pages/index.astro       главная — hero и услуги
+  pages/cases.astro       кейсы + технологический стек
+  pages/services.astro    пакеты и полный прайс
+  pages/work.astro        процесс, гарантии, сравнение, FAQ
   styles/global.css       дизайн-система 2026
 bot/                      Telegram-бот приёма заявок (см. bot/README.md)
 .github/workflows/deploy.yml   авто-сборка и деплой на GitHub Pages

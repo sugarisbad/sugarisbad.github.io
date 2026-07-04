@@ -199,8 +199,10 @@ h2{font-size:clamp(2rem,4.4vw,2.9rem);letter-spacing:-.035em;font-weight:800;lin
   background:color-mix(in srgb,var(--a1) 6%,transparent)}
 .compare thead .me{color:var(--a1)}
 
-/* ── страница прайса ─────────────────────────────────────────────────────── */
+/* ── подстраницы ─────────────────────────────────────────────────────────── */
 .hero-compact{padding:84px 0 44px}
+.hero-compact .eyebrow{margin-bottom:18px}
+.section-tight{padding-top:24px}
 .lead-link{color:var(--a1);border-bottom:1px solid color-mix(in srgb,var(--a1) 40%,transparent);transition:border-color .2s}
 .lead-link:hover{border-color:var(--a1)}
 .plist-section{padding-top:20px}
