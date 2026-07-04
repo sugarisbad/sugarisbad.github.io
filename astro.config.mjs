@@ -12,5 +12,5 @@ import { defineConfig } from 'astro/config';
 // ────────────────────────────────────────────────────────────────────────────
 export default defineConfig({
   site: 'https://sugarisbad.github.io',
-  base: '/landing/',
+  base: '/',
 });

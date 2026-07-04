@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Установка бота заявок как systemd-сервиса (Debian/Ubuntu).
 #
-#   git clone https://github.com/sugarisbad/landing.git
-#   cd landing/bot
+#   git clone https://github.com/sugarisbad/sugarisbad.github.io.git site
+#   cd site/bot
 #   sudo ./install.sh
 #
 # Скрипт идемпотентен: повторный запуск обновит bot.py и перезапустит сервис,

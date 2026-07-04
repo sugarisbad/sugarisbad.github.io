@@ -55,8 +55,8 @@ Telegram, позвонить или написать на почту.
 ## Деплой на сервер (systemd) — одной командой
 
 ```bash
-git clone https://github.com/sugarisbad/landing.git
-cd landing/bot
+git clone https://github.com/sugarisbad/sugarisbad.github.io.git site
+cd site/bot
 sudo ./install.sh        # спросит BOT_TOKEN и ADMIN_CHAT_ID, если нет .env
 ```
 
