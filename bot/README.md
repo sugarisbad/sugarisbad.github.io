@@ -52,7 +52,29 @@ Telegram, позвонить или написать на почту.
 4. **Проверьте**: напишите боту `/start`, пройдите форму — заявка должна
    прийти вам в личку.
 
-## Деплой на сервер (systemd)
+## Деплой на сервер (systemd) — одной командой
+
+```bash
+git clone https://github.com/sugarisbad/landing.git
+cd landing/bot
+sudo ./install.sh        # спросит BOT_TOKEN и ADMIN_CHAT_ID, если нет .env
+```
+
+Скрипт создаёт служебного пользователя `tgbot`, ставит бота в `/opt/tgbot`
+с виртуальным окружением, устанавливает systemd-юнит и запускает сервис.
+Повторный запуск скрипта обновляет `bot.py` и перезапускает сервис,
+не трогая `.env`.
+
+Управление:
+
+```bash
+systemctl status tgbot        # состояние
+journalctl -u tgbot -f        # живые логи
+sudo systemctl restart tgbot  # перезапуск
+```
+
+<details>
+<summary>Ручная установка (если не хочется скриптом)</summary>
 
 ```bash
 sudo useradd -r -s /usr/sbin/nologin tgbot
@@ -61,8 +83,8 @@ cd /opt/tgbot && sudo python3 -m venv venv && sudo venv/bin/pip install -r requi
 sudo chown -R tgbot:tgbot /opt/tgbot
 sudo cp tgbot.service /etc/systemd/system/
 sudo systemctl daemon-reload && sudo systemctl enable --now tgbot
-systemctl status tgbot
 ```
+</details>
 
 ## Подключение к сайту
 
