@@ -3,7 +3,7 @@
   "type": "module",
   "version": "1.0.0",
   "private": true,
-  "description": "Лендинг DevOps & AI-инфраструктуры — Данила Кулаков",
+  "description": "Лендинг DevOps & AI-инфраструктуры — Данила (sugarisbad)",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",

@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import {
   contacts, heroStats, services, caseFlow, caseMetrics,
-  stack, plans, process,
+  stack, plans, process, guarantees, compare, faq,
 } from '../data/site';
 
 const mailto = `mailto:${contacts.email}?subject=${encodeURIComponent('Проект по DevOps/ИИ')}`;
@@ -10,16 +10,16 @@ const desc =
   'Настройка и защита VPS, self-hosted ИИ (Ollama/Gemma), Telegram ИИ-агенты и отказоустойчивая автоматизация инфраструктуры. Проекты под ключ и абонентское администрирование.';
 ---
 
-<Base title={`${contacts.name} — DevOps & AI-инфраструктура под ключ`} description={desc}>
+<Base title={`${contacts.name} (${contacts.username}) — DevOps & AI-инфраструктура под ключ`} description={desc}>
   <!-- NAV -->
   <header>
     <div class="wrap nav">
-      <div class="brand"><span class="dot"></span> {contacts.name}</div>
+      <div class="brand"><span class="dot"></span> {contacts.name} <span class="brand-user mono">// {contacts.username}</span></div>
       <nav class="nav-links" id="nav">
         <a href="#services">Услуги</a>
         <a href="#case">Кейс</a>
-        <a href="#stack">Стек</a>
         <a href="#pricing">Цены</a>
+        <a href="#faq">FAQ</a>
         <a href="#contact" class="nav-cta">Связаться</a>
       </nav>
       <button class="burger" id="burger" aria-label="Меню">☰</button>
@@ -33,11 +33,12 @@ const desc =
       <h1>DevOps и <span class="grad-text">ИИ-инфраструктура</span><br />под ключ</h1>
       <p class="sub">
         Настраиваю и защищаю VPS, разворачиваю собственные ИИ-модели на вашем железе и
-        собираю автономных Telegram-агентов. От одного сервера до самовосстанавливающейся
-        системы, которая живёт без вашего участия.
+        собираю автономных Telegram-агентов. Вы получаете систему, которая сама следит
+        за собой и чинит себя, — а не ещё одного подрядчика, которому надо писать по
+        каждому поводу.
       </p>
       <div class="hero-cta">
-        <a href="#pricing" class="btn btn-primary">Смотреть цены →</a>
+        <a href="#contact" class="btn btn-primary">Обсудить задачу →</a>
         <a href="#case" class="btn btn-ghost">Разобрать кейс</a>
       </div>
       <div class="stats">
@@ -115,8 +116,31 @@ const desc =
     </div>
   </section>
 
-  <!-- STACK -->
-  <section id="stack">
+  <!-- GUARANTEES -->
+  <section id="guarantees">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">// почему со мной спокойно</span>
+        <h2>Гарантии, а не обещания</h2>
+        <p class="lead">
+          Главные страхи заказа у фрилансера — «пропадёт», «подорожает», «заберёт доступы».
+          Закрываю их до старта, письменно.
+        </p>
+      </div>
+      <div class="steps reveal">
+        {guarantees.map((g) => (
+          <div class="step guarantee">
+            <div class="ico">{g.icon}</div>
+            <h4>{g.title}</h4>
+            <p>{g.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- STACK (marquee) -->
+  <section id="stack" class="stack-section">
     <div class="wrap">
       <div class="section-head reveal">
         <span class="eyebrow">// инструменты</span>
@@ -125,8 +149,36 @@ const desc =
           То, чем я работаю каждый день — от системного администрирования до интеграции нейросетей.
         </p>
       </div>
-      <div class="stack reveal">
+    </div>
+    <div class="marquee reveal" aria-label="Технологии">
+      <div class="marquee-track">
         {stack.map((t) => <span class="chip"><i></i>{t}</span>)}
+        {stack.map((t) => <span class="chip" aria-hidden="true"><i></i>{t}</span>)}
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARE -->
+  <section id="compare">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">// форматы работы</span>
+        <h2>Инженер напрямую — считается лучше</h2>
+        <p class="lead">
+          Те же задачи можно отдать агентству или нанять админа в штат. Вот честное сравнение.
+        </p>
+      </div>
+      <div class="compare-wrap reveal">
+        <table class="compare">
+          <thead>
+            <tr>{compare.columns.map((c, i) => <th class={i === 1 ? 'me' : ''}>{c}</th>)}</tr>
+          </thead>
+          <tbody>
+            {compare.rows.map((row) => (
+              <tr>{row.map((cell, i) => i === 0 ? <th scope="row">{cell}</th> : <td class={i === 1 ? 'me' : ''}>{cell}</td>)}</tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   </section>
@@ -176,6 +228,24 @@ const desc =
     </div>
   </section>
 
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">// вопросы</span>
+        <h2>Частые вопросы</h2>
+      </div>
+      <div class="faq reveal">
+        {faq.map((f) => (
+          <details class="faq-item">
+            <summary><span>{f.q}</span><b class="faq-plus" aria-hidden="true">+</b></summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
   <!-- CONTACT -->
   <section id="contact">
     <div class="wrap">
@@ -186,8 +256,9 @@ const desc =
           Первичная консультация ни к чему не обязывает.
         </p>
         <div class="hero-cta">
-          <a href={mailto} class="btn btn-primary">✉ Написать на почту</a>
-          <a href={contacts.telegramUrl} class="btn btn-ghost">✈ Telegram · @{contacts.telegram}</a>
+          <a href={contacts.telegramUrl} class="btn btn-primary">✈ Telegram · @{contacts.telegram}</a>
+          <a href={mailto} class="btn btn-ghost">✉ Написать на почту</a>
+          <a href={contacts.githubUrl} class="btn btn-ghost" rel="noopener">⌥ GitHub · {contacts.github}</a>
         </div>
       </div>
     </div>
@@ -195,10 +266,11 @@ const desc =
 
   <footer>
     <div class="wrap foot">
-      <div class="brand"><span class="dot"></span> {contacts.name}</div>
+      <div class="brand"><span class="dot"></span> {contacts.name} <span class="brand-user mono">// {contacts.username}</span></div>
       <div class="foot-links">
         <a href={mailto}>{contacts.email}</a>
         <a href={contacts.telegramUrl}>@{contacts.telegram}</a>
+        <a href={contacts.githubUrl} rel="noopener">github.com/{contacts.github}</a>
         <a href="#services">Услуги</a>
         <a href="#pricing">Цены</a>
       </div>
