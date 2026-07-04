@@ -6,12 +6,12 @@ import {
 } from '../data/site';
 
 const base = import.meta.env.BASE_URL;
-const mailto = `mailto:${contacts.email}?subject=${encodeURIComponent('Проект по DevOps/ИИ')}`;
+const mailto = `mailto:${contacts.email}?subject=${encodeURIComponent('Проект по DevOps')}`;
 const desc =
-  'DevOps-инженер: настройка и защита VPS, Docker, CI/CD, мониторинг и отказоустойчивость. Self-hosted ИИ (Ollama) и Telegram-агенты. Проекты под ключ и абонентское администрирование.';
+  'DevOps-инженер: настройка и защита VPS, Docker, CI/CD, мониторинг и отказоустойчивость. Telegram-боты и автоматизация. Проекты под ключ и абонентское администрирование.';
 ---
 
-<Base title={`${contacts.name} (${contacts.username}) — DevOps & AI-инфраструктура под ключ`} description={desc}>
+<Base title={`${contacts.name} (${contacts.username}) — DevOps-инженер: серверы, CI/CD, автоматизация`} description={desc}>
   <!-- NAV -->
   <header>
     <div class="wrap nav">
@@ -34,13 +34,13 @@ const desc =
       <div class="badge"><span class="live"></span> Принимаю проекты · ответ в течение дня</div>
       <h1><span class="grad-text">DevOps</span>-инженер<br />для вашей инфраструктуры</h1>
       <p class="sub">
-        Серверы, Docker, CI/CD, мониторинг и отказоустойчивость — плюс собственные
-        ИИ-модели на вашем железе. Вы получаете систему, которая сама следит за собой
-        и чинит себя, — а не ещё одного подрядчика, которому надо писать по каждому поводу.
+        Серверы, Docker, CI/CD, мониторинг и отказоустойчивость. Вы получаете систему,
+        которая сама следит за собой и чинит себя, — а не ещё одного подрядчика,
+        которому надо писать по каждому поводу.
       </p>
       <div class="hero-cta">
         <a href="#contact" class="btn btn-primary">Обсудить задачу →</a>
-        <a href="#case" class="btn btn-ghost">Разобрать кейс</a>
+        <a href="#cases" class="btn btn-ghost">Смотреть кейсы</a>
       </div>
       <div class="stats">
         {heroStats.map((s) => (
@@ -248,7 +248,8 @@ const desc =
           Первичная консультация ни к чему не обязывает.
         </p>
         <div class="hero-cta">
-          <a href={contacts.telegramUrl} class="btn btn-primary">✈ Telegram · @{contacts.telegram}</a>
+          {contacts.botUrl && <a href={contacts.botUrl} class="btn btn-primary">🤖 Оставить заявку в боте</a>}
+          <a href={contacts.telegramUrl} class={`btn ${contacts.botUrl ? 'btn-ghost' : 'btn-primary'}`}>✈ Telegram · @{contacts.telegram}</a>
           <a href={contacts.phoneUrl} class="btn btn-ghost">📞 {contacts.phone}</a>
           <a href={mailto} class="btn btn-ghost">✉ Написать на почту</a>
           <a href={contacts.githubUrl} class="btn btn-ghost" rel="noopener">⌥ GitHub · {contacts.github}</a>
@@ -268,7 +269,7 @@ const desc =
         <a href={`${base}services/`}>Прайс</a>
         <a href="#pricing">Цены</a>
       </div>
-      <div style="font-size:.86rem">DevOps · ИИ-инфраструктура · <span id="year"></span></div>
+      <div style="font-size:.86rem">DevOps · автоматизация · мониторинг · <span id="year"></span></div>
     </div>
   </footer>
 </Base>

@@ -1,0 +1,26 @@
+# systemd-юнит для бота заявок.
+# Установка:
+#   sudo cp tgbot.service /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now tgbot
+[Unit]
+Description=Telegram orders bot (landing)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=tgbot
+WorkingDirectory=/opt/tgbot
+EnvironmentFile=/opt/tgbot/.env
+ExecStart=/opt/tgbot/venv/bin/python /opt/tgbot/bot.py
+Restart=always
+RestartSec=5
+# безопасность
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/opt/tgbot
+
+[Install]
+WantedBy=multi-user.target
