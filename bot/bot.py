@@ -21,7 +21,7 @@ import re
 from datetime import datetime, timedelta, timezone
 
 from aiogram import Bot, Dispatcher, F, Router
-from aiogram.filters import Command, CommandStart
+from aiogram.filters import Command, CommandObject, CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import (
@@ -55,6 +55,47 @@ class Form(StatesGroup):
 
 SKIP = "Пропустить"
 CANCEL = "Отмена"
+
+# Deep-link payload (t.me/<bot>?start=<slug>) → откуда пришёл клиент.
+# Слаги должны совпадать с src/data/site.ts на сайте.
+SOURCES = {
+    # пакеты
+    "plan-vps": "Пакет «Настройка VPS»",
+    "plan-monitoring": "Пакет «Мониторинг и алерты»",
+    "plan-ai": "Пакет «Self-hosted ИИ»",
+    "plan-system": "Пакет «Система под ключ»",
+    # прайс: серверы и безопасность
+    "vps-setup": "Настройка VPS «под ключ»",
+    "audit": "Аудит существующего сервера",
+    "nginx-ssl": "nginx: домены, SSL, реверс-прокси",
+    "migration": "Миграция на новый сервер",
+    "backup": "Резервное копирование",
+    # прайс: Docker и CI/CD
+    "dockerize": "Docker-изация приложения",
+    "compose": "docker-compose стек",
+    "cicd": "CI/CD пайплайн",
+    "mass-deploy": "Массовое развёртывание",
+    # прайс: мониторинг
+    "monitoring": "Мониторинг + алерты в Telegram",
+    "balancer": "Балансировка нагрузки",
+    "failover": "Автоматический failover",
+    # прайс: ИИ
+    "ollama": "Self-hosted ИИ (Ollama)",
+    "tg-bot": "ИИ-агент / Telegram-бот",
+    "turnkey": "Система под ключ",
+    # прайс: поддержка
+    "subscription": "Абонентское администрирование",
+    "consult": "Разовая консультация",
+    "incident": "Срочный выезд в инцидент",
+    # общие кнопки «Оставить заявку» по страницам
+    "src-home": "кнопка на главной странице",
+    "src-cases": "кнопка на странице кейсов",
+    "src-services": "кнопка на странице услуг и цен",
+    "src-work": "кнопка на странице «Как я работаю»",
+}
+
+# Для этих слагов бот упоминает услугу в приветствии (страницы-источники — нет).
+SERVICE_SLUGS = {s for s in SOURCES if not s.startswith("src-")}
 
 
 def kb(*rows: list[KeyboardButton]) -> ReplyKeyboardMarkup:
@@ -103,12 +144,22 @@ async def analyze_task(text: str) -> str:
 # ── диалог с клиентом ────────────────────────────────────────────────────────
 
 @router.message(CommandStart())
-async def cmd_start(message: Message, state: FSMContext) -> None:
+async def cmd_start(message: Message, state: FSMContext, command: CommandObject) -> None:
     await state.clear()
+    slug = (command.args or "").strip()
+    source = SOURCES.get(slug, "")
+    await state.update_data(source=source, source_slug=slug if source else "")
     await state.set_state(Form.name)
+
+    intro = (
+        f"Привет! Вижу, вас интересует <b>{html.escape(source)}</b> — отличный выбор.\n"
+        if slug in SERVICE_SLUGS
+        else "Привет! "
+    )
     await message.answer(
-        "Привет! Я приму вашу заявку и сразу передам её Даниле — "
+        intro + "Я приму вашу заявку и сразу передам её Даниле — "
         "он ответит в течение дня.\n\nКак вас зовут?",
+        parse_mode="HTML",
         reply_markup=ReplyKeyboardRemove(),
     )
 
@@ -199,11 +250,15 @@ async def form_email(message: Message, state: FSMContext, bot: Bot) -> None:
         "Готово, заявка ушла! 🚀\nДанила свяжется с вами в течение дня. Спасибо!",
         reply_markup=ReplyKeyboardRemove(),
     )
-    await send_lead(bot, message, data["name"], data["task"], data.get("phone", ""), email)
+    await send_lead(
+        bot, message, data["name"], data["task"], data.get("phone", ""), email,
+        data.get("source", ""),
+    )
 
 
 async def send_lead(
-    bot: Bot, message: Message, name: str, task: str, phone: str, email: str
+    bot: Bot, message: Message, name: str, task: str, phone: str, email: str,
+    source: str = "",
 ) -> None:
     user = message.from_user
     tg_line = (
@@ -217,8 +272,10 @@ async def send_lead(
         "🆕 <b>Новая заявка с сайта</b>",
         "",
         f"👤 <b>Имя:</b> {html.escape(name)}",
-        f"📝 <b>Задача:</b>\n{html.escape(task)}",
     ]
+    if source:
+        parts.append(f"🔗 <b>Откуда:</b> {html.escape(source)}")
+    parts.append(f"📝 <b>Задача:</b>\n{html.escape(task)}")
     if analysis:
         parts += ["", f"🤖 <b>Разбор (локальная LLM):</b>\n{html.escape(analysis)}"]
     parts += [

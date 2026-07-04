@@ -7,6 +7,9 @@ import { contacts, plans, priceGroups } from '../data/site';
 
 const desc =
   'Услуги и цены DevOps-инженера: настройка VPS от 7 000 ₽, мониторинг от 15 000 ₽, self-hosted ИИ от 20 000 ₽, системы под ключ. Смета фиксируется письменно, работа по предоплате.';
+
+// Кнопки заказа ведут в бота с кодом услуги — так видно, откуда пришёл клиент.
+const order = (slug: string) => contacts.botUrl ? `${contacts.botUrl}?start=${slug}` : '#contact';
 ---
 
 <Base title={`Услуги и цены — ${contacts.name} (${contacts.username}), DevOps-инженер`} description={desc}>
@@ -40,7 +43,7 @@ const desc =
             <div class="amount">{p.price}</div>
             <span class="meta">{p.meta}</span>
             <ul>{p.features.map((f) => <li>{f}</li>)}</ul>
-            <a href="#contact" class={`btn ${p.featured ? 'btn-primary' : 'btn-ghost'}`}>{p.cta}</a>
+            <a href={order(p.slug)} class={`btn ${p.featured ? 'btn-primary' : 'btn-ghost'}`}>{p.cta}</a>
           </div>
         ))}
       </div>
@@ -74,6 +77,7 @@ const desc =
                 <div class="pitem-meta">
                   <b class="grad-text">{item.price}</b>
                   <span class="mono">{item.time}</span>
+                  <a href={order(item.slug)} class="btn btn-ghost btn-sm">Заказать</a>
                 </div>
               </div>
             ))}
@@ -91,6 +95,7 @@ const desc =
   <Contact
     title="Не нашли свою задачу?"
     text="Прайс покрывает типовые работы, но большинство проектов — комбинация из них. Опишите задачу как умеете — я переведу её в смету с ценой и сроком в течение дня."
+    source="src-services"
   />
   <Footer />
 </Base>

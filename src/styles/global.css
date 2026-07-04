@@ -220,12 +220,13 @@ h2{font-size:clamp(2rem,4.4vw,2.9rem);letter-spacing:-.035em;font-weight:800;lin
 .pitem:hover{background:color-mix(in srgb,var(--a1) 4%,transparent)}
 .pitem-info h3{font-size:1.04rem;font-weight:700;margin-bottom:4px}
 .pitem-info p{color:var(--dim);font-size:.9rem;max-width:640px}
-.pitem-meta{text-align:right;flex-shrink:0}
+.pitem-meta{text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:2px}
 .pitem-meta b{display:block;font-size:1.25rem;font-weight:800;letter-spacing:-.02em;white-space:nowrap}
 .pitem-meta span{color:var(--dim);font-size:.76rem}
+.btn-sm{padding:7px 16px;font-size:.85rem;border-radius:10px;margin-top:8px}
 @media(max-width:640px){
   .pitem{flex-direction:column;align-items:flex-start;gap:10px}
-  .pitem-meta{text-align:left}
+  .pitem-meta{text-align:left;align-items:flex-start}
 }
 
 /* ── FAQ ─────────────────────────────────────────────────────────────────── */
