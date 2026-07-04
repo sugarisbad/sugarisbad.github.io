@@ -84,7 +84,8 @@ const desc =
           Опишите задачу как умеете — я переведу её в смету с ценой и сроком в течение дня.
         </p>
         <div class="hero-cta">
-          <a href={contacts.telegramUrl} class="btn btn-primary">✈ Telegram · @{contacts.telegram}</a>
+          {contacts.botUrl && <a href={contacts.botUrl} class="btn btn-primary">🤖 Оставить заявку в боте</a>}
+          <a href={contacts.telegramUrl} class={`btn ${contacts.botUrl ? 'btn-ghost' : 'btn-primary'}`}>✈ Telegram · @{contacts.telegram}</a>
           <a href={contacts.phoneUrl} class="btn btn-ghost">📞 {contacts.phone}</a>
           <a href={mailto} class="btn btn-ghost">✉ Написать на почту</a>
         </div>

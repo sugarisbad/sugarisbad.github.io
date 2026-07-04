@@ -10,9 +10,8 @@ export const contacts = {
   githubUrl: 'https://github.com/sugarisbad',
   phone: '+7 999 827-37-18',
   phoneUrl: 'tel:+79998273718',
-  // Ссылка на бота приёма заявок (см. bot/README.md). Заполните после создания
-  // бота в BotFather, например: 'https://t.me/sugarisbad_orders_bot'
-  botUrl: '',
+  // Бот приёма заявок (см. bot/README.md).
+  botUrl: 'https://t.me/sugarisbad_bot',
 };
 
 export const heroStats = [
