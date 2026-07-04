@@ -36,8 +36,7 @@ Telegram, позвонить или написать на почту.
 
 1. **Создайте бота**: напишите [@BotFather](https://t.me/BotFather) → `/newbot` →
    придумайте имя и юзернейм (например `sugarisbad_orders_bot`) → получите токен.
-2. **Узнайте свой chat id**: запустите бота (шаг 3) и напишите ему `/id`,
-   либо спросите у @userinfobot заранее.
+2. **Узнайте свой chat id**: спросите у [@userinfobot](https://t.me/userinfobot).
 3. **Запустите**:
 
    ```bash

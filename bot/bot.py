@@ -122,12 +122,6 @@ async def cmd_cancel(message: Message, state: FSMContext) -> None:
     )
 
 
-@router.message(Command("id"))
-async def cmd_id(message: Message) -> None:
-    """Служебная команда: узнать свой chat id (нужно для ADMIN_CHAT_ID)."""
-    await message.answer(f"Ваш chat id: <code>{message.chat.id}</code>", parse_mode="HTML")
-
-
 @router.message(Form.name, F.text)
 async def form_name(message: Message, state: FSMContext) -> None:
     name = message.text.strip()
