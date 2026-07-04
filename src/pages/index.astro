@@ -1,0 +1,208 @@
+---
+import Base from '../layouts/Base.astro';
+import {
+  contacts, heroStats, services, caseFlow, caseMetrics,
+  stack, plans, process,
+} from '../data/site';
+
+const mailto = `mailto:${contacts.email}?subject=${encodeURIComponent('Проект по DevOps/ИИ')}`;
+const desc =
+  'Настройка и защита VPS, self-hosted ИИ (Ollama/Gemma), Telegram ИИ-агенты и отказоустойчивая автоматизация инфраструктуры. Проекты под ключ и абонентское администрирование.';
+---
+
+<Base title={`${contacts.name} — DevOps & AI-инфраструктура под ключ`} description={desc}>
+  <!-- NAV -->
+  <header>
+    <div class="wrap nav">
+      <div class="brand"><span class="dot"></span> {contacts.name}</div>
+      <nav class="nav-links" id="nav">
+        <a href="#services">Услуги</a>
+        <a href="#case">Кейс</a>
+        <a href="#stack">Стек</a>
+        <a href="#pricing">Цены</a>
+        <a href="#contact" class="nav-cta">Связаться</a>
+      </nav>
+      <button class="burger" id="burger" aria-label="Меню">☰</button>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="badge"><span class="live"></span> Принимаю проекты · ответ в течение дня</div>
+      <h1>DevOps и <span class="grad-text">ИИ-инфраструктура</span><br />под ключ</h1>
+      <p class="sub">
+        Настраиваю и защищаю VPS, разворачиваю собственные ИИ-модели на вашем железе и
+        собираю автономных Telegram-агентов. От одного сервера до самовосстанавливающейся
+        системы, которая живёт без вашего участия.
+      </p>
+      <div class="hero-cta">
+        <a href="#pricing" class="btn btn-primary">Смотреть цены →</a>
+        <a href="#case" class="btn btn-ghost">Разобрать кейс</a>
+      </div>
+      <div class="stats">
+        {heroStats.map((s) => (
+          <div class="stat"><b class="grad-text">{s.value}</b><span>{s.label}</span></div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">// что я делаю</span>
+        <h2>Четыре направления,<br />один инженер</h2>
+        <p class="lead">
+          Не «настрою хостинг по инструкции», а проектирую и собираю инфраструктуру целиком:
+          сервер, автоматизация, ИИ и управление — как единую систему.
+        </p>
+      </div>
+      <div class="grid">
+        {services.map((s) => (
+          <article class="card reveal">
+            <div class="gborder-fx"></div>
+            <div class="ico">{s.icon}</div>
+            <h3>{s.title}</h3>
+            <p>{s.text}</p>
+            <ul class="tags">{s.tags.map((t) => <li>{t}</li>)}</ul>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CASE -->
+  <section id="case">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">// реальный проект</span>
+        <h2>Кейс: самовосстанавливающаяся инфраструктура</h2>
+        <p class="lead">
+          Боевая система, которую я спроектировал и собрал целиком — от Python-ядра до
+          bash-агента на VPS. Показывает уровень задач, которые я закрываю.
+        </p>
+      </div>
+      <div class="case reveal">
+        <div class="case-top">
+          <div>
+            <h3>Отказоустойчивый веб-фронт с ИИ-генерацией</h3>
+            <p>
+              Система непрерывно следит за доступностью сайта. Как только фронт становится
+              недоступен — автоматически поднимает новый VPS, генерирует свежую версию
+              локальной нейросетью, публикует и переключает трафик. Без участия человека.
+            </p>
+          </div>
+          <span class="pill">архитектура: 2 машины</span>
+        </div>
+        <div class="case-body">
+          <div class="case-flow">
+            {caseFlow.map((f, i) => (
+              <div class="flow-step">
+                <div class="flow-num">{i + 1}</div>
+                <div><h4>{f.title}</h4><p>{f.text}</p></div>
+              </div>
+            ))}
+          </div>
+          <div class="case-metrics">
+            {caseMetrics.map((m) => (
+              <div class="metric"><b class="grad-text">{m.value}</b><span>{m.label}</span></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STACK -->
+  <section id="stack">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">// инструменты</span>
+        <h2>Технологический стек</h2>
+        <p class="lead">
+          То, чем я работаю каждый день — от системного администрирования до интеграции нейросетей.
+        </p>
+      </div>
+      <div class="stack reveal">
+        {stack.map((t) => <span class="chip"><i></i>{t}</span>)}
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">// стоимость</span>
+        <h2>Прозрачные цены</h2>
+        <p class="lead">
+          Ставка — от 4 000 ₽/час (~$45). Ниже — типовые пакеты. Точная смета после
+          короткого созвона: фиксирую объём и цену до старта, без сюрпризов.
+        </p>
+      </div>
+      <div class="price-grid reveal">
+        {plans.map((p) => (
+          <div class={`price${p.featured ? ' featured' : ''}`}>
+            <h3>{p.title}</h3>
+            <p class="desc">{p.desc}</p>
+            <div class="amount">{p.price}</div>
+            <span class="meta">{p.meta}</span>
+            <ul>{p.features.map((f) => <li>{f}</li>)}</ul>
+            <a href="#contact" class={`btn ${p.featured ? 'btn-primary' : 'btn-ghost'}`}>{p.cta}</a>
+          </div>
+        ))}
+      </div>
+      <p class="price-note">
+        <b>Абонентское администрирование</b> — от 10 000 ₽/мес: мониторинг, обновления,
+        реакция на инциденты, мелкие правки. &nbsp;·&nbsp; Разовая консультация — 4 000 ₽/час.
+      </p>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section id="process">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">// как мы работаем</span>
+        <h2>Процесс без сюрпризов</h2>
+      </div>
+      <div class="steps reveal">
+        {process.map((s) => (
+          <div class="step"><h4>{s.title}</h4><p>{s.text}</p></div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="wrap">
+      <div class="cta-band reveal">
+        <h2>Обсудим ваш проект?</h2>
+        <p>
+          Опишите задачу в двух словах — вернусь с решением и оценкой в течение дня.
+          Первичная консультация ни к чему не обязывает.
+        </p>
+        <div class="hero-cta">
+          <a href={mailto} class="btn btn-primary">✉ Написать на почту</a>
+          <a href={contacts.telegramUrl} class="btn btn-ghost">✈ Telegram · @{contacts.telegram}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap foot">
+      <div class="brand"><span class="dot"></span> {contacts.name}</div>
+      <div class="foot-links">
+        <a href={mailto}>{contacts.email}</a>
+        <a href={contacts.telegramUrl}>@{contacts.telegram}</a>
+        <a href="#services">Услуги</a>
+        <a href="#pricing">Цены</a>
+      </div>
+      <div style="font-size:.86rem">DevOps · ИИ-инфраструктура · <span id="year"></span></div>
+    </div>
+  </footer>
+</Base>

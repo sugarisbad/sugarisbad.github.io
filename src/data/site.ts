@@ -1,0 +1,149 @@
+// Единый источник контента сайта. Секции в index.astro рендерятся из этих данных.
+
+export const contacts = {
+  name: 'Данила Кулаков',
+  email: 'dk0x@proton.me',
+  telegram: 'sugarisbaddy',
+  telegramUrl: 'https://t.me/sugarisbaddy',
+};
+
+export const heroStats = [
+  { value: '<60с', label: 'от команды до готового VPS' },
+  { value: '24/7', label: 'авто-мониторинг и failover' },
+  { value: '0 ₽', label: 'на внешние API — ИИ локально' },
+  { value: '58', label: 'тестов на боевом ядре' },
+];
+
+export type Service = {
+  icon: string;
+  title: string;
+  text: string;
+  tags: string[];
+};
+
+export const services: Service[] = [
+  {
+    icon: '🛡️',
+    title: 'Настройка и защита VPS',
+    text: 'Разворачиваю сервер «под ключ»: nginx, systemd-сервисы, файрвол, SSH-хардненинг, автозапуск и health-check. Никаких ручных SSH в проде — всё через cloud-init.',
+    tags: ['nginx', 'systemd', 'cloud-init', 'ufw', "Let's Encrypt"],
+  },
+  {
+    icon: '🧠',
+    title: 'Self-hosted ИИ',
+    text: 'Ваша нейросеть на вашем железе через Ollama — без утечки данных и без счетов за токены. Gemma, Llama и другие модели с готовым HTTP-API для ваших сервисов.',
+    tags: ['Ollama', 'Gemma', 'llama.cpp', 'REST API', 'quantized'],
+  },
+  {
+    icon: '🤖',
+    title: 'ИИ-агенты и боты',
+    text: 'Telegram-агенты, понимающие команды в свободной форме — LLM разбирает текст в действия. Уведомления, управление конфигом и запуск задач прямо из чата.',
+    tags: ['OpenClaw', 'Telegram Bot', 'TypeScript', 'LLM-парсинг', 'SSE'],
+  },
+  {
+    icon: '⚙️',
+    title: 'Автоматизация под ключ',
+    text: 'Самовосстанавливающиеся системы: мониторинг ловит сбой, инфраструктура сама переключается на резерв. CI/CD, интеграции с облачными API, отказоустойчивость.',
+    tags: ['FastAPI', 'GitLab CI', 'Cloudflare API', 'failover', 'Python'],
+  },
+];
+
+export const caseFlow = [
+  { title: 'Мониторинг', text: 'HTTP-проверка уникального маркера каждые 30 секунд' },
+  { title: 'Новый VPS за минуту', text: 'cloud-init поднимает nginx + агент автоматически' },
+  { title: 'ИИ-генерация', text: 'Локальная Gemma (Ollama) создаёт контент — 0 внешних API' },
+  { title: 'Доставка через GitLab', text: 'Агент на VPS сам тянет обновление каждые 15с' },
+  { title: 'Управление в Telegram', text: 'ИИ-агент понимает команды в свободной форме' },
+];
+
+export const caseMetrics = [
+  { value: '30–60 сек', label: 'полный цикл восстановления от сбоя до рабочего сервера' },
+  { value: '~470 000', label: 'уникальных комбинаций дизайна в генераторе' },
+  { value: '4 API', label: 'TimeWeb, Cloudflare, GitLab, реестр доменов — в одном ядре' },
+  { value: '100%', label: 'автономность: без ручных SSH и вмешательства оператора' },
+];
+
+export const stack = [
+  'Linux', 'nginx', 'systemd', 'cloud-init', 'Python / asyncio', 'FastAPI',
+  'TypeScript', 'Bash', 'Ollama', 'Gemma / Llama', 'OpenClaw', 'Telegram Bot API',
+  'GitLab CI/CD', 'Cloudflare API', 'TimeWeb Cloud', 'SQLite / SQLAlchemy',
+  'JWT / bcrypt', 'Vue / Vite', "Let's Encrypt", 'pytest',
+];
+
+export type Plan = {
+  title: string;
+  desc: string;
+  price: string;
+  meta: string;
+  featured?: boolean;
+  cta: string;
+  features: string[];
+};
+
+// Цены — анализ рынка на середину 2026 (см. README → «Обоснование цен»).
+export const plans: Plan[] = [
+  {
+    title: 'Настройка VPS',
+    desc: 'Сервер «под ключ»: развернуть, защитить, автоматизировать запуск.',
+    price: 'от 7 000 ₽',
+    meta: '≈ $80 · срок 1–2 дня',
+    cta: 'Заказать',
+    features: [
+      'nginx + SSL (Let’s Encrypt)',
+      'SSH-хардненинг и файрвол',
+      'systemd-автозапуск сервисов',
+      'Мониторинг и health-check',
+      'Документация по доступам',
+    ],
+  },
+  {
+    title: 'ИИ-агент / бот',
+    desc: 'Автономный Telegram-агент с пониманием команд на естественном языке.',
+    price: 'от 40 000 ₽',
+    meta: '≈ $460 · срок 1–2 недели',
+    featured: true,
+    cta: 'Обсудить',
+    features: [
+      'Telegram-бот на TypeScript / Python',
+      'LLM-парсинг свободных команд',
+      'Уведомления и живые статусы (SSE)',
+      'Интеграция с вашим API/сервисом',
+      'Деплой на сервер + автозапуск',
+    ],
+  },
+  {
+    title: 'Self-hosted ИИ',
+    desc: 'Своя нейросеть на вашем железе — без счетов за токены и утечки данных.',
+    price: 'от 20 000 ₽',
+    meta: '≈ $230 · срок 2–4 дня',
+    cta: 'Заказать',
+    features: [
+      'Установка Ollama + подбор модели',
+      'Оптимизация под ваше железо',
+      'HTTP-API для ваших сервисов',
+      'Квантизация под скорость/память',
+      'Замена платных API (OpenAI и т.п.)',
+    ],
+  },
+  {
+    title: 'Система под ключ',
+    desc: 'Комплексная автоматизация: мониторинг, failover, CI/CD, облачные API.',
+    price: 'от 160 000 ₽',
+    meta: '≈ $1 850 · срок от 3 недель',
+    cta: 'Обсудить',
+    features: [
+      'Проектирование архитектуры',
+      'Отказоустойчивость и авто-восстановление',
+      'Интеграции облачных провайдеров',
+      'CI/CD и автоматический деплой',
+      'Тесты, документация, поддержка',
+    ],
+  },
+];
+
+export const process = [
+  { title: 'Созвон', text: 'Разбираем задачу, я задаю правильные вопросы и предлагаю решение.' },
+  { title: 'Смета', text: 'Фиксирую объём, цену и срок письменно — до начала работ.' },
+  { title: 'Работа', text: 'Собираю систему, держу вас в курсе, показываю промежуточные результаты.' },
+  { title: 'Передача', text: 'Документация, доступы, инструкции. Всё работает и понятно в поддержке.' },
+];
