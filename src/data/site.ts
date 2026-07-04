@@ -8,13 +8,15 @@ export const contacts = {
   telegramUrl: 'https://t.me/sugarisbaddy',
   github: 'sugarisbad',
   githubUrl: 'https://github.com/sugarisbad',
+  phone: '+7 999 827-37-18',
+  phoneUrl: 'tel:+79998273718',
 };
 
 export const heroStats = [
   { value: '<60с', label: 'от команды до готового VPS' },
   { value: '24/7', label: 'авто-мониторинг и failover' },
+  { value: '10', label: 'микросервисов в боевом GPU-маркетплейсе' },
   { value: '0 ₽', label: 'на внешние API — ИИ локально' },
-  { value: '58', label: 'тестов на боевом ядре' },
 ];
 
 export type Service = {
@@ -32,38 +34,89 @@ export const services: Service[] = [
     tags: ['nginx', 'systemd', 'cloud-init', 'ufw', "Let's Encrypt"],
   },
   {
+    icon: '🐳',
+    title: 'Docker и контейнеризация',
+    text: 'Переношу приложения в контейнеры: docker-compose стеки с БД, кэшем и очередями, multi-stage сборки, приватные реестры. Один файл — и проект поднимается где угодно.',
+    tags: ['Docker', 'docker-compose', 'multi-stage', 'registry'],
+  },
+  {
+    icon: '🚀',
+    title: 'CI/CD и автодеплой',
+    text: 'Пайплайны GitLab CI / GitHub Actions: тесты, сборка, деплой на сервер по пушу в main. Стейджинг, откаты, секреты — релизы перестают быть событием.',
+    tags: ['GitLab CI', 'GitHub Actions', 'rollback', 'staging'],
+  },
+  {
+    icon: '📈',
+    title: 'Мониторинг и алерты',
+    text: 'Метрики, логи и health-check с алертами в Telegram: узнаёте о проблеме раньше клиентов. Самовосстановление: мониторинг ловит сбой — система сама переключается на резерв.',
+    tags: ['VictoriaMetrics', 'Grafana', 'health-check', 'failover'],
+  },
+  {
     icon: '🧠',
     title: 'Self-hosted ИИ',
     text: 'Ваша нейросеть на вашем железе через Ollama — без утечки данных и без счетов за токены. Gemma, Llama и другие модели с готовым HTTP-API для ваших сервисов.',
-    tags: ['Ollama', 'Gemma', 'llama.cpp', 'REST API', 'quantized'],
+    tags: ['Ollama', 'Gemma', 'llama.cpp', 'REST API'],
   },
   {
     icon: '🤖',
     title: 'ИИ-агенты и боты',
     text: 'Telegram-агенты, понимающие команды в свободной форме — LLM разбирает текст в действия. Уведомления, управление конфигом и запуск задач прямо из чата.',
-    tags: ['OpenClaw', 'Telegram Bot', 'TypeScript', 'LLM-парсинг', 'SSE'],
+    tags: ['Telegram Bot', 'TypeScript', 'LLM-парсинг', 'SSE'],
+  },
+];
+
+// Кейсы — реальные проекты (в т.ч. приватные), без ссылок на код.
+export type Case = {
+  icon: string;
+  title: string;
+  text: string;
+  tags: string[];
+  stat: { value: string; label: string };
+};
+
+export const cases: Case[] = [
+  {
+    icon: '🖥️',
+    title: 'GPU-маркетплейс: платформа аренды видеокарт',
+    text: 'Многосервисный бэкенд: хосты подключают свои машины, платформа размещает Docker-инстансы арендаторов, считает потребление и биллинг. Kafka, Postgres, Redis, Vault, Jaeger, VictoriaMetrics — полный продакшен-стек.',
+    tags: ['Go', 'gRPC', 'Kafka', 'Docker', 'Vault', 'Postgres'],
+    stat: { value: '10', label: 'микросервисов в одной платформе' },
   },
   {
     icon: '⚙️',
-    title: 'Автоматизация под ключ',
-    text: 'Самовосстанавливающиеся системы: мониторинг ловит сбой, инфраструктура сама переключается на резерв. CI/CD, интеграции с облачными API, отказоустойчивость.',
-    tags: ['FastAPI', 'GitLab CI', 'Cloudflare API', 'failover', 'Python'],
+    title: 'Go-демон для управления GPU-серверами',
+    text: 'Системный агент на Go: gRPC-управление Docker-контейнерами с NVIDIA GPU, мониторинг железа через NVML, сетевая изоляция контейнеров через iptables/nftables. Ставится на любой Linux-хост.',
+    tags: ['Go', 'gRPC', 'NVML', 'Docker API', 'iptables'],
+    stat: { value: '1 демон', label: 'весь хост под контролем' },
   },
-];
-
-export const caseFlow = [
-  { title: 'Мониторинг', text: 'HTTP-проверка уникального маркера каждые 30 секунд' },
-  { title: 'Новый VPS за минуту', text: 'cloud-init поднимает nginx + агент автоматически' },
-  { title: 'ИИ-генерация', text: 'Локальная Gemma (Ollama) создаёт контент — 0 внешних API' },
-  { title: 'Доставка через GitLab', text: 'Агент на VPS сам тянет обновление каждые 15с' },
-  { title: 'Управление в Telegram', text: 'ИИ-агент понимает команды в свободной форме' },
-];
-
-export const caseMetrics = [
-  { value: '30–60 сек', label: 'полный цикл восстановления от сбоя до рабочего сервера' },
-  { value: '~470 000', label: 'уникальных комбинаций дизайна в генераторе' },
-  { value: '4 API', label: 'TimeWeb, Cloudflare, GitLab, реестр доменов — в одном ядре' },
-  { value: '100%', label: 'автономность: без ручных SSH и вмешательства оператора' },
+  {
+    icon: '🌐',
+    title: 'Прокси-платформа с балансировкой',
+    text: 'HAProxy + мульти-инстансный 3proxy: балансировка нагрузки, rate-limiting, health-checks, systemd-интеграция и веб-панель. Скрипты массового развёртывания на десятки серверов, полный dual-stack IPv4/IPv6.',
+    tags: ['HAProxy', '3proxy', 'systemd', 'IPv6', 'Web UI'],
+    stat: { value: '10+', label: 'серверов из одного скрипта' },
+  },
+  {
+    icon: '📡',
+    title: 'Мониторинг парка прокси-модемов',
+    text: 'FastAPI-бэкенд + React-дашборд: почасовые проверки SOCKS5-модемов на нескольких серверах, мгновенные алерты в Telegram, история инцидентов. Docker Compose — развёртывание одной командой.',
+    tags: ['FastAPI', 'React', 'Docker Compose', 'Telegram'],
+    stat: { value: '24/7', label: 'алерты раньше, чем заметят клиенты' },
+  },
+  {
+    icon: '🐧',
+    title: 'Автодеплой multi-IP прокси-стека',
+    text: 'Один скрипт разворачивает Docker-стек Glider на Debian: десятки HTTP/SOCKS5-эндпоинтов с привязкой исходящего IP, dnsmasq против DNS-утечек, авторизация и готовые ссылки-конфиги на выходе.',
+    tags: ['Docker', 'Debian', 'Shell', 'dnsmasq', 'ipset'],
+    stat: { value: '1 команда', label: 'от чистой ОС до рабочего стека' },
+  },
+  {
+    icon: '🔁',
+    title: 'Самовосстанавливающийся веб-фронт с ИИ',
+    text: 'Система сама следит за сайтом: упал фронт — за минуту поднимается новый VPS через cloud-init, локальная нейросеть генерирует контент, GitLab доставляет обновления. Управление — ИИ-агентом в Telegram.',
+    tags: ['cloud-init', 'Ollama', 'GitLab CI', 'Python', 'failover'],
+    stat: { value: '30–60 с', label: 'от сбоя до рабочего сервера, без людей' },
+  },
 ];
 
 export const stack = [
@@ -208,5 +261,70 @@ export const faq = [
   {
     q: 'Как проходит оплата?',
     a: 'Поэтапно: фиксируем этап — предоплата — результат — следующий этап. На небольших задачах обычно 50% до / 50% после демонстрации результата. Работаю официально, детали обсудим на созвоне.',
+  },
+];
+
+// Прайс типовых DevOps-услуг — страница /services.
+export type PriceItem = {
+  name: string;
+  desc: string;
+  price: string;
+  time: string;
+};
+
+export type PriceGroup = {
+  title: string;
+  icon: string;
+  items: PriceItem[];
+};
+
+export const priceGroups: PriceGroup[] = [
+  {
+    title: 'Серверы и безопасность',
+    icon: '🛡️',
+    items: [
+      { name: 'Настройка VPS «под ключ»', desc: 'nginx + SSL, файрвол, SSH-харднинг, systemd-автозапуск, health-check, документация', price: 'от 7 000 ₽', time: '1–2 дня' },
+      { name: 'Аудит существующего сервера', desc: 'Проверка безопасности и точек отказа, письменный отчёт с планом и ценами исправлений', price: '4 000 ₽', time: '1–2 часа' },
+      { name: 'nginx: домены, SSL, реверс-прокси', desc: 'Виртуальные хосты, Let’s Encrypt с автопродлением, редиректы, gzip/brotli, кэширование', price: 'от 5 000 ₽', time: '1 день' },
+      { name: 'Миграция на новый сервер', desc: 'Перенос приложений, БД и доменов без простоя, проверка и откат-план', price: 'от 12 000 ₽', time: '1–3 дня' },
+      { name: 'Резервное копирование', desc: 'Автоматические бэкапы БД и файлов на внешнее хранилище, проверка восстановления', price: 'от 8 000 ₽', time: '1 день' },
+    ],
+  },
+  {
+    title: 'Docker и CI/CD',
+    icon: '🐳',
+    items: [
+      { name: 'Docker-изация приложения', desc: 'Dockerfile с multi-stage сборкой, оптимизация размера образа, .dockerignore, документация', price: 'от 10 000 ₽', time: '1–2 дня' },
+      { name: 'docker-compose стек', desc: 'Приложение + БД + кэш + очередь в одном compose: сети, volume’ы, health-check’и, лимиты', price: 'от 15 000 ₽', time: '2–3 дня' },
+      { name: 'CI/CD пайплайн', desc: 'GitLab CI / GitHub Actions: тесты → сборка → деплой по пушу, секреты, стейджинг, откаты', price: 'от 15 000 ₽', time: '2–4 дня' },
+      { name: 'Массовое развёртывание', desc: 'Скрипты раскатки идентичной конфигурации на парк серверов: cloud-init, идемпотентные шаги', price: 'от 25 000 ₽', time: 'от 1 недели' },
+    ],
+  },
+  {
+    title: 'Мониторинг и отказоустойчивость',
+    icon: '📈',
+    items: [
+      { name: 'Мониторинг + алерты в Telegram', desc: 'Метрики сервера и приложений, health-check’и, мгновенные уведомления об инцидентах', price: 'от 15 000 ₽', time: '2–4 дня' },
+      { name: 'Балансировка нагрузки', desc: 'HAProxy / nginx upstream: распределение трафика, health-check’и, graceful-переключение', price: 'от 18 000 ₽', time: '3–5 дней' },
+      { name: 'Автоматический failover', desc: 'Резервная площадка + автоматическое переключение при сбое основной, тесты сценария отказа', price: 'от 30 000 ₽', time: 'от 1 недели' },
+    ],
+  },
+  {
+    title: 'ИИ-инфраструктура',
+    icon: '🧠',
+    items: [
+      { name: 'Self-hosted ИИ (Ollama)', desc: 'Подбор модели под железо, квантизация, HTTP-API для ваших сервисов, замена платных API', price: 'от 20 000 ₽', time: '2–4 дня' },
+      { name: 'ИИ-агент / Telegram-бот', desc: 'Бот с LLM-парсингом свободных команд, уведомления, интеграция с вашим API, деплой', price: 'от 40 000 ₽', time: '1–2 недели' },
+      { name: 'Система под ключ', desc: 'Архитектура, отказоустойчивость, CI/CD, интеграции облачных API, тесты и документация', price: 'от 160 000 ₽', time: 'от 3 недель' },
+    ],
+  },
+  {
+    title: 'Поддержка',
+    icon: '🤝',
+    items: [
+      { name: 'Абонентское администрирование', desc: 'Мониторинг, обновления, реакция на инциденты, мелкие правки — сервер под присмотром', price: 'от 10 000 ₽/мес', time: 'постоянно' },
+      { name: 'Разовая консультация', desc: 'Созвон: разбор вашей инфраструктуры, ответы на вопросы, план действий', price: '4 000 ₽/час', time: 'по записи' },
+      { name: 'Срочный выезд в инцидент', desc: 'Сервер лежит прямо сейчас — подключаюсь, диагностирую, поднимаю, пишу пост-мортем', price: 'от 6 000 ₽', time: 'сегодня' },
+    ],
   },
 ];

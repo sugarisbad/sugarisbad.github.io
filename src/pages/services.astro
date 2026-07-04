@@ -1,0 +1,106 @@
+---
+import Base from '../layouts/Base.astro';
+import { contacts, priceGroups } from '../data/site';
+
+const base = import.meta.env.BASE_URL;
+const mailto = `mailto:${contacts.email}?subject=${encodeURIComponent('Заказ DevOps-услуги')}`;
+const desc =
+  'Прайс типовых DevOps-услуг: настройка VPS от 7 000 ₽, Docker и CI/CD от 10 000 ₽, мониторинг и алерты от 15 000 ₽, self-hosted ИИ от 20 000 ₽. Фиксированная смета до старта работ.';
+---
+
+<Base title={`Прайс DevOps-услуг — ${contacts.name} (${contacts.username})`} description={desc}>
+  <!-- NAV -->
+  <header>
+    <div class="wrap nav">
+      <a class="brand" href={base}><span class="dot"></span> {contacts.name} <span class="brand-user mono">// {contacts.username}</span></a>
+      <nav class="nav-links" id="nav">
+        <a href={base}>Главная</a>
+        <a href={`${base}#services`}>Услуги</a>
+        <a href={`${base}#cases`}>Кейсы</a>
+        <a href={`${base}#faq`}>FAQ</a>
+        <a href="#order" class="nav-cta">Связаться</a>
+      </nav>
+      <button class="burger" id="burger" aria-label="Меню">☰</button>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero hero-compact">
+    <div class="wrap">
+      <div class="badge"><span class="live"></span> Смета фиксируется письменно до старта</div>
+      <h1>Прайс <span class="grad-text">DevOps-услуг</span></h1>
+      <p class="sub">
+        Типовые задачи с понятными ценами и сроками. Все суммы «от …» — стартовые:
+        точную смету назову после короткого созвона, и в процессе она не вырастет.
+      </p>
+      <div class="hero-cta">
+        <a href={contacts.telegramUrl} class="btn btn-primary">✈ Написать в Telegram</a>
+        <a href={contacts.phoneUrl} class="btn btn-ghost">📞 {contacts.phone}</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICE LIST -->
+  <section class="plist-section">
+    <div class="wrap">
+      {priceGroups.map((g) => (
+        <div class="pgroup reveal">
+          <div class="pgroup-head">
+            <span class="pgroup-ico">{g.icon}</span>
+            <h2>{g.title}</h2>
+          </div>
+          <div class="plist">
+            {g.items.map((item) => (
+              <div class="pitem">
+                <div class="pitem-info">
+                  <h3>{item.name}</h3>
+                  <p>{item.desc}</p>
+                </div>
+                <div class="pitem-meta">
+                  <b class="grad-text">{item.price}</b>
+                  <span class="mono">{item.time}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+      <p class="price-note">
+        Часовая ставка — <b>4 000 ₽/час</b> (~$45). Комбинация нескольких услуг — дешевле,
+        чем по отдельности: объединяю работы и не беру дважды за одно и то же.
+      </p>
+    </div>
+  </section>
+
+  <!-- ORDER CTA -->
+  <section id="order">
+    <div class="wrap">
+      <div class="cta-band reveal">
+        <h2>Не нашли свою задачу?</h2>
+        <p>
+          Прайс покрывает типовые работы, но большинство проектов — комбинация из них.
+          Опишите задачу как умеете — я переведу её в смету с ценой и сроком в течение дня.
+        </p>
+        <div class="hero-cta">
+          <a href={contacts.telegramUrl} class="btn btn-primary">✈ Telegram · @{contacts.telegram}</a>
+          <a href={contacts.phoneUrl} class="btn btn-ghost">📞 {contacts.phone}</a>
+          <a href={mailto} class="btn btn-ghost">✉ Написать на почту</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap foot">
+      <a class="brand" href={base}><span class="dot"></span> {contacts.name} <span class="brand-user mono">// {contacts.username}</span></a>
+      <div class="foot-links">
+        <a href={contacts.phoneUrl}>{contacts.phone}</a>
+        <a href={mailto}>{contacts.email}</a>
+        <a href={contacts.telegramUrl}>@{contacts.telegram}</a>
+        <a href={contacts.githubUrl} rel="noopener">github.com/{contacts.github}</a>
+        <a href={base}>Главная</a>
+      </div>
+      <div style="font-size:.86rem">DevOps · ИИ-инфраструктура · <span id="year"></span></div>
+    </div>
+  </footer>
+</Base>

@@ -1,13 +1,14 @@
 ---
 import Base from '../layouts/Base.astro';
 import {
-  contacts, heroStats, services, caseFlow, caseMetrics,
+  contacts, heroStats, services, cases,
   stack, plans, process, guarantees, compare, faq,
 } from '../data/site';
 
+const base = import.meta.env.BASE_URL;
 const mailto = `mailto:${contacts.email}?subject=${encodeURIComponent('Проект по DevOps/ИИ')}`;
 const desc =
-  'Настройка и защита VPS, self-hosted ИИ (Ollama/Gemma), Telegram ИИ-агенты и отказоустойчивая автоматизация инфраструктуры. Проекты под ключ и абонентское администрирование.';
+  'DevOps-инженер: настройка и защита VPS, Docker, CI/CD, мониторинг и отказоустойчивость. Self-hosted ИИ (Ollama) и Telegram-агенты. Проекты под ключ и абонентское администрирование.';
 ---
 
 <Base title={`${contacts.name} (${contacts.username}) — DevOps & AI-инфраструктура под ключ`} description={desc}>
@@ -17,8 +18,9 @@ const desc =
       <div class="brand"><span class="dot"></span> {contacts.name} <span class="brand-user mono">// {contacts.username}</span></div>
       <nav class="nav-links" id="nav">
         <a href="#services">Услуги</a>
-        <a href="#case">Кейс</a>
+        <a href="#cases">Кейсы</a>
         <a href="#pricing">Цены</a>
+        <a href={`${base}services/`}>Прайс</a>
         <a href="#faq">FAQ</a>
         <a href="#contact" class="nav-cta">Связаться</a>
       </nav>
@@ -30,12 +32,11 @@ const desc =
   <section class="hero">
     <div class="wrap">
       <div class="badge"><span class="live"></span> Принимаю проекты · ответ в течение дня</div>
-      <h1>DevOps и <span class="grad-text">ИИ-инфраструктура</span><br />под ключ</h1>
+      <h1><span class="grad-text">DevOps</span>-инженер<br />для вашей инфраструктуры</h1>
       <p class="sub">
-        Настраиваю и защищаю VPS, разворачиваю собственные ИИ-модели на вашем железе и
-        собираю автономных Telegram-агентов. Вы получаете систему, которая сама следит
-        за собой и чинит себя, — а не ещё одного подрядчика, которому надо писать по
-        каждому поводу.
+        Серверы, Docker, CI/CD, мониторинг и отказоустойчивость — плюс собственные
+        ИИ-модели на вашем железе. Вы получаете систему, которая сама следит за собой
+        и чинит себя, — а не ещё одного подрядчика, которому надо писать по каждому поводу.
       </p>
       <div class="hero-cta">
         <a href="#contact" class="btn btn-primary">Обсудить задачу →</a>
@@ -54,10 +55,11 @@ const desc =
     <div class="wrap">
       <div class="section-head reveal">
         <span class="eyebrow">// что я делаю</span>
-        <h2>Четыре направления,<br />один инженер</h2>
+        <h2>DevOps как основа,<br />ИИ как усиление</h2>
         <p class="lead">
           Не «настрою хостинг по инструкции», а проектирую и собираю инфраструктуру целиком:
-          сервер, автоматизация, ИИ и управление — как единую систему.
+          серверы, контейнеры, деплой, мониторинг — как единую систему.
+          Типовые задачи с ценами — <a href={`${base}services/`} class="lead-link">в прайсе</a>.
         </p>
       </div>
       <div class="grid">
@@ -74,44 +76,30 @@ const desc =
     </div>
   </section>
 
-  <!-- CASE -->
-  <section id="case">
+  <!-- CASES -->
+  <section id="cases">
     <div class="wrap">
       <div class="section-head reveal">
-        <span class="eyebrow">// реальный проект</span>
-        <h2>Кейс: самовосстанавливающаяся инфраструктура</h2>
+        <span class="eyebrow">// реальные проекты</span>
+        <h2>Кейсы</h2>
         <p class="lead">
-          Боевая система, которую я спроектировал и собрал целиком — от Python-ядра до
-          bash-агента на VPS. Показывает уровень задач, которые я закрываю.
+          Системы, которые я спроектировал и собрал целиком — от микросервисного
+          GPU-маркетплейса до самовосстанавливающейся инфраструктуры.
         </p>
       </div>
-      <div class="case reveal">
-        <div class="case-top">
-          <div>
-            <h3>Отказоустойчивый веб-фронт с ИИ-генерацией</h3>
-            <p>
-              Система непрерывно следит за доступностью сайта. Как только фронт становится
-              недоступен — автоматически поднимает новый VPS, генерирует свежую версию
-              локальной нейросетью, публикует и переключает трафик. Без участия человека.
-            </p>
-          </div>
-          <span class="pill">архитектура: 2 машины</span>
-        </div>
-        <div class="case-body">
-          <div class="case-flow">
-            {caseFlow.map((f, i) => (
-              <div class="flow-step">
-                <div class="flow-num">{i + 1}</div>
-                <div><h4>{f.title}</h4><p>{f.text}</p></div>
-              </div>
-            ))}
-          </div>
-          <div class="case-metrics">
-            {caseMetrics.map((m) => (
-              <div class="metric"><b class="grad-text">{m.value}</b><span>{m.label}</span></div>
-            ))}
-          </div>
-        </div>
+      <div class="cases-grid reveal">
+        {cases.map((c) => (
+          <article class="card case-card">
+            <div class="gborder-fx"></div>
+            <div class="case-card-top">
+              <div class="ico">{c.icon}</div>
+              <div class="case-stat"><b class="grad-text">{c.stat.value}</b><span>{c.stat.label}</span></div>
+            </div>
+            <h3>{c.title}</h3>
+            <p>{c.text}</p>
+            <ul class="tags">{c.tags.map((t) => <li>{t}</li>)}</ul>
+          </article>
+        ))}
       </div>
     </div>
   </section>
@@ -210,6 +198,9 @@ const desc =
         <b>Абонентское администрирование</b> — от 10 000 ₽/мес: мониторинг, обновления,
         реакция на инциденты, мелкие правки. &nbsp;·&nbsp; Разовая консультация — 4 000 ₽/час.
       </p>
+      <div class="hero-cta" style="margin-top:26px">
+        <a href={`${base}services/`} class="btn btn-ghost">Полный прайс типовых услуг →</a>
+      </div>
     </div>
   </section>
 
@@ -257,6 +248,7 @@ const desc =
         </p>
         <div class="hero-cta">
           <a href={contacts.telegramUrl} class="btn btn-primary">✈ Telegram · @{contacts.telegram}</a>
+          <a href={contacts.phoneUrl} class="btn btn-ghost">📞 {contacts.phone}</a>
           <a href={mailto} class="btn btn-ghost">✉ Написать на почту</a>
           <a href={contacts.githubUrl} class="btn btn-ghost" rel="noopener">⌥ GitHub · {contacts.github}</a>
         </div>
@@ -268,10 +260,11 @@ const desc =
     <div class="wrap foot">
       <div class="brand"><span class="dot"></span> {contacts.name} <span class="brand-user mono">// {contacts.username}</span></div>
       <div class="foot-links">
+        <a href={contacts.phoneUrl}>{contacts.phone}</a>
         <a href={mailto}>{contacts.email}</a>
         <a href={contacts.telegramUrl}>@{contacts.telegram}</a>
         <a href={contacts.githubUrl} rel="noopener">github.com/{contacts.github}</a>
-        <a href="#services">Услуги</a>
+        <a href={`${base}services/`}>Прайс</a>
         <a href="#pricing">Цены</a>
       </div>
       <div style="font-size:.86rem">DevOps · ИИ-инфраструктура · <span id="year"></span></div>
