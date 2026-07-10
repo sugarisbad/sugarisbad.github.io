@@ -161,8 +161,11 @@ const websiteLd = {
       try {
         const here = location.pathname === '/en' || location.pathname.startsWith('/en/') ? 'en' : 'ru';
         const saved = localStorage.getItem(LS);
-        const wants = saved || ((navigator.language || '').toLowerCase().startsWith('ru') ? 'ru' : 'en');
-        if (wants !== here && !sessionStorage.getItem('lang-hint')) {
+        // ?lang-hint — принудительный показ плашки (для проверки вёрстки)
+        const force = new URLSearchParams(location.search).has('lang-hint');
+        let wants = saved || ((navigator.language || '').toLowerCase().startsWith('ru') ? 'ru' : 'en');
+        if (force) wants = here === 'ru' ? 'en' : 'ru';
+        if (wants !== here && (force || !sessionStorage.getItem('lang-hint'))) {
           const other =
             here === 'ru'
               ? '/en' + (location.pathname === '/' ? '/' : location.pathname)
