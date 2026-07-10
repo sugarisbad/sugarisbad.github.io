@@ -17,6 +17,10 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://sugarisbad.github.io',
   base: '/',
+  // CSS инлайнится в HTML: минус блокирующий запрос на критическом пути
+  // (GitHub Pages отдаёт статику с кэшем всего 10 минут, так что отдельный
+  // CSS-файл всё равно не кэшировался бы надолго).
+  build: { inlineStylesheets: 'always' },
   i18n: {
     defaultLocale: 'ru',
     locales: ['ru', 'en'],
