@@ -1,4 +1,5 @@
 import { defineConfig } from 'astro/config';
+import sitemap from '@astrojs/sitemap';
 
 // ────────────────────────────────────────────────────────────────────────────
 // НАСТРОЙКА ПОД GITHUB PAGES:
@@ -9,8 +10,25 @@ import { defineConfig } from 'astro/config';
 //
 //  • Репозиторий  username.github.io  (личная страница) или свой домен:
 //        site: 'https://username.github.io',  base: '/'
+//
+// ЯЗЫКИ: русский — на корне (/), английский — под /en/.
+// Sitemap-интеграция сама проставляет hreflang-связи в sitemap.
 // ────────────────────────────────────────────────────────────────────────────
 export default defineConfig({
   site: 'https://sugarisbad.github.io',
   base: '/',
+  i18n: {
+    defaultLocale: 'ru',
+    locales: ['ru', 'en'],
+    routing: { prefixDefaultLocale: false },
+  },
+  integrations: [
+    sitemap({
+      i18n: {
+        defaultLocale: 'ru',
+        locales: { ru: 'ru', en: 'en' },
+      },
+      filter: (page) => !page.includes('/404'),
+    }),
+  ],
 });

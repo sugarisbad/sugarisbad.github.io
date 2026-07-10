@@ -1,0 +1,71 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Contact from '../components/Contact.astro';
+import Footer from '../components/Footer.astro';
+import { t, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const dict = t(locale);
+---
+
+<Base title={dict.casesPage.title} description={dict.casesPage.desc} locale={locale} path="cases/">
+  <Header locale={locale} path="cases/" />
+
+  <!-- HERO -->
+  <section class="hero hero-compact">
+    <div class="wrap">
+      <span class="eyebrow">{dict.casesPage.eyebrow}</span>
+      <h1>{dict.casesPage.h1}</h1>
+      <p class="sub">{dict.casesPage.sub}</p>
+    </div>
+  </section>
+
+  <!-- CASES -->
+  <section class="section-tight">
+    <div class="wrap">
+      <div class="cases-grid reveal">
+        {dict.cases.map((c) => (
+          <article class="card case-card">
+            <div class="gborder-fx"></div>
+            <div class="case-card-top">
+              <div class="ico">{c.icon}</div>
+              <div class="case-stat"><b class="grad-text">{c.stat.value}</b><span>{c.stat.label}</span></div>
+            </div>
+            <h3>{c.title}</h3>
+            <p>{c.text}</p>
+            <ul class="tags">{c.tags.map((tag) => <li>{tag}</li>)}</ul>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- STACK (marquee) -->
+  <section class="stack-section">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">{dict.casesPage.stackEyebrow}</span>
+        <h2>{dict.casesPage.stackH2}</h2>
+        <p class="lead">{dict.casesPage.stackLead}</p>
+      </div>
+    </div>
+    <div class="marquee reveal" aria-label={dict.casesPage.marqueeAria}>
+      <div class="marquee-track">
+        {dict.stack.map((tech) => <span class="chip"><i></i>{tech}</span>)}
+        {dict.stack.map((tech) => <span class="chip" aria-hidden="true"><i></i>{tech}</span>)}
+      </div>
+    </div>
+  </section>
+
+  <Contact
+    locale={locale}
+    title={dict.casesPage.contactTitle}
+    text={dict.casesPage.contactText}
+    source="src-cases"
+  />
+  <Footer locale={locale} />
+</Base>

@@ -1,0 +1,96 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Contact from '../components/Contact.astro';
+import Footer from '../components/Footer.astro';
+import { contacts } from '../data/site';
+import { t, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const dict = t(locale);
+
+// Кнопки заказа ведут в бота с кодом услуги и языка — видно, откуда пришёл клиент.
+const order = (slug: string) =>
+  contacts.botUrl ? `${contacts.botUrl}?start=${slug}${locale === 'en' ? '-en' : ''}` : '#contact';
+---
+
+<Base title={dict.servicesPage.title} description={dict.servicesPage.desc} locale={locale} path="services/">
+  <Header locale={locale} path="services/" />
+
+  <!-- HERO -->
+  <section class="hero hero-compact">
+    <div class="wrap">
+      <div class="badge"><span class="live"></span> {dict.servicesPage.badge}</div>
+      <h1 set:html={dict.servicesPage.h1} />
+      <p class="sub">{dict.servicesPage.sub}</p>
+    </div>
+  </section>
+
+  <!-- PLANS -->
+  <section class="section-tight">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">{dict.servicesPage.plansEyebrow}</span>
+        <h2>{dict.servicesPage.plansH2}</h2>
+      </div>
+      <div class="price-grid reveal">
+        {dict.plans.map((p) => (
+          <div class={`price${p.featured ? ' featured' : ''}`}>
+            <h3>{p.title}</h3>
+            <p class="desc">{p.desc}</p>
+            <div class="amount">{p.price}</div>
+            <span class="meta">{p.meta}</span>
+            <ul>{p.features.map((f) => <li>{f}</li>)}</ul>
+            <a href={order(p.slug)} class={`btn ${p.featured ? 'btn-primary' : 'btn-ghost'}`}>{p.cta}</a>
+          </div>
+        ))}
+      </div>
+      <p class="price-note" set:html={dict.servicesPage.priceNote1} />
+    </div>
+  </section>
+
+  <!-- PRICE LIST -->
+  <section class="plist-section">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">{dict.servicesPage.listEyebrow}</span>
+        <h2>{dict.servicesPage.listH2}</h2>
+      </div>
+      {dict.priceGroups.map((g) => (
+        <div class="pgroup reveal">
+          <div class="pgroup-head">
+            <span class="pgroup-ico">{g.icon}</span>
+            <h2>{g.title}</h2>
+          </div>
+          <div class="plist">
+            {g.items.map((item) => (
+              <div class="pitem">
+                <div class="pitem-info">
+                  <h3>{item.name}</h3>
+                  <p>{item.desc}</p>
+                </div>
+                <div class="pitem-meta">
+                  <b class="grad-text">{item.price}</b>
+                  <span class="mono">{item.time}</span>
+                  <a href={order(item.slug)} class="btn btn-ghost btn-sm">{dict.servicesPage.orderBtn}</a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+      <p class="price-note" set:html={dict.servicesPage.priceNote2} />
+    </div>
+  </section>
+
+  <Contact
+    locale={locale}
+    title={dict.servicesPage.contactTitle}
+    text={dict.servicesPage.contactText}
+    source="src-services"
+  />
+  <Footer locale={locale} />
+</Base>

@@ -1,18 +1,32 @@
 ---
 import { contacts } from '../data/site';
+import { t, localeUrl, type Locale } from '../i18n';
+
+interface Props {
+  locale?: Locale;
+  /** Путь текущей страницы без префикса локали — для переключателя языка. */
+  path?: string;
+}
+const { locale = 'ru', path = '' } = Astro.props;
+const dict = t(locale);
 const base = import.meta.env.BASE_URL;
+const p = (s: string) => localeUrl(locale, s, base);
 ---
 
 <header>
   <div class="wrap nav">
-    <a class="brand" href={base}><span class="dot"></span> {contacts.name} <span class="brand-user mono">// {contacts.username}</span></a>
+    <a class="brand" href={p('')}><span class="dot"></span> {dict.seo.personName} <span class="brand-user mono">// {contacts.username}</span></a>
     <nav class="nav-links" id="nav">
-      <a href={base}>Главная</a>
-      <a href={`${base}cases/`}>Кейсы</a>
-      <a href={`${base}services/`}>Услуги и цены</a>
-      <a href={`${base}work/`}>Как я работаю</a>
-      <a href="#contact" class="nav-cta">Связаться</a>
+      <a href={p('')}>{dict.nav.home}</a>
+      <a href={p('cases/')}>{dict.nav.cases}</a>
+      <a href={p('services/')}>{dict.nav.services}</a>
+      <a href={p('work/')}>{dict.nav.work}</a>
+      <a href="#contact" class="nav-cta">{dict.nav.contact}</a>
     </nav>
-    <button class="burger" id="burger" aria-label="Меню">☰</button>
+    <div class="lang-switch" aria-label="Language">
+      <a href={localeUrl('ru', path, base)} data-lang="ru" class={locale === 'ru' ? 'active' : ''} aria-current={locale === 'ru' ? 'true' : undefined}>RU</a>
+      <a href={localeUrl('en', path, base)} data-lang="en" class={locale === 'en' ? 'active' : ''} aria-current={locale === 'en' ? 'true' : undefined}>EN</a>
+    </div>
+    <button class="burger" id="burger" aria-label={dict.nav.menu}>☰</button>
   </div>
 </header>

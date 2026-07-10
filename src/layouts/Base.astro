@@ -1,15 +1,50 @@
 ---
 import '../styles/global.css';
+import { contacts } from '../data/site';
+import { t, localeUrl, type Locale } from '../i18n';
 
 interface Props {
   title: string;
   description: string;
+  locale?: Locale;
+  /** Путь страницы без префикса локали: '' | 'cases/' | 'services/' | 'work/'. */
+  path?: string;
+  /** true — страница вне индекса (404 и т.п.): noindex, без canonical/hreflang. */
+  noindex?: boolean;
 }
-const { title, description } = Astro.props;
+const { title, description, locale = 'ru', path = '', noindex = false } = Astro.props;
+const dict = t(locale);
+
+const site = (Astro.site?.href ?? 'https://sugarisbad.github.io/').replace(/\/$/, '');
+const urlRu = `${site}${localeUrl('ru', path)}`;
+const urlEn = `${site}${localeUrl('en', path)}`;
+const canonical = locale === 'ru' ? urlRu : urlEn;
+const ogImage = `${site}/og.png`;
+
+// Микроразметка: кто автор сайта и что это за сайт.
+const personLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: dict.seo.personName,
+  alternateName: contacts.username,
+  jobTitle: dict.seo.jobTitle,
+  email: `mailto:${contacts.email}`,
+  telephone: contacts.phone.replace(/[\s-]/g, ''),
+  url: `${site}/`,
+  sameAs: [contacts.githubUrl, contacts.telegramUrl],
+  knowsAbout: ['DevOps', 'Linux', 'Docker', 'CI/CD', 'nginx', 'Monitoring', 'Self-hosted AI', 'Ollama'],
+};
+const websiteLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: dict.seo.siteName,
+  url: `${site}/`,
+  inLanguage: [{ '@type': 'Language', name: 'Russian', alternateName: 'ru' }, { '@type': 'Language', name: 'English', alternateName: 'en' }],
+};
 ---
 
 <!doctype html>
-<html lang="ru">
+<html lang={dict.htmlLang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -17,14 +52,47 @@ const { title, description } = Astro.props;
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="theme-color" content="#07080c" />
+    {noindex ? (
+      <meta name="robots" content="noindex, nofollow" />
+    ) : (
+      <>
+        <link rel="canonical" href={canonical} />
+        <link rel="alternate" hreflang="ru" href={urlRu} />
+        <link rel="alternate" hreflang="en" href={urlEn} />
+        <link rel="alternate" hreflang="x-default" href={urlRu} />
+      </>
+    )}
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <!-- Подтверждение прав в поисковиках: вставьте коды из Яндекс.Вебмастера и
+         Google Search Console (или подтверждайте через DNS/файл — см. README). -->
+    <!-- <meta name="yandex-verification" content="XXXXXXXXXXXXXXXX" /> -->
+    <!-- <meta name="google-site-verification" content="XXXXXXXXXXXXXXXX" /> -->
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={dict.seo.siteName} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={dict.seo.ogImageAlt} />
+    <meta property="og:locale" content={dict.ogLocale} />
+    <meta property="og:locale:alternate" content={locale === 'ru' ? 'en_US' : 'ru_RU'} />
+
+    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
 
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='9' fill='%234ff0c7'/%3E%3C/svg%3E" />
+
+    <script type="application/ld+json" set:html={JSON.stringify(personLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(websiteLd)} />
+    <slot name="head" />
   </head>
   <body>
     <div class="bg-fx"></div>
@@ -32,6 +100,13 @@ const { title, description } = Astro.props;
     <div class="bg-grain"></div>
 
     <slot />
+
+    <!-- Ненавязчивая подсказка версии на языке браузера клиента -->
+    <div class="lang-banner" id="lang-banner" hidden>
+      <span id="lang-banner-text"></span>
+      <a href="#" id="lang-banner-link"></a>
+      <button id="lang-banner-close" aria-label="Close">✕</button>
+    </div>
 
     <script>
       // мобильное меню
@@ -67,6 +142,39 @@ const { title, description } = Astro.props;
           card.style.setProperty('--mx', `${ev.clientX - r.left}px`);
         });
       });
+
+      // Выбор языка: клик по переключателю запоминаем; посетителю с другим
+      // языком браузера один раз показываем подсказку (без авторедиректа —
+      // он вредит и поисковым роботам, и людям).
+      const LS = 'site-lang';
+      document.querySelectorAll<HTMLAnchorElement>('.lang-switch a').forEach((a) =>
+        a.addEventListener('click', () => localStorage.setItem(LS, a.dataset.lang ?? ''))
+      );
+      try {
+        const here = location.pathname === '/en' || location.pathname.startsWith('/en/') ? 'en' : 'ru';
+        const saved = localStorage.getItem(LS);
+        const wants = saved || ((navigator.language || '').toLowerCase().startsWith('ru') ? 'ru' : 'en');
+        if (wants !== here && !sessionStorage.getItem('lang-hint')) {
+          const other =
+            here === 'ru'
+              ? '/en' + (location.pathname === '/' ? '/' : location.pathname)
+              : location.pathname.replace(/^\/en\/?/, '/');
+          const banner = document.getElementById('lang-banner')!;
+          const text = document.getElementById('lang-banner-text')!;
+          const link = document.getElementById('lang-banner-link') as HTMLAnchorElement;
+          text.textContent = wants === 'en' ? 'This page is also available in English.' : 'Эта страница есть и на русском.';
+          link.textContent = wants === 'en' ? 'Switch to English →' : 'Открыть на русском →';
+          link.href = other;
+          link.addEventListener('click', () => localStorage.setItem(LS, wants));
+          banner.hidden = false;
+          banner.classList.add('show');
+          document.getElementById('lang-banner-close')?.addEventListener('click', () => {
+            banner.classList.remove('show');
+            banner.hidden = true;
+            sessionStorage.setItem('lang-hint', '1');
+          });
+        }
+      } catch {}
     </script>
   </body>
 </html>
