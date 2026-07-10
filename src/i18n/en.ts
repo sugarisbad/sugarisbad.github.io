@@ -33,23 +33,23 @@ export const en: Dict = {
   },
 
   home: {
-    title: 'Danila (sugarisbad) — DevOps engineer: servers, CI/CD, automation',
-    desc: 'DevOps engineer: VPS setup and hardening, Docker, CI/CD, monitoring and high availability. Self-hosted AI (Ollama) and Telegram bots. Turnkey projects and managed server administration.',
+    title: 'Freelance DevOps Engineer for Hire: Server Setup, Docker, CI/CD — Danila (sugarisbad)',
+    desc: 'Hire a freelance DevOps engineer: Linux/VPS server setup and hardening, Docker, CI/CD pipelines, monitoring and high availability, self-hosted AI (Ollama), Telegram bots. Remote worldwide, fixed written quotes.',
     badge: 'Accepting projects · reply within a day',
     h1: '<span class="grad-text">DevOps</span> engineer<br />for your infrastructure',
-    sub: 'Servers, Docker, CI/CD, monitoring and failover. You get a system that watches over itself and heals itself — not yet another contractor you have to chase about every little thing.',
+    sub: 'Linux server (VPS) setup and administration, Docker, CI/CD, monitoring and failover. You get a system that watches over itself and heals itself — not yet another contractor you have to chase about every little thing.',
     ctaDiscuss: 'Discuss your task →',
     ctaCases: 'View case studies',
     servicesEyebrow: '// what I do',
     servicesH2: 'DevOps as the foundation,<br />AI as the multiplier',
-    servicesLead: 'I design and build infrastructure end to end: servers, containers, deployment, monitoring — as a single system.',
+    servicesLead: 'I design and build infrastructure end to end — remotely, turnkey: servers, containers, deployment, monitoring — as a single system.',
     btnPrices: 'Pricing & full price list →',
     btnWork: 'How I work →',
   },
 
   casesPage: {
-    title: 'Case studies — Danila (sugarisbad), DevOps engineer',
-    desc: 'Case studies: a GPU rental platform, a self-healing website, 24/7 hardware monitoring, load-balanced server fleets. Real systems built end to end by one engineer.',
+    title: 'DevOps Case Studies: Infrastructure Automation, 24/7 Monitoring, Self-hosted AI — Danila',
+    desc: 'Infrastructure automation examples: a GPU rental platform, a self-healing website, 24/7 hardware monitoring, load-balanced server fleets. Real systems built end to end by one DevOps engineer.',
     eyebrow: '// real projects',
     h1: 'Case studies',
     sub: 'Systems I designed and built end to end. Described in plain words — I’m happy to share the technical details on a call.',
@@ -62,8 +62,8 @@ export const en: Dict = {
   },
 
   servicesPage: {
-    title: 'Services & pricing — Danila (sugarisbad), DevOps engineer',
-    desc: 'DevOps engineer services and pricing: VPS setup from $80, monitoring from $170, self-hosted AI from $230, turnkey systems. Written fixed quotes, prepayment-based workflow.',
+    title: 'DevOps Services & Pricing: Server Setup from $80, CI/CD, Monitoring, Self-hosted AI',
+    desc: 'DevOps services and pricing: Linux/VPS server setup from $80, CI/CD pipeline setup, server monitoring (Grafana, Telegram alerts), self-hosted LLM with Ollama from $230, Telegram bot development. Fixed written quotes.',
     badge: 'Written fixed quote · prepayment-based workflow',
     h1: 'Services & <span class="grad-text">pricing</span>',
     sub: 'Standard packages and a full price list. All “from …” prices are starting points: I’ll give you an exact quote after a short call, and it won’t grow along the way. I work on prepayment — usually 50% upfront, the rest after you see the result.',
@@ -79,8 +79,8 @@ export const en: Dict = {
   },
 
   workPage: {
-    title: 'How I work — Danila (sugarisbad), DevOps engineer',
-    desc: 'How I work: a written quote and prepayment, fixed pricing, 30 days of free support after delivery, all access and accounts belong to you. Answers to frequently asked questions.',
+    title: 'DevOps Freelancer Rates & How I Work: Fixed Quotes, Timelines, Guarantees — Danila',
+    desc: 'How much a DevOps freelancer costs and how the work goes: $45/hour, a written fixed quote before start, prepayment-based workflow, 30 days of free support after delivery. Frequently asked questions.',
     eyebrow: '// process & terms',
     h1: 'How I work',
     sub: 'A transparent process with no surprises: a written quote before we start, prepayment-based workflow, and a month of free support after delivery.',
@@ -112,8 +112,8 @@ export const en: Dict = {
   services: [
     {
       icon: '🛡️',
-      title: 'VPS setup and hardening',
-      text: 'I deploy servers turnkey: nginx, systemd services, firewall, SSH hardening, autostart and health checks. No manual SSH in production — everything via cloud-init.',
+      title: 'VPS / Linux server setup and hardening',
+      text: 'I deploy servers turnkey (Ubuntu/Debian): nginx, systemd services, firewall, SSH hardening, autostart and health checks. No manual SSH in production — everything via cloud-init.',
       tags: ['nginx', 'systemd', 'cloud-init', 'ufw', "Let's Encrypt"],
     },
     {

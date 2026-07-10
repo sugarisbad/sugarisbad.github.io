@@ -47,6 +47,10 @@ canonical и `hreflang` на каждой странице, Open Graph + og:imag
 3. После деплоя проверить разметку: <https://validator.schema.org> и
    «Проверка ответа сервера» в Вебмастере.
 
+Семантическое ядро (какие запросы ловит каждая страница и как его поддерживать) —
+в **[docs/semantic-core.md](docs/semantic-core.md)**. Ключи уже внесены в title,
+description и тексты страниц в `src/i18n/{ru,en}.ts`.
+
 ## Локальный запуск (нужен Node 18+)
 
 ```bash
