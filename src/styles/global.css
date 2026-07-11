@@ -95,8 +95,15 @@ header{position:sticky;top:0;z-index:50;backdrop-filter:blur(16px);
   box-shadow:0 0 0 4px var(--glow);animation:pulse 2.4s ease-in-out infinite}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 4px var(--glow)}50%{box-shadow:0 0 0 9px transparent}}
 .nav-links{display:flex;gap:30px;align-items:center}
-.nav-links a{color:var(--muted);font-size:.94rem;font-weight:500;transition:color .2s}
+.nav-links a{color:var(--muted);font-size:.94rem;font-weight:500;transition:color .2s;position:relative}
 .nav-links a:hover{color:var(--text)}
+.nav-links a:not(.nav-cta)::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:2px;
+  background:var(--grad);border-radius:2px;transform:scaleX(0);transform-origin:0 50%;
+  transition:transform .28s var(--ease)}
+.nav-links a:not(.nav-cta):hover::after{transform:scaleX(1)}
+header{transition:box-shadow .35s,background .35s}
+header.scrolled{background:color-mix(in srgb,var(--bg) 88%,transparent);
+  box-shadow:0 10px 34px -16px rgba(0,0,0,.75)}
 .nav-cta{border:1px solid var(--line-2);padding:9px 18px;border-radius:11px;color:var(--text)!important;font-weight:600;transition:.2s}
 .nav-cta:hover{border-color:var(--a1);background:var(--glow)}
 .burger{display:none;background:none;border:0;color:var(--text);font-size:1.5rem;cursor:pointer;line-height:1}
@@ -139,7 +146,7 @@ h2{font-size:clamp(2rem,4.4vw,2.9rem);letter-spacing:-.035em;font-weight:800;lin
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
 .card{border:1px solid var(--line);background:linear-gradient(180deg,var(--surface),var(--bg-2));
   border-radius:var(--r);padding:28px;transition:transform .24s var(--ease),border-color .24s;position:relative;overflow:hidden}
-.card:hover{transform:translateY(-5px);border-color:var(--line-2)}
+.card:hover{transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(-5px);border-color:var(--line-2)}
 .card:hover .gborder-fx{opacity:1}
 .gborder-fx{position:absolute;inset:0;border-radius:inherit;opacity:0;transition:opacity .3s;pointer-events:none;
   background:radial-gradient(300px 160px at var(--mx,50%) 0%, color-mix(in srgb,var(--a2) 22%,transparent), transparent 70%)}
@@ -322,8 +329,56 @@ footer{border-top:1px solid var(--line);padding:46px 0;margin-top:44px;color:var
   background:var(--surface-2);border:1px solid var(--line-2);border-radius:14px;padding:11px 16px;
   box-shadow:0 10px 40px rgba(0,0,0,.55);font-size:.92rem;opacity:0;pointer-events:none;transition:.3s var(--ease)}
 .lang-banner.show{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.lang-banner span{flex:1;min-width:0}
 .lang-banner a{color:var(--a1);font-weight:700;white-space:nowrap}
 .lang-banner button{background:none;border:0;color:var(--dim);cursor:pointer;font-size:1rem;line-height:1;padding:2px}
 .lang-banner button:hover{color:var(--text)}
 
 .lang-globe{font-size:.85rem;line-height:1;align-self:center;padding-left:5px;opacity:.75}
+
+/* ============================================================================
+   Премиум-моушен: вход hero, шиммер, tilt, прогресс скролла, свет за курсором
+   ============================================================================ */
+
+/* ── вход hero: каскад снизу с лёгким блюром ─────────────────────────────── */
+@keyframes rise{
+  from{opacity:0;transform:translateY(26px);filter:blur(7px)}
+  to{opacity:1;transform:none;filter:none}
+}
+.hero .badge,.hero .eyebrow{animation:rise .7s var(--ease) both}
+.hero h1{animation:rise .85s var(--ease) .08s both}
+.hero .sub{animation:rise .85s var(--ease) .18s both}
+.hero .hero-cta{animation:rise .85s var(--ease) .28s both}
+.hero .stats{animation:rise .95s var(--ease) .42s both}
+
+/* ── переливающийся градиент в заголовках ────────────────────────────────── */
+h1 .grad-text,h2 .grad-text{background-size:220% 100%;animation:shimmer 6s ease-in-out infinite}
+@keyframes shimmer{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+
+/* ── индикатор прочтения страницы ────────────────────────────────────────── */
+.scroll-progress{position:fixed;top:0;left:0;right:0;height:2px;z-index:70;pointer-events:none;
+  background:var(--grad);transform-origin:0 50%;transform:scaleX(var(--sp,0))}
+
+/* ── мягкий свет, следующий за курсором (только точные указатели) ────────── */
+.bg-cursor{position:fixed;top:0;left:0;z-index:-1;width:560px;height:560px;border-radius:50%;
+  pointer-events:none;opacity:0;transition:opacity .6s;will-change:transform;
+  background:radial-gradient(circle,color-mix(in srgb,var(--a2) 9%,transparent),transparent 65%)}
+
+/* ── дыхание основной кнопки ─────────────────────────────────────────────── */
+.btn-primary{animation:btn-breathe 4.5s ease-in-out infinite}
+@keyframes btn-breathe{
+  0%,100%{box-shadow:0 10px 34px -10px color-mix(in srgb,var(--a2) 70%,transparent)}
+  50%{box-shadow:0 12px 46px -8px color-mix(in srgb,var(--a2) 95%,transparent)}
+}
+
+/* ── луч света, обходящий CTA-плашку ─────────────────────────────────────── */
+.cta-band::before{content:"";position:absolute;left:50%;top:50%;width:160%;aspect-ratio:1;
+  margin:-80% 0 0 -80%;pointer-events:none;opacity:.5;
+  background:conic-gradient(from 0deg,transparent 0 72%,color-mix(in srgb,var(--a1) 22%,transparent) 86%,transparent 100%);
+  animation:spin 16s linear infinite}
+@keyframes spin{to{transform:rotate(1turn)}}
+.cta-band :is(h2,p,.hero-cta){position:relative;z-index:1}
+
+/* ── детали ──────────────────────────────────────────────────────────────── */
+::selection{background:color-mix(in srgb,var(--a2) 38%,transparent)}
+:focus-visible{outline:2px solid var(--a1);outline-offset:3px;border-radius:4px}

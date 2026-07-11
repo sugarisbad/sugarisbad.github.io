@@ -98,6 +98,7 @@ const websiteLd = {
     <slot name="head" />
   </head>
   <body>
+    <div class="scroll-progress" aria-hidden="true"></div>
     <div class="bg-fx"></div>
     <div class="bg-grid"></div>
     <div class="bg-grain"></div>
@@ -124,13 +125,31 @@ const websiteLd = {
       const y = document.getElementById('year');
       if (y) y.textContent = String(new Date().getFullYear());
 
+      const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // reveal с грид-контейнера переносим на карточки — так работает каскад
+      document.querySelectorAll<HTMLElement>('.grid, .cases-grid, .price-grid, .steps').forEach((g) => {
+        if (g.classList.contains('reveal')) {
+          g.classList.remove('reveal');
+          [...g.children].forEach((c) => c.classList.add('reveal'));
+        }
+        [...g.children].forEach((c, i) => {
+          if (c instanceof HTMLElement && c.classList.contains('reveal'))
+            c.style.transitionDelay = `${Math.min(i, 7) * 70}ms`;
+        });
+      });
+
       // появление секций при скролле
       const io = new IntersectionObserver(
         (entries) => {
           entries.forEach((e) => {
             if (e.isIntersecting) {
-              e.target.classList.add('in');
-              io.unobserve(e.target);
+              const el = e.target as HTMLElement;
+              el.classList.add('in');
+              io.unobserve(el);
+              // transition-delay нужен только на входе — иначе тормозит hover
+              if (el.style.transitionDelay)
+                setTimeout(() => (el.style.transitionDelay = ''), 1300);
             }
           });
         },
@@ -138,18 +157,95 @@ const websiteLd = {
       );
       document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
 
-      // подсветка карточек услуг за курсором
+      // подсветка + лёгкий 3D-наклон карточек за курсором
       // (геометрию читаем один раз на mouseenter, а не на каждый mousemove —
       // getBoundingClientRect в mousemove вызывает forced reflow)
       document.querySelectorAll<HTMLElement>('.card').forEach((card) => {
-        let left = 0;
+        let rect: DOMRect | null = null;
         card.addEventListener('mouseenter', () => {
-          left = card.getBoundingClientRect().left;
+          rect = card.getBoundingClientRect();
         });
         card.addEventListener('mousemove', (ev) => {
-          card.style.setProperty('--mx', `${ev.clientX - left}px`);
+          if (!rect) rect = card.getBoundingClientRect();
+          const x = ev.clientX - rect.left;
+          const y = ev.clientY - rect.top;
+          card.style.setProperty('--mx', `${x}px`);
+          if (!reducedMotion) {
+            card.style.setProperty('--ry', `${(x / rect.width - 0.5) * 5}deg`);
+            card.style.setProperty('--rx', `${(0.5 - y / rect.height) * 5}deg`);
+          }
+        });
+        card.addEventListener('mouseleave', () => {
+          card.style.setProperty('--rx', '0deg');
+          card.style.setProperty('--ry', '0deg');
         });
       });
+
+      // прогресс прочтения + состояние шапки (только transform, без reflow)
+      const headerEl = document.querySelector('header');
+      let scrollRaf = 0;
+      const onScroll = () => {
+        scrollRaf = 0;
+        const max = document.documentElement.scrollHeight - innerHeight;
+        document.documentElement.style.setProperty('--sp', String(max > 0 ? Math.min(scrollY / max, 1) : 0));
+        headerEl?.classList.toggle('scrolled', scrollY > 8);
+      };
+      addEventListener('scroll', () => {
+        if (!scrollRaf) scrollRaf = requestAnimationFrame(onScroll);
+      }, { passive: true });
+      onScroll();
+
+      // цифры статистики «расшифровываются» при появлении
+      if (!reducedMotion) {
+        const scramble = (el: HTMLElement) => {
+          const final = el.textContent ?? '';
+          const chars = '<>/\\[]{}=+*#0123456789';
+          const total = Math.max(16, final.length * 5);
+          let frame = 0;
+          const tick = () => {
+            frame++;
+            const done = Math.floor((frame / total) * final.length);
+            el.textContent =
+              final.slice(0, done) +
+              [...final.slice(done)].map((c) => (c === ' ' ? ' ' : chars[(Math.random() * chars.length) | 0])).join('');
+            if (done < final.length) requestAnimationFrame(tick);
+            else el.textContent = final;
+          };
+          tick();
+        };
+        const statIo = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((e) => {
+              if (e.isIntersecting) {
+                statIo.unobserve(e.target);
+                setTimeout(() => scramble(e.target as HTMLElement), 350);
+              }
+            });
+          },
+          { threshold: 0.4 }
+        );
+        document.querySelectorAll<HTMLElement>('.stat b, .case-stat b').forEach((el) => statIo.observe(el));
+      }
+
+      // мягкий свет за курсором — только на устройствах с мышью
+      if (!reducedMotion && matchMedia('(pointer: fine)').matches) {
+        const glow = document.createElement('div');
+        glow.className = 'bg-cursor';
+        document.body.appendChild(glow);
+        let tx = 0, ty = 0, gx = 0, gy = 0, glowRaf = 0;
+        const follow = () => {
+          gx += (tx - gx) * 0.12;
+          gy += (ty - gy) * 0.12;
+          glow.style.transform = `translate(${gx - 280}px, ${gy - 280}px)`;
+          glowRaf = Math.abs(tx - gx) + Math.abs(ty - gy) > 0.5 ? requestAnimationFrame(follow) : 0;
+        };
+        addEventListener('pointermove', (e) => {
+          tx = e.clientX;
+          ty = e.clientY;
+          glow.style.opacity = '1';
+          if (!glowRaf) glowRaf = requestAnimationFrame(follow);
+        }, { passive: true });
+      }
 
       // Выбор языка: клик по переключателю запоминаем; посетителю с другим
       // языком браузера один раз показываем подсказку (без авторедиректа —
