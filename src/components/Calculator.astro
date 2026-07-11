@@ -2,7 +2,7 @@
 // Конфигуратор заказа: чекбоксы по прайсу → стартовая сумма → deep-link в бота.
 // Выбор кодируется однобуквенными кодами (calcCodes) в payload /start:
 // t.me/<bot>?start=calc-<коды> — бот расшифрует и приложит состав заказа к заявке.
-import { contacts, calcCodes } from '../data/site';
+import { contacts, calcCodes, bundleCodes } from '../data/site';
 import { t, type Locale } from '../i18n';
 
 interface Props {
@@ -13,6 +13,16 @@ const dict = t(locale);
 
 const num = (p: string) => parseInt(p.replace(/[^\d]/g, ''), 10) || 0;
 const isMonthly = (p: string) => /\/мес|\/mo/.test(p);
+
+// Связки для авто-комбо-скидки: размер скидки — из карточек связок
+// (разница «сумма позиций − цена связки»), чтобы цифры всегда совпадали.
+const bundles = dict.bundles.items
+  .map((b) => ({
+    codes: bundleCodes[b.slug] ?? '',
+    discount: num(b.oldPrice) - num(b.price),
+    title: b.title,
+  }))
+  .filter((b) => b.codes && b.discount > 0);
 ---
 
 <section id="calc" class="calc-section">
@@ -45,11 +55,15 @@ const isMonthly = (p: string) => /\/мес|\/mo/.test(p);
         ))}
       </div>
 
-      <aside class="calc-summary" data-locale={locale} data-bot={contacts.botUrl}>
+      <aside class="calc-summary" data-locale={locale} data-bot={contacts.botUrl} data-bundles={JSON.stringify(bundles)}>
         <div class="calc-count"><span>{dict.calc.selectedLabel}</span> <b id="calc-count">0</b></div>
         <div class="calc-total">
           <span>{dict.calc.totalLabel}</span>
           <b id="calc-total" class="grad-text">—</b>
+        </div>
+        <div class="calc-combo" id="calc-combo" hidden>
+          <span>{dict.calc.comboLabel} <em id="calc-combo-names"></em></span>
+          <b id="calc-combo-sum">—</b>
         </div>
         <div class="calc-monthly" id="calc-monthly" hidden>
           <span>{dict.calc.monthlyLabel}</span>
@@ -79,7 +93,12 @@ const isMonthly = (p: string) => /\/мес|\/mo/.test(p);
     const totalEl = document.getElementById('calc-total')!;
     const monthlyRow = document.getElementById('calc-monthly')!;
     const monthlyEl = document.getElementById('calc-monthly-sum')!;
+    const comboRow = document.getElementById('calc-combo')!;
+    const comboEl = document.getElementById('calc-combo-sum')!;
+    const comboNames = document.getElementById('calc-combo-names')!;
     const btn = document.getElementById('calc-send') as HTMLAnchorElement;
+    const bundles: { codes: string; discount: number; title: string }[] =
+      JSON.parse(summary.dataset.bundles ?? '[]');
 
     const fmt = (n: number) =>
       locale === 'ru' ? `${n.toLocaleString('ru-RU')} ₽` : `$${n.toLocaleString('en-US')}`;
@@ -97,6 +116,19 @@ const isMonthly = (p: string) => /\/мес|\/mo/.test(p);
         if (b.dataset.monthly) monthly += p;
         else total += p;
       });
+      // комбо-скидка: в заказе собралась связка целиком
+      let discount = 0;
+      const applied: string[] = [];
+      bundles.forEach((bl) => {
+        if ([...bl.codes].every((c) => codes.includes(c))) {
+          discount += bl.discount;
+          applied.push(bl.title);
+        }
+      });
+      total -= discount;
+      comboRow.hidden = discount === 0;
+      comboEl.textContent = `−${fmt(discount)}`;
+      comboNames.textContent = applied.length ? `«${applied.join('», «')}»` : '';
       countEl.textContent = String(count);
       totalEl.textContent = count ? fmt(total) : '—';
       monthlyRow.hidden = monthly === 0;

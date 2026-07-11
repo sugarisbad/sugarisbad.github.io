@@ -144,6 +144,7 @@ export const en: Dict = {
     lead: 'Tick the work you need — the calculator adds up the starting price. Then the order goes to the Telegram bot: it collects your contacts and hands everything to the engineer.',
     totalLabel: 'Total, from',
     monthlyLabel: 'plus monthly, from',
+    comboLabel: 'Bundle combo discount',
     selectedLabel: 'Items in order:',
     btnSend: 'Send order via Telegram →',
     btnEmpty: 'Select at least one item',

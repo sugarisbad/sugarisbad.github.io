@@ -54,7 +54,8 @@ const websiteLd = {
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#07080c" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#07080c" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f7fc" />
     {noindex ? (
       <meta name="robots" content="noindex, nofollow" />
     ) : (

@@ -17,6 +17,14 @@ export const contacts = {
 // Однобуквенные коды позиций прайса для payload калькулятора
 // (t.me/<bot>?start=calc-<коды>, максимум 64 символа [A-Za-z0-9_-]).
 // Должны совпадать с CALC_ITEMS в bot/bot.py.
+// Состав связок в кодах калькулятора: если все позиции связки отмечены,
+// калькулятор (и бот) автоматически применяют комбо-скидку.
+export const bundleCodes: Record<string, string> = {
+  'bundle-server': 'aj', // vps-setup + monitoring
+  'bundle-deploy': 'fgh', // dockerize + compose + cicd
+  'bundle-ai': 'mn', // ollama + tg-bot
+};
+
 export const calcCodes: Record<string, string> = {
   'vps-setup': 'a',
   'audit': 'b',

@@ -126,14 +126,24 @@ CALC_ITEMS: dict[str, tuple[str, int, str]] = {
 }
 
 
+# Связки: если все коды связки есть в заказе — применяется комбо-скидка.
+# Составы и суммы должны совпадать с bundleCodes/bundles на сайте.
+CALC_BUNDLES: list[tuple[str, int, str]] = [
+    ("aj", 2500, "Сервер под присмотром"),
+    ("fgh", 6000, "Деплой без рук"),
+    ("mn", 7200, "ИИ в контуре"),
+]
+
+
 def parse_calc(slug: str) -> tuple[str, str]:
     """calc-<коды> → (текст состава заказа, краткий источник). Пустые строки, если не калькулятор."""
     if not slug.startswith("calc-"):
         return "", ""
+    codes = slug[5:]
     total = 0
     monthly = 0
     lines = []
-    for code in slug[5:]:
+    for code in codes:
         item = CALC_ITEMS.get(code)
         if not item:
             continue
@@ -145,11 +155,18 @@ def parse_calc(slug: str) -> tuple[str, str]:
             total += price
     if not lines:
         return "", ""
+    n_items = len(lines)
+    for combo_codes, discount, name in CALC_BUNDLES:
+        if all(c in codes for c in combo_codes):
+            total -= discount
+            lines.append(
+                f"🎁 Комбо «{name}» — скидка {discount:,} ₽".replace(",", " ")
+            )
     summary = f"Итого: от {total:,} ₽".replace(",", " ")
     if monthly:
         summary += f" + от {monthly:,} ₽/мес".replace(",", " ")
     order = "\n".join(lines) + f"\n{summary}"
-    return order, f"Калькулятор на сайте ({len(lines)} поз.)"
+    return order, f"Калькулятор на сайте ({n_items} поз.)"
 
 
 def kb(*rows: list[KeyboardButton]) -> ReplyKeyboardMarkup:

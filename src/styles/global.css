@@ -31,6 +31,48 @@
   --maxw:1160px;
   --ease:cubic-bezier(.2,.7,.2,1);
   --font-display:'Space Grotesk Variable','Manrope Variable',system-ui,sans-serif;
+  color-scheme:dark;
+}
+
+/* ── светлая тема: применяется автоматически по настройке устройства ─────── */
+@media (prefers-color-scheme: light){
+  :root{
+    color-scheme:light;
+
+    --bg:#f5f7fc;
+    --bg-2:#edf0f8;
+    --surface:#ffffff;
+    --surface-2:#f1f4fa;
+    --line:#dee4f0;
+    --line-2:#c6d0e4;
+
+    --text:#111629;
+    --muted:#49556f;
+    --dim:#7b87a2;
+
+    --a1:#089e7c;
+    --a2:#2e66d8;
+    --a3:#7551e8;
+    --warm:#b26a00;
+  }
+  .bg-fx::before{opacity:.28}
+  .bg-grain{opacity:.05;mix-blend-mode:multiply}
+
+  /* терминал в hero остаётся тёмным — кастомные свойства наследуются вниз */
+  .term{
+    --bg-2:#0b0e16;--surface:#0f131f;--surface-2:#141a29;
+    --line:#1c2438;--line-2:#28324c;
+    --text:#eef2fb;--muted:#93a0bd;--dim:#5c6884;
+    --a1:#4ff0c7;
+    color:var(--text);
+  }
+  .term{box-shadow:0 40px 80px -40px rgba(17,22,41,.35)}
+  .term-glow{opacity:.4}
+
+  /* мягче «чёрные» тени тёмной темы */
+  .calc-summary{box-shadow:0 30px 70px -50px rgba(17,22,41,.3)}
+  .lang-banner{box-shadow:0 10px 40px rgba(17,22,41,.22)}
+  header.scrolled{box-shadow:0 10px 34px -16px rgba(17,22,41,.18)}
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -531,6 +573,11 @@ h1 .grad-text,h2 .grad-text{background-size:220% 100%;animation:shimmer 6s ease-
   padding:12px 0;border-bottom:1px solid var(--line);font-size:.88rem}
 .calc-monthly span{color:var(--dim)}
 .calc-monthly b{font-family:'JetBrains Mono Variable',monospace;color:var(--a1);white-space:nowrap}
+.calc-combo{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+  padding:12px 0;border-bottom:1px solid var(--line);font-size:.88rem}
+.calc-combo span{color:var(--dim)}
+.calc-combo em{display:block;font-style:normal;font-size:.78rem;color:var(--warm)}
+.calc-combo b{font-family:'JetBrains Mono Variable',monospace;color:var(--warm);white-space:nowrap}
 .calc-send{width:100%;justify-content:center;margin-top:22px;transition:opacity .25s,transform .18s var(--ease)}
 .calc-send[aria-disabled="true"]{opacity:.45;pointer-events:none;filter:grayscale(.4)}
 .calc-note{color:var(--dim);font-size:.82rem;margin-top:16px;line-height:1.5}
