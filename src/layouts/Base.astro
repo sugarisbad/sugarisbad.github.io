@@ -2,6 +2,7 @@
 // Шрифты — self-hosted (Fontsource): без запросов к Google CDN на критическом пути.
 import '@fontsource-variable/manrope';
 import '@fontsource-variable/jetbrains-mono';
+import '@fontsource-variable/space-grotesk';
 import '../styles/global.css';
 import { contacts } from '../data/site';
 import { t, localeUrl, type Locale } from '../i18n';
@@ -126,6 +127,60 @@ const websiteLd = {
       if (y) y.textContent = String(new Date().getFullYear());
 
       const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // заголовок hero собирается построчно: оборачиваем строки (разделитель — <br>)
+      // в маски, сохраняя внутренние span'ы (.grad-text)
+      if (!reducedMotion) {
+        document.querySelectorAll('.hero h1').forEach((h) => {
+          const groups: Node[][] = [[]];
+          [...h.childNodes].forEach((n) => {
+            if (n.nodeName === 'BR') groups.push([]);
+            else groups[groups.length - 1].push(n);
+          });
+          if (!groups.some((g) => g.length)) return;
+          h.textContent = '';
+          groups.forEach((g, i) => {
+            const line = document.createElement('span');
+            line.className = 'h1-line';
+            const inner = document.createElement('span');
+            inner.className = 'h1-line-in';
+            inner.style.setProperty('--i', String(i));
+            g.forEach((n) => inner.appendChild(n));
+            line.appendChild(inner);
+            h.appendChild(line);
+          });
+        });
+      }
+
+      // «живой» терминал в hero: печатаем строки по очереди, один прогон
+      const term = document.querySelector<HTMLElement>('.term[data-term-lines]');
+      if (term && !reducedMotion) {
+        const lines = [...term.querySelectorAll<HTMLElement>('.term-line')];
+        const texts = lines.map((l) => l.textContent ?? '');
+        lines.forEach((l) => {
+          l.textContent = '';
+          l.style.display = 'none';
+        });
+        let li = 0;
+        const typeLine = () => {
+          if (li >= lines.length) return;
+          const el = lines[li];
+          const txt = texts[li];
+          const isCmd = txt.startsWith('$');
+          el.style.display = 'block';
+          let ci = 0;
+          const iv = setInterval(() => {
+            ci++;
+            el.textContent = txt.slice(0, ci);
+            if (ci >= txt.length) {
+              clearInterval(iv);
+              li++;
+              setTimeout(typeLine, isCmd ? 240 : 420);
+            }
+          }, isCmd ? 30 : 9);
+        };
+        setTimeout(typeLine, 850);
+      }
 
       // reveal с грид-контейнера переносим на карточки — так работает каскад
       document.querySelectorAll<HTMLElement>('.grid, .cases-grid, .price-grid, .steps').forEach((g) => {

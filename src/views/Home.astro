@@ -12,21 +12,48 @@ const { locale } = Astro.props;
 const dict = t(locale);
 const base = import.meta.env.BASE_URL;
 const p = (s: string) => localeUrl(locale, s, base);
+
+// Строки «живого» терминала в hero — язык шелла универсален для обеих локалей.
+const termLines = [
+  '$ ssh deploy@prod',
+  '~ connected · uptime 214d',
+  '$ docker compose up -d --build',
+  '+ 10/10 services healthy',
+  '$ git push origin main',
+  '~ ci/cd: build - test - deploy',
+  '+ released in 42s · zero downtime',
+];
 ---
 
 <Base title={dict.home.title} description={dict.home.desc} locale={locale} path="">
   <Header locale={locale} path="" />
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="wrap">
-      <div class="badge"><span class="live"></span> {dict.home.badge}</div>
-      <h1 set:html={dict.home.h1} />
-      <p class="sub">{dict.home.sub}</p>
-      <div class="hero-cta">
-        <a href="#contact" class="btn btn-primary">{dict.home.ctaDiscuss}</a>
-        <a href={p('cases/')} class="btn btn-ghost">{dict.home.ctaCases}</a>
+  <!-- HERO: асимметричная композиция, слева — копирайтинг, справа — терминал -->
+  <section class="hero hero-home">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <div class="badge"><span class="live"></span> {dict.home.badge}</div>
+        <h1 set:html={dict.home.h1} />
+        <p class="sub">{dict.home.sub}</p>
+        <div class="hero-cta">
+          <a href="#contact" class="btn btn-primary">{dict.home.ctaDiscuss}</a>
+          <a href={p('cases/')} class="btn btn-ghost">{dict.home.ctaCases}</a>
+        </div>
       </div>
+      <aside class="hero-visual" aria-hidden="true">
+        <div class="term" data-term-lines={JSON.stringify(termLines)}>
+          <div class="term-bar"><i></i><i></i><i></i><span class="mono">deploy@prod — ssh</span></div>
+          <div class="term-body mono">
+            {termLines.map((l) => <div class="term-line" data-k={l[0]}>{l}</div>)}
+            <div class="term-caret"></div>
+          </div>
+        </div>
+        <div class="term-glow"></div>
+      </aside>
+    </div>
+
+    <!-- Статистика: редакционная лента с тонкими линейками вместо коробок -->
+    <div class="wrap">
       <div class="stats">
         {dict.heroStats.map((s) => (
           <div class="stat"><b class="grad-text">{s.value}</b><span>{s.label}</span></div>
@@ -35,26 +62,39 @@ const p = (s: string) => localeUrl(locale, s, base);
     </div>
   </section>
 
-  <!-- SERVICES -->
-  <section id="services">
+  <!-- Гигантская контурная строка стека -->
+  <div class="marquee-giant" aria-hidden="true">
+    <div class="marquee-giant-track">
+      {[0, 1].map((i) => (
+        <span aria-hidden={i === 1 ? 'true' : undefined}>
+          {dict.stack.slice(0, 8).map((tech) => <em>{tech}<i>·</i></em>)}
+        </span>
+      ))}
+    </div>
+  </div>
+
+  <!-- SERVICES: нумерованные редакционные строки вместо карточек -->
+  <section id="services" class="section-editorial">
     <div class="wrap">
       <div class="section-head reveal">
         <span class="eyebrow">{dict.home.servicesEyebrow}</span>
         <h2 set:html={dict.home.servicesH2} />
         <p class="lead">{dict.home.servicesLead}</p>
       </div>
-      <div class="grid">
-        {dict.services.map((s) => (
-          <article class="card reveal">
-            <div class="gborder-fx"></div>
-            <div class="ico">{s.icon}</div>
-            <h3>{s.title}</h3>
-            <p>{s.text}</p>
-            <ul class="tags">{s.tags.map((tag) => <li>{tag}</li>)}</ul>
+      <div class="srows">
+        {dict.services.map((s, i) => (
+          <article class="srow reveal">
+            <span class="srow-i mono">{String(i + 1).padStart(2, '0')}</span>
+            <div class="srow-main">
+              <h3>{s.title}</h3>
+              <ul class="tags">{s.tags.map((tag) => <li>{tag}</li>)}</ul>
+            </div>
+            <p class="srow-text">{s.text}</p>
+            <span class="srow-arrow" aria-hidden="true">→</span>
           </article>
         ))}
       </div>
-      <div class="hero-cta" style="margin-top:40px">
+      <div class="hero-cta srows-cta">
         <a href={p('services/')} class="btn btn-ghost">{dict.home.btnPrices}</a>
         <a href={p('work/')} class="btn btn-ghost">{dict.home.btnWork}</a>
       </div>
