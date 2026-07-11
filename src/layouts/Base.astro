@@ -23,7 +23,7 @@ const site = (Astro.site?.href ?? 'https://sugarisbad.github.io/').replace(/\/$/
 const urlRu = `${site}${localeUrl('ru', path)}`;
 const urlEn = `${site}${localeUrl('en', path)}`;
 const canonical = locale === 'ru' ? urlRu : urlEn;
-const ogImage = `${site}/og.png`;
+const ogImage = `${site}/og.jpg`;
 
 // Микроразметка: кто автор сайта и что это за сайт.
 const personLd = {

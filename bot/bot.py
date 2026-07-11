@@ -135,6 +135,11 @@ CALC_BUNDLES: list[tuple[str, int, str]] = [
 ]
 
 
+def fmt_rub(n: int) -> str:
+    """12345 → '12 345' (пробел — разделитель тысяч, названия не трогаем)."""
+    return f"{n:,}".replace(",", " ")
+
+
 def parse_calc(slug: str) -> tuple[str, str]:
     """calc-<коды> → (текст состава заказа, краткий источник). Пустые строки, если не калькулятор."""
     if not slug.startswith("calc-"):
@@ -148,7 +153,7 @@ def parse_calc(slug: str) -> tuple[str, str]:
         if not item:
             continue
         name, price, suffix = item
-        lines.append(f"· {name} — от {price:,} ₽{suffix}".replace(",", " "))
+        lines.append(f"· {name} — от {fmt_rub(price)} ₽{suffix}")
         if suffix == "/мес":
             monthly += price
         else:
@@ -159,12 +164,10 @@ def parse_calc(slug: str) -> tuple[str, str]:
     for combo_codes, discount, name in CALC_BUNDLES:
         if all(c in codes for c in combo_codes):
             total -= discount
-            lines.append(
-                f"🎁 Комбо «{name}» — скидка {discount:,} ₽".replace(",", " ")
-            )
-    summary = f"Итого: от {total:,} ₽".replace(",", " ")
+            lines.append(f"🎁 Комбо «{name}» — скидка {fmt_rub(discount)} ₽")
+    summary = f"Итого: от {fmt_rub(total)} ₽"
     if monthly:
-        summary += f" + от {monthly:,} ₽/мес".replace(",", " ")
+        summary += f" + от {fmt_rub(monthly)} ₽/мес"
     order = "\n".join(lines) + f"\n{summary}"
     return order, f"Калькулятор на сайте ({n_items} поз.)"
 
@@ -232,11 +235,20 @@ async def cmd_start(message: Message, state: FSMContext, command: CommandObject)
         intro = f"Привет! Вижу, вас интересует <b>{html.escape(source)}</b> — отличный выбор.\n"
     else:
         intro = "Привет! "
+
+    # кнопка с именем из Telegram-профиля — чтобы не печатать руками
+    first_name = (message.from_user.first_name or "").strip()
+    name_rows = []
+    if 2 <= len(first_name) <= 80:
+        name_rows.append([KeyboardButton(text=first_name)])
+    name_rows.append([KeyboardButton(text=CANCEL)])
+
     await message.answer(
         intro + "Я приму вашу заявку и сразу передам её инженеру opsmith — "
-        "он ответит в течение дня.\n\nКак вас зовут?",
+        "он ответит в течение дня.\n\n"
+        "Как вас зовут? Напишите или нажмите кнопку ниже.",
         parse_mode="HTML",
-        reply_markup=ReplyKeyboardRemove(),
+        reply_markup=kb(*name_rows),
     )
 
 
@@ -257,17 +269,32 @@ async def form_name(message: Message, state: FSMContext) -> None:
         return
     await state.update_data(name=name)
     await state.set_state(Form.task)
-    await message.answer(
-        f"Приятно познакомиться, {name}!\n\n"
-        "Опишите задачу свободным текстом: что за проект, что нужно сделать, "
-        "какие сроки. Пишите как умеете — переведу на технический сам 🙂"
-    )
+    data = await state.get_data()
+    if data.get("order"):
+        # состав заказа уже известен из калькулятора — описание опционально
+        await message.answer(
+            f"Приятно познакомиться, {name}!\n\n"
+            "Состав заказа у меня уже есть. Хотите добавить пару слов о проекте "
+            "и сроках? Напишите — или нажмите «Пропустить».",
+            reply_markup=KB_SKIP,
+        )
+    else:
+        await message.answer(
+            f"Приятно познакомиться, {name}!\n\n"
+            "Опишите задачу свободным текстом: что за проект, что нужно сделать, "
+            "какие сроки. Пишите как умеете — переведу на технический сам 🙂",
+            reply_markup=kb([KeyboardButton(text=CANCEL)]),
+        )
 
 
 @router.message(Form.task, F.text)
 async def form_task(message: Message, state: FSMContext) -> None:
     task = message.text.strip()
-    if len(task) < 15:
+    data = await state.get_data()
+    has_order = bool(data.get("order"))
+    if task == SKIP and has_order:
+        task = ""
+    elif len(task) < 15 and not has_order:
         await message.answer(
             "Расскажите чуть подробнее (хотя бы пару предложений) — "
             "так оценка будет точнее."
@@ -342,7 +369,7 @@ async def send_lead(
         if user.username
         else f'<a href="tg://user?id={user.id}">профиль без юзернейма</a>'
     )
-    analysis = await analyze_task(task)
+    analysis = await analyze_task(task) if task else ""
 
     parts = [
         "🆕 <b>Новая заявка с сайта</b>",
@@ -353,7 +380,8 @@ async def send_lead(
         parts.append(f"🔗 <b>Откуда:</b> {html.escape(source)}")
     if order:
         parts.append(f"🧮 <b>Заказ из калькулятора:</b>\n{html.escape(order)}")
-    parts.append(f"📝 <b>Задача:</b>\n{html.escape(task)}")
+    if task:
+        parts.append(f"📝 <b>Задача:</b>\n{html.escape(task)}")
     if analysis:
         parts += ["", f"🤖 <b>Разбор (локальная LLM):</b>\n{html.escape(analysis)}"]
     parts += [
