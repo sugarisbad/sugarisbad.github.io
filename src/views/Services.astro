@@ -53,6 +53,31 @@ const order = (slug: string) =>
     </div>
   </section>
 
+  <!-- BUNDLES: честные связки — дешевле суммы позиций из прайса -->
+  <section class="section-tight">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">{dict.bundles.eyebrow}</span>
+        <h2>{dict.bundles.h2}</h2>
+        <p class="lead">{dict.bundles.lead}</p>
+      </div>
+      <div class="bundle-grid reveal">
+        {dict.bundles.items.map((b) => (
+          <div class="bundle">
+            <h3>{b.title}</h3>
+            <p class="desc">{b.desc}</p>
+            <div class="bundle-price">
+              <s class="mono">{b.oldPrice}</s>
+              <b>{b.price}</b>
+              <span class="bundle-save">{b.save}</span>
+            </div>
+            <a href={order(b.slug)} class="btn btn-ghost">{b.cta}</a>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
   <!-- PRICE LIST -->
   <section class="plist-section">
     <div class="wrap">
