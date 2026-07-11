@@ -33,6 +33,8 @@ export default defineConfig({
         locales: { ru: 'ru', en: 'en' },
       },
       filter: (page) => !page.includes('/404'),
+      // lastmod = дата сборки: поисковики видят, что контент обновился
+      serialize: (item) => ({ ...item, lastmod: new Date().toISOString() }),
     }),
   ],
 });

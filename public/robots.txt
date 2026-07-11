@@ -1,4 +1,9 @@
 User-agent: *
 Allow: /
 
+# Яндекс: служебные GET-параметры не создают отдельных страниц
+User-agent: Yandex
+Allow: /
+Clean-param: v&lang-hint /
+
 Sitemap: https://sugarisbad.github.io/sitemap-index.xml

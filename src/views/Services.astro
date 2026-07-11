@@ -16,9 +16,27 @@ const dict = t(locale);
 // Кнопки заказа ведут в бота с кодом услуги и языка — видно, откуда пришёл клиент.
 const order = (slug: string) =>
   contacts.botUrl ? `${contacts.botUrl}?start=${slug}${locale === 'en' ? '-en' : ''}` : '#contact';
+
+// Каталог услуг с ценами: расширенные сниппеты с ценой в Яндексе и Google.
+const priceNum = (p: string) => parseInt(p.replace(/[^\d]/g, ''), 10) || 0;
+const catalogLd = {
+  '@context': 'https://schema.org',
+  '@type': 'OfferCatalog',
+  name: dict.servicesPage.listH2,
+  itemListElement: dict.priceGroups.flatMap((g) =>
+    g.items.map((i) => ({
+      '@type': 'Offer',
+      itemOffered: { '@type': 'Service', name: i.name, description: i.desc },
+      price: priceNum(i.price),
+      priceCurrency: locale === 'ru' ? 'RUB' : 'USD',
+      availability: 'https://schema.org/InStock',
+    }))
+  ),
+};
 ---
 
 <Base title={dict.servicesPage.title} description={dict.servicesPage.desc} locale={locale} path="services/">
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(catalogLd)} />
   <Header locale={locale} path="services/" />
 
   <!-- HERO -->

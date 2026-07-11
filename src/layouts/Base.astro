@@ -4,7 +4,7 @@ import '@fontsource-variable/manrope';
 import '@fontsource-variable/jetbrains-mono';
 import '@fontsource-variable/space-grotesk';
 import '../styles/global.css';
-import { contacts } from '../data/site';
+import { brand, contacts } from '../data/site';
 import { t, localeUrl, type Locale } from '../i18n';
 
 interface Props {
@@ -44,6 +44,38 @@ const websiteLd = {
   url: `${site}/`,
   inLanguage: [{ '@type': 'Language', name: 'Russian', alternateName: 'ru' }, { '@type': 'Language', name: 'English', alternateName: 'en' }],
 };
+// Бренд как организация: связывает страницы в единый сущностный граф
+const orgLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  name: brand,
+  description: dict.home.desc,
+  url: `${site}/`,
+  logo: ogImage,
+  image: ogImage,
+  email: `mailto:${contacts.email}`,
+  founder: { '@type': 'Person', name: dict.seo.personName, jobTitle: dict.seo.jobTitle },
+  sameAs: [contacts.githubUrl, contacts.telegramUrl],
+  priceRange: locale === 'ru' ? '4 800 ₽ – 192 000 ₽' : '$55 – $2,200',
+  areaServed: 'Worldwide',
+};
+// Хлебные крошки для подстраниц
+const crumbNames: Record<string, string> = {
+  'cases/': dict.nav.cases,
+  'services/': dict.nav.services,
+  'work/': dict.nav.work,
+};
+const breadcrumbLd =
+  !noindex && path && crumbNames[path]
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: dict.nav.home, item: `${site}${localeUrl(locale, '')}` },
+          { '@type': 'ListItem', position: 2, name: crumbNames[path], item: canonical },
+        ],
+      }
+    : null;
 ---
 
 <!doctype html>
@@ -60,6 +92,7 @@ const websiteLd = {
       <meta name="robots" content="noindex, nofollow" />
     ) : (
       <>
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
         <link rel="canonical" href={canonical} />
         <link rel="alternate" hreflang="ru" href={urlRu} />
         <link rel="alternate" hreflang="en" href={urlEn} />
@@ -96,6 +129,8 @@ const websiteLd = {
 
     <script type="application/ld+json" set:html={JSON.stringify(personLd)} />
     <script type="application/ld+json" set:html={JSON.stringify(websiteLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(orgLd)} />
+    {breadcrumbLd && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)} />}
     <slot name="head" />
   </head>
   <body>

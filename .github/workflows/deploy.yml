@@ -44,7 +44,34 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  # IndexNow: мгновенно сообщаем Яндексу (и Bing) об обновлении страниц.
+  # Ключ лежит в public/<KEY>.txt и деплоится вместе с сайтом.
+  indexnow:
+    needs: deploy
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Ping IndexNow
+        env:
+          KEY: bd226a7e3bcd6cabe38cf8235671fc71
+          SITE: ${{ needs.deploy.outputs.page_url }}
+        run: |
+          SITE="${SITE%/}"
+          HOST=$(echo "$SITE" | sed -E 's#https?://([^/]+).*#\1#')
+          URLS=$(curl -s "$SITE/sitemap-0.xml" | grep -o '<loc>[^<]*</loc>' | sed 's#</\?loc>##g')
+          [ -z "$URLS" ] && { echo "sitemap пуст — пропускаем"; exit 0; }
+          printf '%s\n' $URLS | jq -R . | jq -s \
+            --arg host "$HOST" --arg key "$KEY" --arg keyloc "$SITE/$KEY.txt" \
+            '{host:$host,key:$key,keyLocation:$keyloc,urlList:.}' > payload.json
+          echo "Отправляем $(printf '%s\n' $URLS | wc -l) URL:"
+          cat payload.json
+          CODE=$(curl -s -o /dev/null -w '%{http_code}' -X POST 'https://api.indexnow.org/indexnow' \
+            -H 'Content-Type: application/json; charset=utf-8' -d @payload.json)
+          echo "IndexNow HTTP $CODE (200/202 = принято)"
