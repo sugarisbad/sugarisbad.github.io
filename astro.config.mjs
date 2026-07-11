@@ -15,7 +15,7 @@ import sitemap from '@astrojs/sitemap';
 // Sitemap-интеграция сама проставляет hreflang-связи в sitemap.
 // ────────────────────────────────────────────────────────────────────────────
 export default defineConfig({
-  site: 'https://sugarisbad.github.io',
+  site: 'https://opsmith.ru',
   base: '/',
   // CSS инлайнится в HTML: минус блокирующий запрос на критическом пути
   // (GitHub Pages отдаёт статику с кэшем всего 10 минут, так что отдельный
