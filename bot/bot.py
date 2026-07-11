@@ -212,7 +212,7 @@ async def cmd_start(message: Message, state: FSMContext, command: CommandObject)
     else:
         intro = "Привет! "
     await message.answer(
-        intro + "Я приму вашу заявку и сразу передам её Даниле — "
+        intro + "Я приму вашу заявку и сразу передам её инженеру opsmith — "
         "он ответит в течение дня.\n\nКак вас зовут?",
         parse_mode="HTML",
         reply_markup=ReplyKeyboardRemove(),
@@ -302,7 +302,7 @@ async def form_email(message: Message, state: FSMContext, bot: Bot) -> None:
     data = await state.get_data()
     await state.clear()
     await message.answer(
-        "Готово, заявка ушла! 🚀\nДанила свяжется с вами в течение дня. Спасибо!",
+        "Готово, заявка ушла! 🚀\nИнженер opsmith свяжется с вами в течение дня. Спасибо!",
         reply_markup=ReplyKeyboardRemove(),
     )
     await send_lead(

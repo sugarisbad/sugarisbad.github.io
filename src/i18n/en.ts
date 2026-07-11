@@ -18,7 +18,7 @@ export const en: Dict = {
     home: 'Home',
     cases: 'Case studies',
     services: 'Services & pricing',
-    work: 'How I work',
+    work: 'How we work',
     contact: 'Contact',
     menu: 'Menu',
   },
@@ -27,7 +27,7 @@ export const en: Dict = {
 
   contact: {
     title: 'Let’s discuss your project',
-    text: 'Describe your task in a couple of sentences — I’ll get back to you with a solution and an estimate within a day. The initial consultation is free and non-binding.',
+    text: 'Describe your task in a couple of sentences — we’ll get back to you with a solution and an estimate within a day. The initial consultation is free and non-binding.',
     btnBot: '🤖 Leave a request via bot',
     btnMail: '✉ Email',
     mailSubject: 'DevOps project',
@@ -35,17 +35,17 @@ export const en: Dict = {
 
   home: {
     title: 'opsmith — DevOps Studio: Server Setup, Docker, CI/CD, Turnkey Automation',
-    desc: 'Hire a freelance DevOps engineer: Linux/VPS server setup and hardening, Docker, CI/CD pipelines, monitoring and high availability, self-hosted AI (Ollama), Telegram bots. Remote worldwide, fixed written quotes.',
+    desc: 'opsmith — a DevOps studio: Linux/VPS server setup and hardening, Docker, CI/CD pipelines, monitoring and high availability, self-hosted AI (Ollama), Telegram bots. Remote worldwide, fixed written quotes.',
     badge: 'Accepting projects · reply within a day',
-    h1: '<span class="grad-text">DevOps</span> engineer<br />for your infrastructure',
+    h1: '<span class="grad-text">DevOps</span> studio<br />for your infrastructure',
     sub: 'Linux server (VPS) setup and administration, Docker, CI/CD, monitoring and failover. You get a system that watches over itself and heals itself — not yet another contractor you have to chase about every little thing.',
     ctaDiscuss: 'Discuss your task →',
     ctaCases: 'View case studies',
-    servicesEyebrow: '// what I do',
+    servicesEyebrow: '// what we do',
     servicesH2: 'DevOps as the foundation,<br />AI as the multiplier',
-    servicesLead: 'I design and build infrastructure end to end — remotely, turnkey: servers, containers, deployment, monitoring — as a single system.',
+    servicesLead: 'We design and build infrastructure end to end — remotely, turnkey: servers, containers, deployment, monitoring — as a single system.',
     btnPrices: 'Pricing & full price list →',
-    btnWork: 'How I work →',
+    btnWork: 'How we work →',
   },
 
   casesPage: {
@@ -53,13 +53,13 @@ export const en: Dict = {
     desc: 'Infrastructure automation examples: a GPU rental platform, a self-healing website, 24/7 hardware monitoring, load-balanced server fleets. Real systems built end to end by one DevOps engineer.',
     eyebrow: '// real projects',
     h1: 'Case studies',
-    sub: 'Systems I designed and built end to end. Described in plain words — I’m happy to share the technical details on a call.',
+    sub: 'Systems we designed and built end to end. Described in plain words — we’re happy to share the technical details on a call.',
     stackEyebrow: '// tools',
     stackH2: 'Technology stack',
-    stackLead: 'What I work with every day — from system administration to integrating neural networks.',
+    stackLead: 'What we work with every day — from system administration to integrating neural networks.',
     marqueeAria: 'Technologies',
     contactTitle: 'Want a system like this?',
-    contactText: 'Tell me what your project needs — I’ll propose a solution and an estimate within a day.',
+    contactText: 'Tell us what your project needs — we’ll propose a solution and an estimate within a day.',
   },
 
   servicesPage: {
@@ -67,32 +67,32 @@ export const en: Dict = {
     desc: 'DevOps services and pricing: Linux/VPS server setup from $80, CI/CD pipeline setup, server monitoring (Grafana, Telegram alerts), self-hosted LLM with Ollama from $230, Telegram bot development. Fixed written quotes.',
     badge: 'Written fixed quote · prepayment-based workflow',
     h1: 'Services & <span class="grad-text">pricing</span>',
-    sub: 'Standard packages and a full price list. All “from …” prices are starting points: I’ll give you an exact quote after a short call, and it won’t grow along the way. I work on prepayment — usually 50% upfront, the rest after you see the result.',
+    sub: 'Standard packages and a full price list. All “from …” prices are starting points: we’ll give you an exact quote after a short call, and it won’t grow along the way. We work on prepayment — usually 50% upfront, the rest after you see the result.',
     plansEyebrow: '// packages',
     plansH2: 'Where people usually start',
     priceNote1: '<b>Managed administration</b> — from $115/mo: monitoring, updates, incident response, small fixes. &nbsp;·&nbsp; One-off consultation — $45/hour.',
     listEyebrow: '// full price list',
     listH2: 'Typical tasks',
     orderBtn: 'Order',
-    priceNote2: 'Hourly rate — <b>$45/hour</b>. Combining several services is cheaper than ordering them separately: I merge the work and never charge twice for the same thing. Work starts after prepayment — 50/50 on small tasks.',
+    priceNote2: 'Hourly rate — <b>$45/hour</b>. Combining several services is cheaper than ordering them separately: we merge the work and never charge twice for the same thing. Work starts after prepayment — 50/50 on small tasks.',
     contactTitle: 'Didn’t find your task?',
-    contactText: 'The price list covers typical work, but most projects are a combination of items. Describe your task in your own words — I’ll turn it into a quote with a price and timeline within a day.',
+    contactText: 'The price list covers typical work, but most projects are a combination of items. Describe your task in your own words — we’ll turn it into a quote with a price and timeline within a day.',
   },
 
   workPage: {
-    title: 'DevOps Rates & How I Work: Fixed Quotes, Timelines, Guarantees — opsmith',
-    desc: 'How much a DevOps freelancer costs and how the work goes: $45/hour, a written fixed quote before start, prepayment-based workflow, 30 days of free support after delivery. Frequently asked questions.',
+    title: 'DevOps Rates & How We Work: Fixed Quotes, Timelines, Guarantees — opsmith',
+    desc: 'How much DevOps work costs and how it goes at opsmith: $45/hour, a written fixed quote before start, prepayment-based workflow, 30 days of free support after delivery. Frequently asked questions.',
     eyebrow: '// process & terms',
-    h1: 'How I work',
+    h1: 'How we work',
     sub: 'A transparent process with no surprises: a written quote before we start, prepayment-based workflow, and a month of free support after delivery.',
     processEyebrow: '// four steps',
     processH2: 'A process without surprises',
-    guaranteesEyebrow: '// why it’s safe to work with me',
+    guaranteesEyebrow: '// why it’s safe to work with us',
     guaranteesH2: 'Guarantees, not promises',
-    guaranteesLead: 'The biggest fears when hiring a freelancer: “they’ll vanish”, “it’ll get more expensive”, “they’ll keep the access”. I close all of them before we start — in writing.',
+    guaranteesLead: 'The biggest fears when hiring a contractor: “they’ll vanish”, “it’ll get more expensive”, “they’ll keep the access”. We close all of them before we start — in writing.',
     compareEyebrow: '// engagement formats',
-    compareH2: 'Why working with an engineer directly pays off',
-    compareLead: 'You could hand the same tasks to an agency or hire a full-time sysadmin. Here’s an honest comparison.',
+    compareH2: 'Why opsmith, not a big agency or an in-house admin',
+    compareLead: 'You could hand the same tasks to a large agency or hire a full-time sysadmin. Here’s an honest comparison: at opsmith you talk to the engineer directly — no account managers in between and no overhead.',
     faqEyebrow: '// questions',
     faqH2: 'Frequently asked questions',
   },
@@ -126,13 +126,13 @@ export const en: Dict = {
     {
       icon: '🛡️',
       title: 'VPS / Linux server setup and hardening',
-      text: 'I deploy servers turnkey (Ubuntu/Debian): nginx, systemd services, firewall, SSH hardening, autostart and health checks. No manual SSH in production — everything via cloud-init.',
+      text: 'We deploy servers turnkey (Ubuntu/Debian): nginx, systemd services, firewall, SSH hardening, autostart and health checks. No manual SSH in production — everything via cloud-init.',
       tags: ['nginx', 'systemd', 'cloud-init', 'ufw', "Let's Encrypt"],
     },
     {
       icon: '🐳',
       title: 'Docker and containerization',
-      text: 'I move applications into containers: docker-compose stacks with databases, caches and queues, multi-stage builds, private registries. One file — and the project runs anywhere.',
+      text: 'We move applications into containers: docker-compose stacks with databases, caches and queues, multi-stage builds, private registries. One file — and the project runs anywhere.',
       tags: ['Docker', 'docker-compose', 'multi-stage', 'registry'],
     },
     {
@@ -156,7 +156,7 @@ export const en: Dict = {
     {
       icon: '🧠',
       title: 'Self-hosted AI',
-      text: 'Your own neural network on your hardware via Ollama: no data leaks and no token bills. I pick a model for your task and hardware, and hand over a ready HTTP API for your services.',
+      text: 'Your own neural network on your hardware via Ollama: no data leaks and no token bills. We pick a model for your task and hardware, and hand over a ready HTTP API for your services.',
       tags: ['Ollama', 'Gemma', 'llama.cpp', 'REST API'],
     },
   ],
@@ -278,9 +278,9 @@ export const en: Dict = {
   ],
 
   process: [
-    { title: 'Call', text: 'We go through the task, I ask the right questions and propose a solution.' },
-    { title: 'Quote and prepayment', text: 'I fix the scope, price and timeline in writing. Work starts after prepayment.' },
-    { title: 'Work', text: 'I build the system, keep you posted and show intermediate results.' },
+    { title: 'Call', text: 'We go through the task, ask the right questions and propose a solution.' },
+    { title: 'Quote and prepayment', text: 'We fix the scope, price and timeline in writing. Work starts after prepayment.' },
+    { title: 'Work', text: 'We build the system, keep you posted and show intermediate results.' },
     { title: 'Handover', text: 'Documentation, access, instructions. Everything works and is easy to maintain.' },
   ],
 
@@ -288,7 +288,7 @@ export const en: Dict = {
     {
       icon: '📄',
       title: 'The price is fixed before we start',
-      text: 'Scope, cost and timeline — in writing, before work begins. “Turned out to be more expensive along the way” is not my style.',
+      text: 'Scope, cost and timeline — in writing, before work begins. “Turned out to be more expensive along the way” is not our style.',
     },
     {
       icon: '🔑',
@@ -298,7 +298,7 @@ export const en: Dict = {
     {
       icon: '🛠️',
       title: '30 days of free support',
-      text: 'For a month after delivery, fixes and consultations on the delivered work are included in the price. If it breaks — I fix it without counting hours.',
+      text: 'For a month after delivery, fixes and consultations on the delivered work are included in the price. If it breaks — we fix it without counting hours.',
     },
     {
       icon: '⚡',
@@ -308,11 +308,12 @@ export const en: Dict = {
   ],
 
   compare: {
-    columns: ['', 'opsmith', 'Agency', 'Full-time sysadmin'],
+    columns: ['', 'opsmith', 'Big agency', 'Full-time sysadmin'],
     rows: [
       ['Work starts', 'tomorrow', '1–2 weeks of approvals', '1–2 months of hiring'],
       ['Entry budget', 'from $80 per task', 'from $1,200 + management', 'from $1,700/mo + taxes'],
       ['Communication', 'directly with the engineer', 'through a manager', 'you still have to find one'],
+      ['Who does the work', 'an engineer who answers personally', 'a team you never see', 'one person — vacations and sick days included'],
       ['Automation and self-hosted AI', 'core specialty', 'depends on the team', 'rarely'],
       ['When there are no tasks', 'you pay nothing', '—', 'the salary keeps running'],
     ],
@@ -325,19 +326,19 @@ export const en: Dict = {
     },
     {
       q: 'I already have a server, but it’s configured “somehow”. Will you take it on?',
-      a: 'Yes, that’s a common case. I’ll start with an audit: review what’s deployed, find security holes and single points of failure, and give you a cleanup plan with prices. The audit is billed hourly and usually takes 1–2 hours.',
+      a: 'Yes, that’s a common case. We’ll start with an audit: review what’s deployed, find security holes and single points of failure, and give you a cleanup plan with prices. The audit is billed hourly and usually takes 1–2 hours.',
     },
     {
       q: 'Can self-hosted AI really replace paid APIs?',
-      a: 'For most practical tasks — yes: classification, text generation, command parsing, summarization. A local model on your hardware doesn’t send data anywhere and doesn’t bill you for tokens. For “maximum intelligence required” tasks I’ll tell you honestly where a local model won’t be enough.',
+      a: 'For most practical tasks — yes: classification, text generation, command parsing, summarization. A local model on your hardware doesn’t send data anywhere and doesn’t bill you for tokens. For “maximum intelligence required” tasks we’ll tell you honestly where a local model won’t be enough.',
     },
     {
       q: 'What happens if something breaks after delivery?',
-      a: 'For 30 days after delivery, fixes to the delivered work are free. After that — either one-off requests at the hourly rate, or managed administration from $115/mo where I watch the system myself.',
+      a: 'For 30 days after delivery, fixes to the delivered work are free. After that — either one-off requests at the hourly rate, or managed administration from $115/mo where we watch the system ourselves.',
     },
     {
       q: 'How does payment work?',
-      a: 'I work on prepayment, stage by stage: we fix a stage — prepayment — result — next stage. On small tasks it’s usually 50% upfront / 50% after a demo of the result. I work officially; we’ll discuss the details on a call.',
+      a: 'We work on prepayment, stage by stage: we fix a stage — prepayment — result — next stage. On small tasks it’s usually 50% upfront / 50% after a demo of the result. We work officially; the details are discussed on a call.',
     },
   ],
 
@@ -387,7 +388,7 @@ export const en: Dict = {
       items: [
         { slug: 'subscription', name: 'Managed administration', desc: 'Monitoring, updates, incident response, small fixes — your server under supervision', price: 'from $115/mo', time: 'ongoing' },
         { slug: 'consult', name: 'One-off consultation', desc: 'A call: review of your infrastructure, answers to questions, an action plan', price: '$45/hour', time: 'by appointment' },
-        { slug: 'incident', name: 'Emergency incident response', desc: 'Your server is down right now — I connect, diagnose, bring it back up and write a post-mortem', price: 'from $70', time: 'today' },
+        { slug: 'incident', name: 'Emergency incident response', desc: 'Your server is down right now — we connect, diagnose, bring it back up and write a post-mortem', price: 'from $70', time: 'today' },
       ],
     },
   ],
