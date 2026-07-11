@@ -26,7 +26,6 @@ const botLink = contacts.botUrl ? `${contacts.botUrl}?start=${source}${locale ==
       <div class="hero-cta">
         {botLink && <a href={botLink} class="btn btn-primary">{dict.contact.btnBot}</a>}
         <a href={contacts.telegramUrl} class={`btn ${contacts.botUrl ? 'btn-ghost' : 'btn-primary'}`}>✈ Telegram · @{contacts.telegram}</a>
-        <a href={contacts.phoneUrl} class="btn btn-ghost">📞 {contacts.phone}</a>
         <a href={mailto} class="btn btn-ghost">{dict.contact.btnMail}</a>
       </div>
     </div>

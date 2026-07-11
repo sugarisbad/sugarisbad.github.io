@@ -1,0 +1,118 @@
+---
+// Конфигуратор заказа: чекбоксы по прайсу → стартовая сумма → deep-link в бота.
+// Выбор кодируется однобуквенными кодами (calcCodes) в payload /start:
+// t.me/<bot>?start=calc-<коды> — бот расшифрует и приложит состав заказа к заявке.
+import { contacts, calcCodes } from '../data/site';
+import { t, type Locale } from '../i18n';
+
+interface Props {
+  locale?: Locale;
+}
+const { locale = 'ru' } = Astro.props;
+const dict = t(locale);
+
+const num = (p: string) => parseInt(p.replace(/[^\d]/g, ''), 10) || 0;
+const isMonthly = (p: string) => /\/мес|\/mo/.test(p);
+---
+
+<section id="calc" class="calc-section">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">{dict.calc.eyebrow}</span>
+      <h2>{dict.calc.h2}</h2>
+      <p class="lead">{dict.calc.lead}</p>
+    </div>
+
+    <div class="calc reveal">
+      <div class="calc-groups">
+        {dict.priceGroups.map((g) => (
+          <div class="calc-group">
+            <h3 class="calc-group-title mono">{g.icon} {g.title}</h3>
+            {g.items.map((item) => (
+              <label class="calc-item">
+                <input
+                  type="checkbox"
+                  data-code={calcCodes[item.slug]}
+                  data-price={num(item.price)}
+                  data-monthly={isMonthly(item.price) ? '1' : undefined}
+                />
+                <span class="calc-box" aria-hidden="true"></span>
+                <span class="calc-name">{item.name}<em>{item.time}</em></span>
+                <span class="calc-price mono">{item.price}</span>
+              </label>
+            ))}
+          </div>
+        ))}
+      </div>
+
+      <aside class="calc-summary" data-locale={locale} data-bot={contacts.botUrl}>
+        <div class="calc-count"><span>{dict.calc.selectedLabel}</span> <b id="calc-count">0</b></div>
+        <div class="calc-total">
+          <span>{dict.calc.totalLabel}</span>
+          <b id="calc-total" class="grad-text">—</b>
+        </div>
+        <div class="calc-monthly" id="calc-monthly" hidden>
+          <span>{dict.calc.monthlyLabel}</span>
+          <b id="calc-monthly-sum">—</b>
+        </div>
+        <a
+          class="btn btn-primary calc-send"
+          id="calc-send"
+          aria-disabled="true"
+          data-send={dict.calc.btnSend}
+          data-empty={dict.calc.btnEmpty}
+        >{dict.calc.btnEmpty}</a>
+        <p class="calc-note">{dict.calc.note}</p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<script>
+  const root = document.getElementById('calc');
+  if (root) {
+    const summary = root.querySelector<HTMLElement>('.calc-summary')!;
+    const locale = summary.dataset.locale ?? 'ru';
+    const botUrl = summary.dataset.bot ?? '';
+    const boxes = [...root.querySelectorAll<HTMLInputElement>('input[type=checkbox]')];
+    const countEl = document.getElementById('calc-count')!;
+    const totalEl = document.getElementById('calc-total')!;
+    const monthlyRow = document.getElementById('calc-monthly')!;
+    const monthlyEl = document.getElementById('calc-monthly-sum')!;
+    const btn = document.getElementById('calc-send') as HTMLAnchorElement;
+
+    const fmt = (n: number) =>
+      locale === 'ru' ? `${n.toLocaleString('ru-RU')} ₽` : `$${n.toLocaleString('en-US')}`;
+
+    const update = () => {
+      let total = 0;
+      let monthly = 0;
+      let codes = '';
+      let count = 0;
+      boxes.forEach((b) => {
+        if (!b.checked) return;
+        count++;
+        codes += b.dataset.code ?? '';
+        const p = Number(b.dataset.price) || 0;
+        if (b.dataset.monthly) monthly += p;
+        else total += p;
+      });
+      countEl.textContent = String(count);
+      totalEl.textContent = count ? fmt(total) : '—';
+      monthlyRow.hidden = monthly === 0;
+      monthlyEl.textContent = fmt(monthly);
+      if (count && botUrl) {
+        btn.href = `${botUrl}?start=calc-${codes}`;
+        btn.removeAttribute('aria-disabled');
+        btn.textContent = btn.dataset.send ?? '';
+      } else {
+        btn.removeAttribute('href');
+        btn.setAttribute('aria-disabled', 'true');
+        btn.textContent = btn.dataset.empty ?? '';
+      }
+    };
+
+    boxes.forEach((b) => b.addEventListener('change', update));
+    update();
+  }
+</script>

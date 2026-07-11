@@ -97,6 +97,56 @@ SOURCES = {
 # Для этих слагов бот упоминает услугу в приветствии (страницы-источники — нет).
 SERVICE_SLUGS = {s for s in SOURCES if not s.startswith("src-")}
 
+# Калькулятор на сайте кодирует выбранные позиции однобуквенными кодами
+# (payload вида calc-adg). Коды должны совпадать с calcCodes в src/data/site.ts.
+CALC_ITEMS: dict[str, tuple[str, int, str]] = {
+    # код: (название, стартовая цена ₽, суффикс цены)
+    "a": ("Настройка VPS «под ключ»", 7000, ""),
+    "b": ("Аудит существующего сервера", 4000, ""),
+    "c": ("nginx: домены, SSL, реверс-прокси", 5000, ""),
+    "d": ("Миграция на новый сервер", 12000, ""),
+    "e": ("Резервное копирование", 8000, ""),
+    "f": ("Docker-изация приложения", 10000, ""),
+    "g": ("docker-compose стек", 15000, ""),
+    "h": ("CI/CD пайплайн", 15000, ""),
+    "i": ("Массовое развёртывание", 25000, ""),
+    "j": ("Мониторинг + алерты в Telegram", 15000, ""),
+    "k": ("Балансировка нагрузки", 18000, ""),
+    "l": ("Автоматический failover", 30000, ""),
+    "m": ("Self-hosted ИИ (Ollama)", 20000, ""),
+    "n": ("ИИ-агент / Telegram-бот", 40000, ""),
+    "o": ("Система под ключ", 160000, ""),
+    "p": ("Абонентское администрирование", 10000, "/мес"),
+    "q": ("Разовая консультация", 4000, "/час"),
+    "r": ("Срочный выезд в инцидент", 6000, ""),
+}
+
+
+def parse_calc(slug: str) -> tuple[str, str]:
+    """calc-<коды> → (текст состава заказа, краткий источник). Пустые строки, если не калькулятор."""
+    if not slug.startswith("calc-"):
+        return "", ""
+    total = 0
+    monthly = 0
+    lines = []
+    for code in slug[5:]:
+        item = CALC_ITEMS.get(code)
+        if not item:
+            continue
+        name, price, suffix = item
+        lines.append(f"· {name} — от {price:,} ₽{suffix}".replace(",", " "))
+        if suffix == "/мес":
+            monthly += price
+        else:
+            total += price
+    if not lines:
+        return "", ""
+    summary = f"Итого: от {total:,} ₽".replace(",", " ")
+    if monthly:
+        summary += f" + от {monthly:,} ₽/мес".replace(",", " ")
+    order = "\n".join(lines) + f"\n{summary}"
+    return order, f"Калькулятор на сайте ({len(lines)} поз.)"
+
 
 def kb(*rows: list[KeyboardButton]) -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(keyboard=list(rows), resize_keyboard=True, one_time_keyboard=True)
@@ -147,15 +197,20 @@ async def analyze_task(text: str) -> str:
 async def cmd_start(message: Message, state: FSMContext, command: CommandObject) -> None:
     await state.clear()
     slug = (command.args or "").strip()
-    source = SOURCES.get(slug, "")
-    await state.update_data(source=source, source_slug=slug if source else "")
+    order, calc_source = parse_calc(slug)
+    source = calc_source or SOURCES.get(slug, "")
+    await state.update_data(source=source, source_slug=slug if source else "", order=order)
     await state.set_state(Form.name)
 
-    intro = (
-        f"Привет! Вижу, вас интересует <b>{html.escape(source)}</b> — отличный выбор.\n"
-        if slug in SERVICE_SLUGS
-        else "Привет! "
-    )
+    if order:
+        intro = (
+            "Привет! Получил ваш заказ из калькулятора:\n\n"
+            f"<b>{html.escape(order)}</b>\n\n"
+        )
+    elif slug in SERVICE_SLUGS:
+        intro = f"Привет! Вижу, вас интересует <b>{html.escape(source)}</b> — отличный выбор.\n"
+    else:
+        intro = "Привет! "
     await message.answer(
         intro + "Я приму вашу заявку и сразу передам её Даниле — "
         "он ответит в течение дня.\n\nКак вас зовут?",
@@ -252,13 +307,13 @@ async def form_email(message: Message, state: FSMContext, bot: Bot) -> None:
     )
     await send_lead(
         bot, message, data["name"], data["task"], data.get("phone", ""), email,
-        data.get("source", ""),
+        data.get("source", ""), data.get("order", ""),
     )
 
 
 async def send_lead(
     bot: Bot, message: Message, name: str, task: str, phone: str, email: str,
-    source: str = "",
+    source: str = "", order: str = "",
 ) -> None:
     user = message.from_user
     tg_line = (
@@ -275,6 +330,8 @@ async def send_lead(
     ]
     if source:
         parts.append(f"🔗 <b>Откуда:</b> {html.escape(source)}")
+    if order:
+        parts.append(f"🧮 <b>Заказ из калькулятора:</b>\n{html.escape(order)}")
     parts.append(f"📝 <b>Задача:</b>\n{html.escape(task)}")
     if analysis:
         parts += ["", f"🤖 <b>Разбор (локальная LLM):</b>\n{html.escape(analysis)}"]

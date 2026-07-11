@@ -1,5 +1,5 @@
 ---
-import { contacts } from '../data/site';
+import { brand, contacts } from '../data/site';
 import { t, localeUrl, type Locale } from '../i18n';
 
 interface Props {
@@ -14,9 +14,8 @@ const mailto = `mailto:${contacts.email}?subject=${encodeURIComponent(dict.conta
 
 <footer>
   <div class="wrap foot">
-    <a class="brand" href={p('')}><span class="dot"></span> {dict.seo.personName} <span class="brand-user mono">// {contacts.username}</span></a>
+    <a class="brand" href={p('')}><span class="dot"></span> {brand}<span class="brand-user mono">{dict.seo.brandTag}</span></a>
     <div class="foot-links">
-      <a href={contacts.phoneUrl}>{contacts.phone}</a>
       <a href={mailto}>{contacts.email}</a>
       <a href={contacts.telegramUrl}>@{contacts.telegram}</a>
       <a href={contacts.githubUrl} rel="noopener">github.com/{contacts.github}</a>

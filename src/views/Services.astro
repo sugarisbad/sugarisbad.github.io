@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
+import Calculator from '../components/Calculator.astro';
 import Contact from '../components/Contact.astro';
 import Footer from '../components/Footer.astro';
 import { contacts } from '../data/site';
@@ -85,6 +86,8 @@ const order = (slug: string) =>
       <p class="price-note" set:html={dict.servicesPage.priceNote2} />
     </div>
   </section>
+
+  <Calculator locale={locale} />
 
   <Contact
     locale={locale}

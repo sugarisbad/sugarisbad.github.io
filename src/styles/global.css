@@ -477,6 +477,49 @@ h1 .grad-text,h2 .grad-text{background-size:220% 100%;animation:shimmer 6s ease-
   .srow-arrow{display:none}
 }
 
+/* ── калькулятор заказа ──────────────────────────────────────────────────── */
+.calc{display:grid;grid-template-columns:1.4fr .8fr;gap:56px;align-items:start}
+.calc-group{margin-bottom:40px}
+.calc-group-title{font-size:.82rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--dim);margin-bottom:6px;padding-bottom:12px;border-bottom:1px solid var(--line-2)}
+.calc-item{display:grid;grid-template-columns:22px 1fr auto;gap:16px;align-items:center;
+  padding:15px 6px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .25s}
+.calc-item:hover{background:color-mix(in srgb,var(--a1) 4%,transparent)}
+.calc-item input{position:absolute;opacity:0;pointer-events:none}
+.calc-box{width:20px;height:20px;border:1px solid var(--line-2);border-radius:6px;position:relative;
+  transition:border-color .2s,background .2s;flex-shrink:0}
+.calc-box::after{content:"✓";position:absolute;inset:0;display:grid;place-items:center;
+  font-size:.8rem;font-weight:800;color:#04121a;opacity:0;transform:scale(.4);
+  transition:opacity .18s,transform .22s var(--ease)}
+.calc-item input:checked~.calc-box{background:var(--grad);border-color:transparent}
+.calc-item input:checked~.calc-box::after{opacity:1;transform:scale(1)}
+.calc-item input:focus-visible~.calc-box{outline:2px solid var(--a1);outline-offset:2px}
+.calc-name{font-weight:600;font-size:.98rem;line-height:1.35}
+.calc-name em{display:block;font-style:normal;color:var(--dim);font-size:.8rem;font-weight:500;margin-top:2px}
+.calc-price{color:var(--a1);font-size:.85rem;white-space:nowrap}
+.calc-item input:checked~.calc-name{color:var(--text)}
+
+.calc-summary{position:sticky;top:96px;border:1px solid var(--line-2);border-radius:var(--r-lg);
+  padding:32px 30px;background:linear-gradient(180deg,var(--surface),var(--bg-2));
+  box-shadow:0 30px 70px -40px rgba(0,0,0,.7)}
+.calc-count{color:var(--dim);font-size:.85rem;margin-bottom:18px}
+.calc-count b{color:var(--text);font-family:'JetBrains Mono Variable',monospace;font-size:1rem}
+.calc-total{display:flex;flex-direction:column;gap:4px;padding:18px 0;
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.calc-total span{color:var(--dim);font-size:.82rem}
+.calc-total b{font-family:var(--font-display);font-size:clamp(2rem,3vw,2.6rem);font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.calc-monthly{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+  padding:12px 0;border-bottom:1px solid var(--line);font-size:.88rem}
+.calc-monthly span{color:var(--dim)}
+.calc-monthly b{font-family:'JetBrains Mono Variable',monospace;color:var(--a1);white-space:nowrap}
+.calc-send{width:100%;justify-content:center;margin-top:22px;transition:opacity .25s,transform .18s var(--ease)}
+.calc-send[aria-disabled="true"]{opacity:.45;pointer-events:none;filter:grayscale(.4)}
+.calc-note{color:var(--dim);font-size:.82rem;margin-top:16px;line-height:1.5}
+@media(max-width:960px){
+  .calc{grid-template-columns:1fr;gap:36px}
+  .calc-summary{position:static}
+}
+
 /* уточнение маски строк заголовка: не режем диакритику и выносные */
 .h1-line{padding-top:.08em;margin-top:-.08em}
 .h1-line-in{transform-origin:0 50%}

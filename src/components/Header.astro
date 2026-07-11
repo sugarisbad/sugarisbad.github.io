@@ -1,5 +1,5 @@
 ---
-import { contacts } from '../data/site';
+import { brand } from '../data/site';
 import { t, localeUrl, type Locale } from '../i18n';
 
 interface Props {
@@ -15,7 +15,7 @@ const p = (s: string) => localeUrl(locale, s, base);
 
 <header>
   <div class="wrap nav">
-    <a class="brand" href={p('')}><span class="dot"></span> {dict.seo.personName} <span class="brand-user mono">// {contacts.username}</span></a>
+    <a class="brand" href={p('')}><span class="dot"></span> {brand}<span class="brand-user mono">{dict.seo.brandTag}</span></a>
     <nav class="nav-links" id="nav">
       <a href={p('')}>{dict.nav.home}</a>
       <a href={p('cases/')}>{dict.nav.cases}</a>

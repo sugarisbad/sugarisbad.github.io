@@ -7,10 +7,11 @@ export const en: Dict = {
   ogLocale: 'en_US',
 
   seo: {
-    siteName: 'Danila (sugarisbad) — DevOps engineer',
+    siteName: 'opsmith — DevOps studio: servers, CI/CD, automation, self-hosted AI',
     personName: 'Danila',
+    brandTag: '// devops studio',
     jobTitle: 'DevOps engineer',
-    ogImageAlt: 'Danila — DevOps engineer: servers, CI/CD, automation, self-hosted AI',
+    ogImageAlt: 'opsmith — DevOps studio: servers, CI/CD, automation, self-hosted AI',
   },
 
   nav: {
@@ -33,7 +34,7 @@ export const en: Dict = {
   },
 
   home: {
-    title: 'Freelance DevOps Engineer for Hire: Server Setup, Docker, CI/CD — Danila (sugarisbad)',
+    title: 'opsmith — DevOps Studio: Server Setup, Docker, CI/CD, Turnkey Automation',
     desc: 'Hire a freelance DevOps engineer: Linux/VPS server setup and hardening, Docker, CI/CD pipelines, monitoring and high availability, self-hosted AI (Ollama), Telegram bots. Remote worldwide, fixed written quotes.',
     badge: 'Accepting projects · reply within a day',
     h1: '<span class="grad-text">DevOps</span> engineer<br />for your infrastructure',
@@ -48,7 +49,7 @@ export const en: Dict = {
   },
 
   casesPage: {
-    title: 'DevOps Case Studies: Infrastructure Automation, 24/7 Monitoring, Self-hosted AI — Danila',
+    title: 'DevOps Case Studies: Infrastructure Automation, 24/7 Monitoring, Self-hosted AI — opsmith',
     desc: 'Infrastructure automation examples: a GPU rental platform, a self-healing website, 24/7 hardware monitoring, load-balanced server fleets. Real systems built end to end by one DevOps engineer.',
     eyebrow: '// real projects',
     h1: 'Case studies',
@@ -62,7 +63,7 @@ export const en: Dict = {
   },
 
   servicesPage: {
-    title: 'DevOps Services & Pricing: Server Setup from $80, CI/CD, Monitoring, Self-hosted AI',
+    title: 'DevOps Services & Pricing: Server Setup from $80, CI/CD, Monitoring — opsmith',
     desc: 'DevOps services and pricing: Linux/VPS server setup from $80, CI/CD pipeline setup, server monitoring (Grafana, Telegram alerts), self-hosted LLM with Ollama from $230, Telegram bot development. Fixed written quotes.',
     badge: 'Written fixed quote · prepayment-based workflow',
     h1: 'Services & <span class="grad-text">pricing</span>',
@@ -79,7 +80,7 @@ export const en: Dict = {
   },
 
   workPage: {
-    title: 'DevOps Freelancer Rates & How I Work: Fixed Quotes, Timelines, Guarantees — Danila',
+    title: 'DevOps Rates & How I Work: Fixed Quotes, Timelines, Guarantees — opsmith',
     desc: 'How much a DevOps freelancer costs and how the work goes: $45/hour, a written fixed quote before start, prepayment-based workflow, 30 days of free support after delivery. Frequently asked questions.',
     eyebrow: '// process & terms',
     h1: 'How I work',
@@ -100,6 +101,18 @@ export const en: Dict = {
     title: 'Page not found',
     text: 'This page doesn’t exist. The link may be outdated.',
     btnHome: 'Back to home',
+  },
+
+  calc: {
+    eyebrow: '// configurator',
+    h2: 'Build your order in a minute',
+    lead: 'Tick the work you need — the calculator adds up the starting price. Then the order goes to the Telegram bot: it collects your contacts and hands everything to the engineer.',
+    totalLabel: 'Total, from',
+    monthlyLabel: 'plus monthly, from',
+    selectedLabel: 'Items in order:',
+    btnSend: 'Send order via Telegram →',
+    btnEmpty: 'Select at least one item',
+    note: '“From” prices are starting points; hourly items are counted as 1 hour. The exact quote is fixed in writing after a short call — and it won’t grow.',
   },
 
   heroStats: [
@@ -295,7 +308,7 @@ export const en: Dict = {
   ],
 
   compare: {
-    columns: ['', 'Me', 'Agency', 'Full-time sysadmin'],
+    columns: ['', 'opsmith', 'Agency', 'Full-time sysadmin'],
     rows: [
       ['Work starts', 'tomorrow', '1–2 weeks of approvals', '1–2 months of hiring'],
       ['Entry budget', 'from $80 per task', 'from $1,200 + management', 'from $1,700/mo + taxes'],
