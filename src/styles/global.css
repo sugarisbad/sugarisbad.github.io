@@ -127,8 +127,9 @@ h1{font-family:var(--font-display);font-size:clamp(2.7rem,7vw,5.2rem);line-heigh
 .hero-home .sub{margin-bottom:40px}
 @media(max-width:1180px){.hero-home h1{font-size:clamp(2.4rem,4.2vw,3.8rem)}}
 @media(max-width:960px){
-  .hero-grid{grid-template-columns:1fr;gap:40px}
-  .hero-visual{display:none}
+  .hero-grid{grid-template-columns:1fr;gap:48px}
+  .hero-visual{max-width:560px}
+  .term-body{min-height:0}
 }
 
 .btn{display:inline-flex;align-items:center;gap:10px;padding:15px 32px;border-radius:999px;
