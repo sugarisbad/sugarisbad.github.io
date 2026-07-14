@@ -1,0 +1,29 @@
+# opsmith
+
+> opsmith — DevOps-студия: настройка и защита Linux/VPS-серверов, Docker, CI/CD-пайплайны, мониторинг и отказоустойчивость, self-hosted AI (Ollama), Telegram-боты. Работаем удалённо по всему миру, фиксированная письменная смета до старта, 30 дней бесплатной поддержки после сдачи.
+
+Сайт двуязычный: русские страницы в корне, английские — с префиксом `/en/`. Контакт с инженером напрямую, без менеджеров: Telegram @sugarisbaddy, почта dk0x@proton.me, заявка через бота t.me/sugarisbad_bot. Ставка $55/час (4 800 ₽/час), пакеты и прайс — на странице услуг.
+
+## Основные страницы
+
+- [Главная](https://opsmith.ru/): что делает студия — серверы, контейнеры, деплой, мониторинг как единая система
+- [Кейсы](https://opsmith.ru/cases/): реальные проекты — платформа аренды GPU, самовосстанавливающийся сайт, мониторинг оборудования 24/7 — и стек технологий
+- [Услуги и цены](https://opsmith.ru/services/): пакеты, полный прайс (настройка VPS от 4 800 ₽ / $95, CI/CD, мониторинг, Ollama от $275), связки со скидкой
+- [Как мы работаем](https://opsmith.ru/work/): процесс, гарантии, сравнение с агентствами и штатным админом, FAQ
+
+## In English
+
+- [Home](https://opsmith.ru/en/): DevOps studio — server setup, Docker, CI/CD, turnkey automation
+- [Case studies](https://opsmith.ru/en/cases/): real infrastructure projects and the technology stack
+- [Services & pricing](https://opsmith.ru/en/services/): packages and full price list, server setup from $95, self-hosted LLM from $275
+- [How we work](https://opsmith.ru/en/work/): process, fixed written quotes, guarantees, FAQ
+
+## Контакты
+
+- [Telegram](https://t.me/sugarisbaddy): основной канал связи, ответ в течение дня
+- [Бот для заявок](https://t.me/sugarisbad_bot): оставить заявку или собрать смету в калькуляторе
+- [GitHub](https://github.com/sugarisbad): профиль инженера (Данила, sugarisbad)
+
+## Optional
+
+- [Sitemap](https://opsmith.ru/sitemap-index.xml): полный список страниц
