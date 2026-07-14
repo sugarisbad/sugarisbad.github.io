@@ -10,6 +10,9 @@
 (суть, подходящая услуга, срочность). Без Ollama бот работает так же,
 просто без блока «Разбор».
 
+Если заданы ESPOCRM_URL и ESPOCRM_API_KEY — каждая заявка дополнительно
+создаётся лидом в EspoCRM. Доставка заявки владельцу от CRM не зависит.
+
 Настройка — через переменные окружения (см. .env.example и README.md).
 """
 
@@ -35,6 +38,8 @@ BOT_TOKEN = os.environ["BOT_TOKEN"]
 ADMIN_CHAT_ID = int(os.environ["ADMIN_CHAT_ID"])
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "")  # напр. http://127.0.0.1:11434
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "gemma2")
+ESPOCRM_URL = os.environ.get("ESPOCRM_URL", "")  # напр. https://qopq.online:8443
+ESPOCRM_API_KEY = os.environ.get("ESPOCRM_API_KEY", "")
 
 MSK = timezone(timedelta(hours=3))
 PHONE_RE = re.compile(r"^\+?[\d\s\-()]{7,20}$")
@@ -213,6 +218,49 @@ async def analyze_task(text: str) -> str:
     except Exception as e:  # разбор — приятный бонус, заявка важнее
         log.warning("Ollama недоступна: %s", e)
         return ""
+
+
+# ── лид в EspoCRM (опционально) ──────────────────────────────────────────────
+
+async def create_crm_lead(
+    name: str, task: str, phone: str, email: str,
+    source: str, order: str, tg_username: str, tg_id: int,
+) -> None:
+    if not (ESPOCRM_URL and ESPOCRM_API_KEY):
+        return
+    desc_parts = []
+    if source:
+        desc_parts.append(f"Откуда: {source}")
+    if order:
+        desc_parts.append(f"Заказ из калькулятора:\n{order}")
+    if task:
+        desc_parts.append(f"Задача:\n{task}")
+    tg = f"@{tg_username}" if tg_username else f"id {tg_id}"
+    desc_parts.append(f"Telegram: {tg} (id {tg_id})")
+    payload = {
+        "lastName": name,
+        "description": "\n\n".join(desc_parts),
+    }
+    if phone:
+        payload["phoneNumber"] = phone
+    if email:
+        payload["emailAddress"] = email
+    try:
+        import aiohttp
+
+        async with aiohttp.ClientSession() as s:
+            async with s.post(
+                f"{ESPOCRM_URL.rstrip('/')}/api/v1/Lead",
+                json=payload,
+                headers={"X-Api-Key": ESPOCRM_API_KEY},
+                timeout=aiohttp.ClientTimeout(total=15),
+            ) as r:
+                if r.status in (200, 201):
+                    log.info("Лид создан в CRM (%s)", name)
+                else:
+                    log.warning("CRM ответила %s: %s", r.status, (await r.text())[:300])
+    except Exception as e:  # CRM — бонус, заявка важнее
+        log.warning("CRM недоступна: %s", e)
 
 
 # ── диалог с клиентом ────────────────────────────────────────────────────────
@@ -401,6 +449,9 @@ async def send_lead(
         log.info("Заявка от %s (id %s) доставлена", name, user.id)
     except Exception:
         log.exception("Не удалось доставить заявку админу")
+    await create_crm_lead(
+        name, task, phone, email, source, order, user.username or "", user.id
+    )
 
 
 # ── любой текст вне формы ────────────────────────────────────────────────────
