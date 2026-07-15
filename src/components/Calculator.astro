@@ -1,8 +1,11 @@
 ---
-// Конфигуратор заказа: чекбоксы по прайсу → стартовая сумма → deep-link в бота.
-// Выбор кодируется однобуквенными кодами (calcCodes) в payload /start:
+// Калькулятор заказа: чекбоксы по прайсу → стартовая сумма → deep-link в бота.
+// Выбор кодируется однобуквенными кодами в payload /start:
 // t.me/<bot>?start=calc-<коды> — бот расшифрует и приложит состав заказа к заявке.
-import { contacts, calcCodes, bundleCodes } from '../data/site';
+// RU — рубли из pricing.ts; EN — доллары по курсу ЦБ (fetch на клиенте,
+// fallback FALLBACK_USD_RATE), округление вверх до $5, минимум $5.
+import { contacts } from '../data/site';
+import { PRICING, BUNDLES, FALLBACK_USD_RATE, CBR_RATE_URL } from '../data/pricing';
 import { t, type Locale } from '../i18n';
 
 interface Props {
@@ -10,75 +13,98 @@ interface Props {
 }
 const { locale = 'ru' } = Astro.props;
 const dict = t(locale);
+const calc = dict.servicesPage.calc;
 
-const num = (p: string) => parseInt(p.replace(/[^\d]/g, ''), 10) || 0;
-const isMonthly = (p: string) => /\/мес|\/mo/.test(p);
+const usd = (rub: number, rate: number) => Math.max(5, Math.ceil(rub / rate / 5) * 5);
+const priceLabel = (it: (typeof PRICING)[number]['items'][number]) => {
+  const from = it.from ? calc.fromPrefix : '';
+  const suffix = it.monthly ? calc.monthlySuffix : it.hourly ? calc.hourlySuffix : '';
+  const amount =
+    locale === 'ru'
+      ? `${it.rub.toLocaleString('ru-RU')} ₽`
+      : `$${usd(it.rub, FALLBACK_USD_RATE).toLocaleString('en-US')}`;
+  return `${from}${amount}${suffix}`;
+};
 
-// Связки для авто-комбо-скидки: размер скидки — из карточек связок
-// (разница «сумма позиций − цена связки»), чтобы цифры всегда совпадали.
-const bundles = dict.bundles.items
-  .map((b) => ({
-    codes: bundleCodes[b.slug] ?? '',
-    discount: num(b.oldPrice) - num(b.price),
-    title: b.title,
-  }))
-  .filter((b) => b.codes && b.discount > 0);
+// Слаги связок → строки кодов: скрипту достаточно сверить коды заказа.
+const codeBySlug = new Map(PRICING.flatMap((g) => g.items.map((it) => [it.slug, it.code])));
+const bundles = BUNDLES.map((b) => ({ codes: b.req.map((s) => codeBySlug.get(s) ?? '').join(''), save: b.save }));
+
+// Метка «своя задача»: custom / custom-en
+const customLink = `${contacts.botUrl}?start=custom${locale === 'en' ? '-en' : ''}`;
 ---
 
-<section id="calc" class="calc-section">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <span class="eyebrow">{dict.calc.eyebrow}</span>
-      <h2>{dict.calc.h2}</h2>
-      <p class="lead">{dict.calc.lead}</p>
-    </div>
-
-    <div class="calc reveal">
-      <div class="calc-groups">
-        {dict.priceGroups.map((g) => (
-          <div class="calc-group">
-            <h3 class="calc-group-title mono">{g.icon} {g.title}</h3>
-            {g.items.map((item) => (
-              <label class="calc-item">
-                <input
-                  type="checkbox"
-                  data-code={calcCodes[item.slug]}
-                  data-price={num(item.price)}
-                  data-monthly={isMonthly(item.price) ? '1' : undefined}
-                />
-                <span class="calc-box" aria-hidden="true"></span>
-                <span class="calc-name">{item.name}<em>{item.time}</em></span>
-                <span class="calc-price mono">{item.price}</span>
-              </label>
-            ))}
-          </div>
-        ))}
+<section class="calc-wrap" id="calc">
+  <div class="wrap calc-grid">
+    <div>
+      {PRICING.map((g) => (
+        <div class="calc-group">
+          <div class="calc-group-title">{locale === 'ru' ? g.title_ru : g.title_en}</div>
+          {g.items.map((it) => (
+            <label class="calc-item">
+              <input
+                type="checkbox"
+                data-code={it.code}
+                data-rub={it.rub}
+                data-monthly={it.monthly ? '1' : undefined}
+              />
+              <span class="calc-box" aria-hidden="true"></span>
+              <span class="calc-name">
+                {locale === 'ru' ? it.name_ru : it.name_en}
+                <em>{locale === 'ru' ? it.time_ru : it.time_en}</em>
+              </span>
+              <span
+                class="calc-price"
+                data-rub={it.rub}
+                data-from={it.from ? '1' : undefined}
+                data-suffix={it.monthly ? calc.monthlySuffix : it.hourly ? calc.hourlySuffix : ''}
+              >{priceLabel(it)}</span>
+            </label>
+          ))}
+        </div>
+      ))}
+      <div class="calc-custom">
+        <div>
+          <b>{dict.servicesPage.custom.title}</b>
+          <p>{dict.servicesPage.custom.text}</p>
+        </div>
+        <a href={customLink} class="btn-ghost btn">{dict.servicesPage.custom.btn}</a>
       </div>
-
-      <aside class="calc-summary" data-locale={locale} data-bot={contacts.botUrl} data-bundles={JSON.stringify(bundles)}>
-        <div class="calc-count"><span>{dict.calc.selectedLabel}</span> <b id="calc-count">0</b></div>
-        <div class="calc-total">
-          <span>{dict.calc.totalLabel}</span>
-          <b id="calc-total" class="grad-text">—</b>
-        </div>
-        <div class="calc-combo" id="calc-combo" hidden>
-          <span>{dict.calc.comboLabel} <em id="calc-combo-names"></em></span>
-          <b id="calc-combo-sum">—</b>
-        </div>
-        <div class="calc-monthly" id="calc-monthly" hidden>
-          <span>{dict.calc.monthlyLabel}</span>
-          <b id="calc-monthly-sum">—</b>
-        </div>
-        <a
-          class="btn btn-primary calc-send"
-          id="calc-send"
-          aria-disabled="true"
-          data-send={dict.calc.btnSend}
-          data-empty={dict.calc.btnEmpty}
-        >{dict.calc.btnEmpty}</a>
-        <p class="calc-note">{dict.calc.note}</p>
-      </aside>
     </div>
+
+    <aside
+      class="calc-summary"
+      data-locale={locale}
+      data-bot={contacts.botUrl}
+      data-bundles={JSON.stringify(bundles)}
+      data-fallback-rate={FALLBACK_USD_RATE}
+      data-rate-url={CBR_RATE_URL}
+      data-from-prefix={calc.fromPrefix}
+      data-monthly-suffix={calc.monthlySuffix}
+    >
+      <div class="calc-count">{calc.countLabel} <b id="calc-count">0</b></div>
+      <div class="calc-total">
+        <span>{calc.totalLabel}</span>
+        <b id="calc-total">—</b>
+      </div>
+      <div class="calc-line monthly" id="calc-monthly" hidden>
+        <span>{calc.monthlyLabel}</span>
+        <b id="calc-monthly-sum">—</b>
+      </div>
+      <div class="calc-line combo" id="calc-combo" hidden>
+        <span>{calc.comboLabel}</span>
+        <b id="calc-combo-sum">—</b>
+      </div>
+      <a
+        class="calc-send"
+        id="calc-send"
+        aria-disabled="true"
+        data-send={calc.btnSend}
+        data-empty={calc.btnEmpty}
+      >{calc.btnEmpty}</a>
+      <a href={contacts.calendlyUrl} class="calc-call">{calc.btnCall}</a>
+      <p class="calc-note"><span>{calc.note}</span> <span id="calc-rate-footnote" hidden>{dict.servicesPage.rateNoteFallback}</span></p>
+    </aside>
   </div>
 </section>
 
@@ -88,6 +114,11 @@ const bundles = dict.bundles.items
     const summary = root.querySelector<HTMLElement>('.calc-summary')!;
     const locale = summary.dataset.locale ?? 'ru';
     const botUrl = summary.dataset.bot ?? '';
+    const bundles: { codes: string; save: number }[] = JSON.parse(summary.dataset.bundles ?? '[]');
+    const fromPrefix = summary.dataset.fromPrefix ?? '';
+    const monthlySuffix = summary.dataset.monthlySuffix ?? '';
+    let rate = Number(summary.dataset.fallbackRate) || 92;
+
     const boxes = [...root.querySelectorAll<HTMLInputElement>('input[type=checkbox]')];
     const countEl = document.getElementById('calc-count')!;
     const totalEl = document.getElementById('calc-total')!;
@@ -95,13 +126,12 @@ const bundles = dict.bundles.items
     const monthlyEl = document.getElementById('calc-monthly-sum')!;
     const comboRow = document.getElementById('calc-combo')!;
     const comboEl = document.getElementById('calc-combo-sum')!;
-    const comboNames = document.getElementById('calc-combo-names')!;
     const btn = document.getElementById('calc-send') as HTMLAnchorElement;
-    const bundles: { codes: string; discount: number; title: string }[] =
-      JSON.parse(summary.dataset.bundles ?? '[]');
 
-    const fmt = (n: number) =>
-      locale === 'ru' ? `${n.toLocaleString('ru-RU')} ₽` : `$${n.toLocaleString('en-US')}`;
+    // округление вверх до $5, минимум $5 — как в референсе
+    const usd = (rub: number) => Math.max(5, Math.ceil(rub / rate / 5) * 5);
+    const fmtRub = (n: number) => `${n.toLocaleString('ru-RU')} ₽`;
+    const fmtUsd = (n: number) => `$${n.toLocaleString('en-US')}`;
 
     const update = () => {
       let total = 0;
@@ -112,27 +142,26 @@ const bundles = dict.bundles.items
         if (!b.checked) return;
         count++;
         codes += b.dataset.code ?? '';
-        const p = Number(b.dataset.price) || 0;
+        const rub = Number(b.dataset.rub) || 0;
+        const p = locale === 'ru' ? rub : usd(rub);
         if (b.dataset.monthly) monthly += p;
         else total += p;
       });
       // комбо-скидка: в заказе собралась связка целиком
-      let discount = 0;
-      const applied: string[] = [];
+      let combo = 0;
       bundles.forEach((bl) => {
-        if ([...bl.codes].every((c) => codes.includes(c))) {
-          discount += bl.discount;
-          applied.push(bl.title);
-        }
+        if ([...bl.codes].every((c) => codes.includes(c)))
+          combo += locale === 'ru' ? bl.save : Math.round(bl.save / rate);
       });
-      total -= discount;
-      comboRow.hidden = discount === 0;
-      comboEl.textContent = `−${fmt(discount)}`;
-      comboNames.textContent = applied.length ? `«${applied.join('», «')}»` : '';
+      total = Math.max(total - combo, 0);
+
+      const fmt = locale === 'ru' ? fmtRub : fmtUsd;
       countEl.textContent = String(count);
-      totalEl.textContent = count ? fmt(total) : '—';
+      totalEl.textContent = count ? `${fromPrefix}${fmt(total)}` : '—';
       monthlyRow.hidden = monthly === 0;
-      monthlyEl.textContent = fmt(monthly);
+      monthlyEl.textContent = `${fromPrefix}${fmt(monthly)}${monthlySuffix}`;
+      comboRow.hidden = combo === 0;
+      comboEl.textContent = `−${fmt(combo)}`;
       if (count && botUrl) {
         btn.href = `${botUrl}?start=calc-${codes}`;
         btn.removeAttribute('aria-disabled');
@@ -146,5 +175,30 @@ const bundles = dict.bundles.items
 
     boxes.forEach((b) => b.addEventListener('change', update));
     update();
+
+    // EN: живой курс ЦБ → пересчёт цен позиций и итога, примечание под hero
+    if (locale === 'en') {
+      const repaintPrices = () => {
+        root.querySelectorAll<HTMLElement>('.calc-price').forEach((el) => {
+          const rub = Number(el.dataset.rub) || 0;
+          el.textContent = `${el.dataset.from ? fromPrefix : ''}${fmtUsd(usd(rub))}${el.dataset.suffix ?? ''}`;
+        });
+      };
+      fetch(summary.dataset.rateUrl ?? '')
+        .then((r) => r.json())
+        .then((d) => {
+          const v = d?.Valute?.USD?.Value;
+          if (!v) throw new Error('no rate');
+          rate = v;
+          repaintPrices();
+          update();
+          const note = document.getElementById('rate-note');
+          if (note) note.textContent = `${note.dataset.text} · today $1 = ${v.toFixed(2)} ₽`;
+        })
+        .catch(() => {
+          const foot = document.getElementById('calc-rate-footnote');
+          if (foot) foot.hidden = false;
+        });
+    }
   }
 </script>

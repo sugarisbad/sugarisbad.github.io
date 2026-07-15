@@ -1,117 +1,88 @@
 ---
+// Процесс: 5 шагов-строк с бейджем результата, 3 принципа-карточки, CTA.
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
-import Contact from '../components/Contact.astro';
 import Footer from '../components/Footer.astro';
-import { t, type Locale } from '../i18n';
+import { contacts } from '../data/site';
+import { t, localeUrl, type Locale } from '../i18n';
 
 interface Props {
-  locale: Locale;
+  locale?: Locale;
 }
-const { locale } = Astro.props;
+const { locale = 'ru' } = Astro.props;
 const dict = t(locale);
+const base = import.meta.env.BASE_URL;
+const p = (s: string) => localeUrl(locale, s, base);
 
-// FAQ-микроразметка: расширенный сниппет в выдаче Google и Яндекса.
-const faqLd = {
-  '@context': 'https://schema.org',
-  '@type': 'FAQPage',
-  mainEntity: dict.faq.map((f) => ({
-    '@type': 'Question',
-    name: f.q,
-    acceptedAnswer: { '@type': 'Answer', text: f.a },
-  })),
-};
+// Метка источника для бота: src-work / src-work-en
+const botLink = `${contacts.botUrl}?start=src-work${locale === 'en' ? '-en' : ''}`;
+// В референсах порядок CTA различается: RU — бот главный, EN — Calendly главный.
+const ctaButtons =
+  locale === 'ru'
+    ? [
+        { href: botLink, label: dict.workPage.ctaBot, primary: true },
+        { href: contacts.calendlyUrl, label: dict.workPage.ctaCall, primary: false },
+        { href: p('services/'), label: dict.workPage.ctaCalc, primary: false },
+      ]
+    : [
+        { href: contacts.calendlyUrl, label: dict.workPage.ctaCall, primary: true },
+        { href: botLink, label: dict.workPage.ctaBot, primary: false },
+        { href: p('services/'), label: dict.workPage.ctaCalc, primary: false },
+      ];
 ---
 
-<Base title={dict.workPage.title} description={dict.workPage.desc} locale={locale} path="work/">
-  <script type="application/ld+json" slot="head" set:html={JSON.stringify(faqLd)} />
-  <Header locale={locale} path="work/" />
+<Base title={dict.workPage.title} description={dict.workPage.desc} locale={locale} path="work/" bg="page">
+  <Header locale={locale} path="work/" active="work" cta={locale === 'ru' ? 'contact' : 'call'} />
 
-  <!-- HERO -->
-  <section class="hero hero-compact">
+  <section class="hero-page">
     <div class="wrap">
-      <span class="eyebrow">{dict.workPage.eyebrow}</span>
-      <h1>{dict.workPage.h1}</h1>
-      <p class="sub">{dict.workPage.sub}</p>
+      <span class="kicker fx">{dict.workPage.kicker}</span>
+      <h1 class="h1 fx-1" set:html={dict.workPage.h1} />
+      <p class="lead fx-2">{dict.workPage.sub}</p>
     </div>
   </section>
 
-  <!-- PROCESS -->
-  <section class="section-tight">
+  <section class="steps-wrap">
     <div class="wrap">
-      <div class="section-head reveal">
-        <span class="eyebrow">{dict.workPage.processEyebrow}</span>
-        <h2>{dict.workPage.processH2}</h2>
-      </div>
-      <div class="steps reveal">
-        {dict.process.map((s) => (
-          <div class="step"><h4>{s.title}</h4><p>{s.text}</p></div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- GUARANTEES -->
-  <section>
-    <div class="wrap">
-      <div class="section-head reveal">
-        <span class="eyebrow">{dict.workPage.guaranteesEyebrow}</span>
-        <h2>{dict.workPage.guaranteesH2}</h2>
-        <p class="lead">{dict.workPage.guaranteesLead}</p>
-      </div>
-      <div class="steps reveal">
-        {dict.guarantees.map((g) => (
-          <div class="step guarantee">
-            <div class="ico">{g.icon}</div>
-            <h4>{g.title}</h4>
-            <p>{g.text}</p>
+      <div class="steps">
+        {dict.workPage.steps.map((s) => (
+          <div class="step">
+            <span class="step-num">{s.num}</span>
+            <h3>{s.title}</h3>
+            <p>{s.text}</p>
+            <span class="step-out">→ {s.output}</span>
           </div>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- COMPARE -->
-  <section>
+  <section class="principles-sec">
     <div class="wrap">
-      <div class="section-head reveal">
-        <span class="eyebrow">{dict.workPage.compareEyebrow}</span>
-        <h2>{dict.workPage.compareH2}</h2>
-        <p class="lead">{dict.workPage.compareLead}</p>
-      </div>
-      <div class="compare-wrap reveal">
-        <table class="compare">
-          <thead>
-            <tr>{dict.compare.columns.map((c, i) => <th class={i === 1 ? 'me' : ''}>{c}</th>)}</tr>
-          </thead>
-          <tbody>
-            {dict.compare.rows.map((row) => (
-              <tr>{row.map((cell, i) => i === 0 ? <th scope="row">{cell}</th> : <td class={i === 1 ? 'me' : ''}>{cell}</td>)}</tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- FAQ -->
-  <section>
-    <div class="wrap">
-      <div class="section-head reveal">
-        <span class="eyebrow">{dict.workPage.faqEyebrow}</span>
-        <h2>{dict.workPage.faqH2}</h2>
-      </div>
-      <div class="faq reveal">
-        {dict.faq.map((f) => (
-          <details class="faq-item">
-            <summary><span>{f.q}</span><b class="faq-plus" aria-hidden="true">+</b></summary>
-            <p>{f.a}</p>
-          </details>
+      <span class="kicker">{dict.workPage.principlesKicker}</span>
+      <div class="tiles">
+        {dict.workPage.principles.map((pr) => (
+          <div class="principle">
+            <div class="num">{pr.num}</div>
+            <h3>{pr.title}</h3>
+            <p>{pr.text}</p>
+          </div>
         ))}
       </div>
     </div>
   </section>
 
-  <Contact locale={locale} source="src-work" />
+  <section class="cta-sec">
+    <div class="wrap">
+      <h2 set:html={dict.workPage.ctaH2} />
+      <p class="lead">{dict.workPage.ctaText}</p>
+      <div class="cta-row">
+        {ctaButtons.map((b) => (
+          <a href={b.href} class={`btn ${b.primary ? 'btn-primary' : 'btn-ghost'}`}>{b.label}</a>
+        ))}
+      </div>
+    </div>
+  </section>
+
   <Footer locale={locale} />
 </Base>

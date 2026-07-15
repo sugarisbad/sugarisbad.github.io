@@ -62,81 +62,112 @@ SKIP = "Пропустить"
 CANCEL = "Отмена"
 
 # Deep-link payload (t.me/<bot>?start=<slug>) → откуда пришёл клиент.
-# Слаги должны совпадать с src/data/site.ts на сайте.
+# Слаги должны совпадать с src/data/pricing.ts на сайте.
+# EN-страницы шлют те же слаги с суффиксом -en (см. cmd_start).
 SOURCES = {
-    # пакеты
-    "plan-vps": "Пакет «Настройка VPS»",
-    "plan-monitoring": "Пакет «Мониторинг и алерты»",
-    "plan-ai": "Пакет «Self-hosted ИИ»",
-    "plan-system": "Пакет «Система под ключ»",
     # прайс: серверы и безопасность
-    "vps-setup": "Настройка VPS «под ключ»",
-    "audit": "Аудит существующего сервера",
+    "vps-setup": "Настройка VPS/VDS «под ключ»",
+    "audit": "Аудит сервера и безопасности",
+    "hardening": "Хардненинг: fail2ban, ufw, SSH, обновления",
     "nginx-ssl": "nginx: домены, SSL, реверс-прокси",
     "migration": "Миграция на новый сервер",
-    "backup": "Резервное копирование",
+    "backup": "Автоматическое резервное копирование",
+    "mail": "Self-hosted почта: DKIM/SPF/DMARC",
     # прайс: Docker и CI/CD
     "dockerize": "Docker-изация приложения",
     "compose": "docker-compose стек",
     "cicd": "CI/CD пайплайн",
-    "mass-deploy": "Массовое развёртывание",
-    # прайс: мониторинг
+    "registry": "Приватный Docker Registry",
+    "iac": "Инфраструктура как код (Ansible / Terraform)",
+    # прайс: Kubernetes
+    "k8s-cluster": "Кластер Kubernetes под ключ",
+    "k8s-migrate": "Миграция приложений в Kubernetes",
+    "gitops": "Helm-чарты и GitOps (ArgoCD)",
+    "k8s-audit": "Аудит и оптимизация кластера",
+    # прайс: облака
+    "cloud-migrate": "Миграция в облако / между облаками",
+    "cost-opt": "Оптимизация облачных расходов",
+    "multi-env": "Стейджинг и дев-окружения",
+    # прайс: мониторинг и SRE
     "monitoring": "Мониторинг + алерты в Telegram",
+    "logging": "Централизованные логи (Loki / ELK)",
     "balancer": "Балансировка нагрузки",
     "failover": "Автоматический failover",
+    "loadtest": "Нагрузочное тестирование",
+    # прайс: базы данных
+    "db-setup": "Установка и тюнинг PostgreSQL / MySQL",
+    "db-replica": "Репликация и бэкапы БД",
+    "db-migrate": "Миграция БД без простоя",
     # прайс: ИИ
     "ollama": "Self-hosted ИИ (Ollama)",
-    "tg-bot": "ИИ-агент / Telegram-бот",
+    "ai-bot": "ИИ-агент / Telegram-бот",
     "turnkey": "Система под ключ",
     # прайс: поддержка
     "subscription": "Абонентское администрирование",
     "consult": "Разовая консультация",
-    "incident": "Срочный выезд в инцидент",
-    # связки со страницы услуг
-    "bundle-server": "Связка «Сервер под присмотром» (от 23 900 ₽)",
-    "bundle-deploy": "Связка «Деплой без рук» (от 42 000 ₽)",
-    "bundle-ai": "Связка «ИИ в контуре» (от 64 800 ₽)",
+    "incident": "Срочное реагирование на инцидент",
+    "hourly": "Часовая ставка инженера",
+    # кнопка «Не нашли свою задачу?» на странице услуг
+    "custom": "индивидуальная задача (вне прайса)",
     # общие кнопки «Оставить заявку» по страницам
     "src-home": "кнопка на главной странице",
     "src-cases": "кнопка на странице кейсов",
     "src-services": "кнопка на странице услуг и цен",
-    "src-work": "кнопка на странице «Как я работаю»",
+    "src-work": "кнопка на странице «Процесс»",
 }
 
 # Для этих слагов бот упоминает услугу в приветствии (страницы-источники — нет).
 SERVICE_SLUGS = {s for s in SOURCES if not s.startswith("src-")}
 
 # Калькулятор на сайте кодирует выбранные позиции однобуквенными кодами
-# (payload вида calc-adg). Коды должны совпадать с calcCodes в src/data/site.ts.
-CALC_ITEMS: dict[str, tuple[str, int, str]] = {
-    # код: (название, стартовая цена ₽, суффикс цены)
-    "a": ("Настройка VPS «под ключ»", 8400, ""),
-    "b": ("Аудит существующего сервера", 4800, ""),
-    "c": ("nginx: домены, SSL, реверс-прокси", 6000, ""),
-    "d": ("Миграция на новый сервер", 14400, ""),
-    "e": ("Резервное копирование", 9600, ""),
-    "f": ("Docker-изация приложения", 12000, ""),
-    "g": ("docker-compose стек", 18000, ""),
-    "h": ("CI/CD пайплайн", 18000, ""),
-    "i": ("Массовое развёртывание", 30000, ""),
-    "j": ("Мониторинг + алерты в Telegram", 18000, ""),
-    "k": ("Балансировка нагрузки", 21600, ""),
-    "l": ("Автоматический failover", 36000, ""),
-    "m": ("Self-hosted ИИ (Ollama)", 24000, ""),
-    "n": ("ИИ-агент / Telegram-бот", 48000, ""),
-    "o": ("Система под ключ", 192000, ""),
-    "p": ("Абонентское администрирование", 12000, "/мес"),
-    "q": ("Разовая консультация", 4800, "/час"),
-    "r": ("Срочный выезд в инцидент", 7200, ""),
+# (payload вида calc-adG; регистр значим). Коды, цены и «от» должны совпадать
+# с src/data/pricing.ts.
+CALC_ITEMS: dict[str, tuple[str, int, str, bool]] = {
+    # код: (название, стартовая цена ₽, суффикс цены, цена «от …»)
+    "a": ("Настройка VPS/VDS «под ключ»", 8400, "", True),
+    "b": ("Аудит сервера и безопасности", 4800, "", False),
+    "c": ("Хардненинг: fail2ban, ufw, SSH, обновления", 7200, "", True),
+    "d": ("nginx: домены, SSL, реверс-прокси", 6000, "", True),
+    "e": ("Миграция на новый сервер", 14400, "", True),
+    "f": ("Автоматическое резервное копирование", 9600, "", True),
+    "g": ("Self-hosted почта: DKIM/SPF/DMARC", 18000, "", True),
+    "h": ("Docker-изация приложения", 12000, "", True),
+    "i": ("docker-compose стек (БД, кэш, очереди)", 18000, "", True),
+    "j": ("CI/CD пайплайн (GitLab CI / GitHub Actions)", 18000, "", True),
+    "k": ("Приватный Docker Registry", 9600, "", True),
+    "l": ("Инфраструктура как код (Ansible / Terraform)", 30000, "", True),
+    "m": ("Кластер Kubernetes под ключ (k3s / k8s)", 48000, "", True),
+    "n": ("Миграция приложений в Kubernetes", 36000, "", True),
+    "o": ("Helm-чарты и GitOps (ArgoCD)", 24000, "", True),
+    "p": ("Аудит и оптимизация кластера", 14400, "", True),
+    "q": ("Миграция в облако / между облаками", 24000, "", True),
+    "r": ("Оптимизация облачных расходов", 18000, "", True),
+    "s": ("Стейджинг и дев-окружения", 14400, "", True),
+    "t": ("Мониторинг + алерты в Telegram", 18000, "", True),
+    "u": ("Централизованные логи (Loki / ELK)", 16800, "", True),
+    "v": ("Балансировка нагрузки", 21600, "", True),
+    "w": ("Автоматический failover", 36000, "", True),
+    "x": ("Нагрузочное тестирование", 14400, "", True),
+    "y": ("Установка и тюнинг PostgreSQL / MySQL", 12000, "", True),
+    "z": ("Репликация и бэкапы БД", 18000, "", True),
+    "A": ("Миграция БД без простоя", 24000, "", True),
+    "B": ("Self-hosted ИИ (Ollama)", 24000, "", True),
+    "C": ("ИИ-агент / Telegram-бот", 48000, "", True),
+    "D": ("Система под ключ", 192000, "", True),
+    "E": ("Абонентское администрирование", 12000, "/мес", True),
+    "F": ("Разовая консультация", 4800, "", False),
+    "G": ("Срочное реагирование на инцидент", 7200, "", True),
+    "H": ("Часовая ставка инженера", 3600, "/час", True),
 }
 
 
 # Связки: если все коды связки есть в заказе — применяется комбо-скидка.
-# Составы и суммы должны совпадать с bundleCodes/bundles на сайте.
+# Составы и суммы должны совпадать с BUNDLES в src/data/pricing.ts.
 CALC_BUNDLES: list[tuple[str, int, str]] = [
-    ("aj", 2500, "Сервер под присмотром"),
-    ("fgh", 6000, "Деплой без рук"),
-    ("mn", 7200, "ИИ в контуре"),
+    ("at", 2500, "Сервер под присмотром"),
+    ("hij", 6000, "Деплой без рук"),
+    ("BC", 7200, "ИИ в контуре"),
+    ("mo", 9000, "Kubernetes + GitOps"),
 ]
 
 
@@ -157,8 +188,9 @@ def parse_calc(slug: str) -> tuple[str, str]:
         item = CALC_ITEMS.get(code)
         if not item:
             continue
-        name, price, suffix = item
-        lines.append(f"· {name} — от {fmt_rub(price)} ₽{suffix}")
+        name, price, suffix, from_flag = item
+        prefix = "от " if from_flag else ""
+        lines.append(f"· {name} — {prefix}{fmt_rub(price)} ₽{suffix}")
         if suffix == "/мес":
             monthly += price
         else:
@@ -269,8 +301,14 @@ async def create_crm_lead(
 async def cmd_start(message: Message, state: FSMContext, command: CommandObject) -> None:
     await state.clear()
     slug = (command.args or "").strip()
+    # EN-страницы сайта шлют те же метки с суффиксом -en — фиксируем язык клиента
+    lang_en = slug.endswith("-en") and not slug.startswith("calc-")
+    if lang_en:
+        slug = slug[: -len("-en")]
     order, calc_source = parse_calc(slug)
     source = calc_source or SOURCES.get(slug, "")
+    if source and lang_en:
+        source += " · EN-версия сайта"
     await state.update_data(source=source, source_slug=slug if source else "", order=order)
     await state.set_state(Form.name)
 

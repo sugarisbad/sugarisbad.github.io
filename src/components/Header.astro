@@ -1,33 +1,37 @@
 ---
-import { brand } from '../data/site';
+import { brand, contacts } from '../data/site';
 import { t, localeUrl, type Locale } from '../i18n';
 
 interface Props {
   locale?: Locale;
   /** Путь текущей страницы без префикса локали — для переключателя языка. */
   path?: string;
+  /** Активный раздел (подчёркивается акцентом). Не задан — главная. */
+  active?: 'cases' | 'services' | 'work';
+  /** Правая кнопка: contact → #contact (на главной) / главная#contact, call → Calendly. */
+  cta?: 'contact' | 'call';
 }
-const { locale = 'ru', path = '' } = Astro.props;
+const { locale = 'ru', path = '', active, cta = 'contact' } = Astro.props;
 const dict = t(locale);
 const base = import.meta.env.BASE_URL;
 const p = (s: string) => localeUrl(locale, s, base);
+
+const ctaHref = cta === 'call' ? contacts.calendlyUrl : active ? `${p('')}#contact` : '#contact';
+const ctaLabel = cta === 'call' ? dict.nav.call : dict.nav.contact;
 ---
 
 <header>
   <div class="wrap nav">
-    <a class="brand" href={p('')}><span class="dot"></span> {brand}<span class="brand-user mono">{dict.seo.brandTag}</span></a>
-    <nav class="nav-links" id="nav">
-      <a href={p('')}>{dict.nav.home}</a>
-      <a href={p('cases/')}>{dict.nav.cases}</a>
-      <a href={p('services/')}>{dict.nav.services}</a>
-      <a href={p('work/')}>{dict.nav.work}</a>
-      <a href="#contact" class="nav-cta">{dict.nav.contact}</a>
+    <a class="brand" href={p('')}>{brand}</a>
+    <nav class="nav-links">
+      <a class={`nav-link${active === 'cases' ? ' active' : ''}`} href={p('cases/')}>{dict.nav.cases}</a>
+      <a class={`nav-link${active === 'services' ? ' active' : ''}`} href={p('services/')}>{dict.nav.services}</a>
+      <a class={`nav-link${active === 'work' ? ' active' : ''}`} href={p('work/')}>{dict.nav.work}</a>
+      <div class="lang-switch" aria-label={dict.nav.langLabel}>
+        <a href={localeUrl('ru', path, base)} data-lang="ru" class={locale === 'ru' ? 'active' : ''} aria-current={locale === 'ru' ? 'true' : undefined}>RU</a>
+        <a href={localeUrl('en', path, base)} data-lang="en" class={locale === 'en' ? 'active' : ''} aria-current={locale === 'en' ? 'true' : undefined}>EN</a>
+      </div>
+      <a class="nav-cta" href={ctaHref}>{ctaLabel}</a>
     </nav>
-    <div class="lang-switch" aria-label="Language">
-      <span class="lang-globe" aria-hidden="true">🌐</span>
-      <a href={localeUrl('ru', path, base)} data-lang="ru" class={locale === 'ru' ? 'active' : ''} aria-current={locale === 'ru' ? 'true' : undefined}>RU</a>
-      <a href={localeUrl('en', path, base)} data-lang="en" class={locale === 'en' ? 'active' : ''} aria-current={locale === 'en' ? 'true' : undefined}>EN</a>
-    </div>
-    <button class="burger" id="burger" aria-label={dict.nav.menu}>☰</button>
   </div>
 </header>

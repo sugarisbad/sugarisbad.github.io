@@ -1,109 +1,104 @@
 ---
+// Главная: hero со статус-панелью, статистика, услуги-строки, кейсы-превью, контакт.
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
-import Calculator from '../components/Calculator.astro';
-import Contact from '../components/Contact.astro';
 import Footer from '../components/Footer.astro';
+import Contact from '../components/Contact.astro';
 import { t, localeUrl, type Locale } from '../i18n';
 
 interface Props {
-  locale: Locale;
+  locale?: Locale;
 }
-const { locale } = Astro.props;
+const { locale = 'ru' } = Astro.props;
 const dict = t(locale);
 const base = import.meta.env.BASE_URL;
 const p = (s: string) => localeUrl(locale, s, base);
-
-// Строки «живого» терминала в hero — язык шелла универсален для обеих локалей.
-const termLines = [
-  '$ ssh deploy@prod',
-  '~ connected · uptime 214d',
-  '$ docker compose up -d --build',
-  '+ 10/10 services healthy',
-  '$ git push origin main',
-  '~ ci/cd: build - test - deploy',
-  '+ released in 42s · zero downtime',
-];
 ---
 
-<Base title={dict.home.title} description={dict.home.desc} locale={locale} path="">
-  <Header locale={locale} path="" />
+<Base title={dict.home.title} description={dict.home.desc} locale={locale} path="" bg="home">
+  <Header locale={locale} path="" cta="contact" />
 
-  <!-- HERO: асимметричная композиция, слева — копирайтинг, справа — терминал -->
-  <section class="hero hero-home">
+  <section class="hero-home">
     <div class="wrap hero-grid">
-      <div class="hero-copy">
-        <div class="badge"><span class="live"></span> {dict.home.badge}</div>
-        <h1 set:html={dict.home.h1} />
-        <p class="sub">{dict.home.sub}</p>
-        <div class="hero-cta">
+      <div>
+        <span class="kicker fx">{dict.home.kicker}</span>
+        <h1 class="fx-1" set:html={dict.home.h1} />
+        <p class="lead fx-2">{dict.home.sub}</p>
+        <div class="cta-row fx-3">
           <a href="#contact" class="btn btn-primary">{dict.home.ctaDiscuss}</a>
           <a href={p('cases/')} class="btn btn-ghost">{dict.home.ctaCases}</a>
         </div>
       </div>
-      <aside class="hero-visual" aria-hidden="true">
-        <div class="term" data-term-lines={JSON.stringify(termLines)}>
-          <div class="term-bar"><i></i><i></i><i></i><span class="mono">deploy@prod — ssh</span></div>
-          <div class="term-body mono">
-            {termLines.map((l) => <div class="term-line" data-k={l[0]}>{l}</div>)}
-            <div class="term-caret"></div>
-          </div>
-        </div>
-        <div class="term-glow"></div>
-      </aside>
+      <div class="status-panel fx-4">
+        <div class="status-head">{dict.home.status.head} <span class="status-dot"></span></div>
+        {dict.home.status.rows.map((r) => (
+          <div class="status-row"><span>{r.name}</span><b class={r.tone}>{r.value}</b></div>
+        ))}
+        {dict.home.status.foot.map((r, i) => (
+          <div class={`status-row${i === 0 ? ' status-sep' : ''}`}><span>{r.name}</span><b class="text">{r.value}</b></div>
+        ))}
+      </div>
     </div>
-
-    <!-- Статистика: редакционная лента с тонкими линейками вместо коробок -->
     <div class="wrap">
-      <div class="stats">
-        {dict.heroStats.map((s) => (
-          <div class="stat"><b class="grad-text">{s.value}</b><span>{s.label}</span></div>
+      <div class="stats fx-5">
+        {dict.home.stats.map((s) => (
+          <div class="stat">
+            <b class={s.accent ? 'accent' : undefined}>{s.value}</b>
+            <span>{s.label}</span>
+          </div>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- Гигантская контурная строка стека -->
-  <div class="marquee-giant" aria-hidden="true">
-    <div class="marquee-giant-track">
-      {[0, 1].map((i) => (
-        <span aria-hidden={i === 1 ? 'true' : undefined}>
-          {dict.stack.slice(0, 8).map((tech) => <em>{tech}<i>·</i></em>)}
-        </span>
-      ))}
-    </div>
-  </div>
-
-  <!-- SERVICES: нумерованные редакционные строки вместо карточек -->
-  <section id="services" class="section-editorial">
+  <section class="section">
     <div class="wrap">
-      <div class="section-head reveal">
-        <span class="eyebrow">{dict.home.servicesEyebrow}</span>
-        <h2 set:html={dict.home.servicesH2} />
+      <div class="svc-head">
+        <div>
+          <span class="kicker">{dict.home.servicesKicker}</span>
+          <h2 class="h2" set:html={dict.home.servicesH2} />
+        </div>
         <p class="lead">{dict.home.servicesLead}</p>
       </div>
-      <div class="srows">
-        {dict.services.map((s, i) => (
-          <article class="srow reveal">
-            <span class="srow-i mono">{String(i + 1).padStart(2, '0')}</span>
-            <div class="srow-main">
-              <h3>{s.title}</h3>
-              <ul class="tags">{s.tags.map((tag) => <li>{tag}</li>)}</ul>
-            </div>
-            <p class="srow-text">{s.text}</p>
-            <span class="srow-arrow" aria-hidden="true">→</span>
-          </article>
+      <div class="svc-rows">
+        {dict.home.services.map((s) => (
+          <div class="svc-row">
+            <span class="num">{s.num}</span>
+            <h3>{s.title}</h3>
+            <p>{s.text}</p>
+            <span class="arrow">→</span>
+          </div>
         ))}
       </div>
-      <div class="hero-cta srows-cta">
-        <a href={p('services/')} class="btn btn-ghost">{dict.home.btnPrices}</a>
+      <div class="svc-btns">
+        <a href={p('services/')} class="btn btn-primary">{dict.home.btnPrices}</a>
         <a href={p('work/')} class="btn btn-ghost">{dict.home.btnWork}</a>
       </div>
     </div>
   </section>
 
-  <Calculator locale={locale} />
+  <section class="section">
+    <div class="wrap">
+      <div class="sec-head-row">
+        <div>
+          <span class="kicker">{dict.home.casesKicker}</span>
+          <h2 class="h2" set:html={dict.home.casesH2} />
+        </div>
+        <a href={p('cases/')} class="link-more">{dict.home.casesAll}</a>
+      </div>
+      <div class="tiles">
+        {dict.home.casesPreview.map((c) => (
+          <div class="tile">
+            <b>{c.value}</b>
+            <h3>{c.title}</h3>
+            <p>{c.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
 
-  <Contact locale={locale} />
+  <Contact locale={locale} source="src-home" />
+
   <Footer locale={locale} />
 </Base>

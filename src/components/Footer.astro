@@ -1,28 +1,22 @@
 ---
 import { brand, contacts } from '../data/site';
-import { t, localeUrl, type Locale } from '../i18n';
+import { localeUrl, type Locale } from '../i18n';
+import { t } from '../i18n';
 
 interface Props {
   locale?: Locale;
+  /** true — без верхнего отступа (страница услуг: секция сама даёт паддинг). */
+  flush?: boolean;
 }
-const { locale = 'ru' } = Astro.props;
+const { locale = 'ru', flush = false } = Astro.props;
 const dict = t(locale);
 const base = import.meta.env.BASE_URL;
-const p = (s: string) => localeUrl(locale, s, base);
-const mailto = `mailto:${contacts.email}?subject=${encodeURIComponent(dict.contact.mailSubject)}`;
 ---
 
-<footer>
+<footer class={flush ? 'flush' : undefined}>
   <div class="wrap foot">
-    <a class="brand" href={p('')}><span class="dot"></span> {brand}<span class="brand-user mono">{dict.seo.brandTag}</span></a>
-    <div class="foot-links">
-      <a href={mailto}>{contacts.email}</a>
-      <a href={contacts.telegramUrl}>@{contacts.telegram}</a>
-      <a href={contacts.githubUrl} rel="noopener">github.com/{contacts.github}</a>
-      <a href={p('cases/')}>{dict.nav.cases}</a>
-      <a href={p('services/')}>{dict.nav.services}</a>
-      <a href={p('work/')}>{dict.nav.work}</a>
-    </div>
-    <div style="font-size:.86rem">{dict.footerTagline} · <span id="year"></span></div>
+    <a class="brand" href={localeUrl(locale, '', base)}>{brand}</a>
+    <a href={`mailto:${contacts.email}`}>{contacts.email}</a>
+    <span class="tag">{dict.footer.tagline}</span>
   </div>
 </footer>

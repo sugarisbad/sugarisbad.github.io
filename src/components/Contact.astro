@@ -1,33 +1,29 @@
 ---
+// Контактная секция главной: бот (primary) + Calendly + почта.
 import { contacts } from '../data/site';
 import { t, type Locale } from '../i18n';
 
 interface Props {
   locale?: Locale;
-  title?: string;
-  text?: string;
-  source?: string; // payload deep-link: бот покажет, с какой страницы пришли
+  /** Метка источника в payload deep-link'а — бот видит, с какой страницы пришли. */
+  source?: string;
 }
 const { locale = 'ru', source = 'src-home' } = Astro.props;
 const dict = t(locale);
-const title = Astro.props.title ?? dict.contact.title;
-const text = Astro.props.text ?? dict.contact.text;
 
-const mailto = `mailto:${contacts.email}?subject=${encodeURIComponent(dict.contact.mailSubject)}`;
 // суффикс -en в payload: бот видит и страницу, и язык клиента
-const botLink = contacts.botUrl ? `${contacts.botUrl}?start=${source}${locale === 'en' ? '-en' : ''}` : '';
+const botLink = `${contacts.botUrl}?start=${source}${locale === 'en' ? '-en' : ''}`;
 ---
 
-<section id="contact">
+<section id="contact" class="contact-sec">
   <div class="wrap">
-    <div class="cta-band reveal">
-      <h2>{title}</h2>
-      <p>{text}</p>
-      <div class="hero-cta">
-        {botLink && <a href={botLink} class="btn btn-primary">{dict.contact.btnBot}</a>}
-        <a href={contacts.telegramUrl} class={`btn ${contacts.botUrl ? 'btn-ghost' : 'btn-primary'}`}>✈ Telegram · @{contacts.telegram}</a>
-        <a href={mailto} class="btn btn-ghost">{dict.contact.btnMail}</a>
-      </div>
+    <span class="kicker">{dict.contact.kicker}</span>
+    <h2 set:html={dict.contact.h2} />
+    <p class="lead">{dict.contact.text}</p>
+    <div class="cta-row">
+      <a href={botLink} class="btn btn-primary">{dict.contact.btnBot}</a>
+      <a href={contacts.calendlyUrl} class="btn btn-ghost">{dict.contact.btnCall}</a>
+      <a href={`mailto:${contacts.email}`} class="btn btn-ghost">{contacts.email}</a>
     </div>
   </div>
 </section>

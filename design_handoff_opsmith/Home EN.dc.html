@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:ital,wght@0,400;0,500;0,600;0,700&amp;family=Manrope:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark light;--bg:#0b0b0d;--panel:rgba(17,17,20,.72);--line:rgba(216,201,163,.14);--line2:rgba(216,201,163,.34);--text:#f2ede1;--muted:#8a8578;--accent:#d8c9a3;--accent-dim:rgba(216,201,163,.08);--ok:#7fd4a8;--btn-bg:#d8c9a3;--btn-fg:#0b0b0d;--ease:cubic-bezier(.2,.7,.2,1)}
+@media (prefers-color-scheme: light){:root{--bg:#f5f2ea;--panel:rgba(251,249,244,.78);--line:rgba(110,102,80,.18);--line2:rgba(110,102,80,.4);--text:#17150f;--muted:#6e6650;--accent:#9b8a5c;--accent-dim:rgba(155,138,92,.08);--ok:#2c9e68;--btn-bg:#17150f;--btn-fg:#f5f2ea}}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Manrope',system-ui,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+@keyframes lineflow{from{stroke-dashoffset:800}to{stroke-dashoffset:0}}
+@keyframes fadeup{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes blink{50%{opacity:.25}}
+@keyframes slowdrift{0%,100%{transform:translate(0,0)}50%{transform:translate(-24px,-16px)}}
+@media (max-width:920px){[data-rhide]{display:none!important}[data-rg]{grid-template-columns:1fr!important}[data-rg2]{grid-template-columns:1fr 1fr!important}nav{gap:14px!important}h1{font-size:2.4rem!important}}
+::selection{background:var(--accent);color:var(--bg)}
+</style>
+</helmet>
+<div style="position:fixed;inset:0;z-index:0;pointer-events:none">
+  <svg viewBox="0 0 1440 900" style="position:absolute;inset:0;width:100%;height:100%" preserveAspectRatio="xMidYMid slice">
+    <path d="M -60 620 C 330 570 560 680 930 600 S 1400 500 1560 550" fill="none" stroke="var(--accent)" stroke-width="1" opacity=".3" stroke-dasharray="800" style="animation:lineflow 12s linear infinite"></path>
+    <path d="M -60 680 C 400 640 660 730 1010 660 S 1420 570 1560 610" fill="none" stroke="var(--muted)" stroke-width="1" opacity=".18" stroke-dasharray="800" style="animation:lineflow 16s linear infinite"></path>
+    <path d="M -60 200 C 360 240 640 150 980 210 S 1420 290 1560 250" fill="none" stroke="var(--muted)" stroke-width="1" opacity=".12" stroke-dasharray="800" style="animation:lineflow 20s linear infinite"></path>
+    <circle cx="930" cy="600" r="3" fill="var(--accent)" opacity=".85"></circle>
+    <circle cx="560" cy="655" r="2.5" fill="var(--accent)" opacity=".45"></circle>
+    <circle cx="980" cy="210" r="2.5" fill="var(--accent)" opacity=".4"></circle>
+  </svg>
+  <div style="position:absolute;inset:0;background-image:linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:140px 100%;opacity:.5"></div>
+  <div style="position:absolute;width:640px;height:640px;border-radius:50%;background:radial-gradient(circle,var(--accent-dim),transparent 65%);top:-200px;right:-140px;animation:slowdrift 18s ease-in-out infinite"></div>
+</div>
+
+<div style="position:relative;z-index:1">
+<header data-screen-label="Nav" style="position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);background:var(--panel);border-bottom:1px solid var(--line)">
+  <div style="max-width:1240px;margin:0 auto;padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:72px">
+    <a href="Home%20EN.dc.html" style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.02rem;letter-spacing:.14em">OPSMITH</a>
+    <nav style="display:flex;gap:38px;align-items:center">
+      <a data-rhide="" href="Cases%20EN.dc.html" style="color:var(--muted);font-size:.9rem;font-weight:500;letter-spacing:.02em" style-hover="color:var(--text)">Case studies</a>
+      <a data-rhide="" href="Services%20EN.dc.html" style="color:var(--muted);font-size:.9rem;font-weight:500;letter-spacing:.02em" style-hover="color:var(--text)">Services &amp; pricing</a>
+      <a data-rhide="" href="Work%20EN.dc.html" style="color:var(--muted);font-size:.9rem;font-weight:500;letter-spacing:.02em" style-hover="color:var(--text)">Process</a>
+      <div style="display:flex;gap:2px;border:1px solid var(--line2);padding:3px;font-family:'JetBrains Mono',monospace">
+        <a href="Home%20RU.dc.html" style="padding:3px 10px;font-size:.78rem;font-weight:700;color:var(--muted)" style-hover="color:var(--text)">RU</a>
+        <a href="Home%20EN.dc.html" style="padding:3px 10px;font-size:.78rem;font-weight:700;background:var(--accent);color:var(--bg)">EN</a>
+      </div>
+      <a href="#contact" style="border:1px solid var(--line2);padding:10px 24px;color:var(--text);font-weight:600;font-size:.9rem;letter-spacing:.04em;transition:.2s" style-hover="background:var(--accent);color:var(--bg);border-color:var(--accent)">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<section data-screen-label="Hero" style="padding:120px 0 100px">
+  <div data-rg="" style="max-width:1240px;margin:0 auto;padding:0 32px;display:grid;grid-template-columns:1.25fr .75fr;gap:70px;align-items:center">
+    <div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.76rem;letter-spacing:.32em;color:var(--accent);margin-bottom:32px;animation:fadeup .8s var(--ease) both">DEVOPS · INFRASTRUCTURE · AI</div>
+      <h1 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(2.8rem,4.9vw,4.6rem);font-weight:500;letter-spacing:-.03em;line-height:1.05;margin:0 0 28px;animation:fadeup .9s var(--ease) .1s both">Infrastructure engineering for companies that <em style="font-style:italic;color:var(--accent)">cannot go down</em>.</h1>
+      <p style="color:var(--muted);font-size:1.12rem;max-width:540px;margin:0 0 44px;animation:fadeup .9s var(--ease) .2s both">Servers, Kubernetes, CI/CD, monitoring and self-hosted AI — designed, documented and delivered turnkey. Your customers never notice a failure.</p>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;animation:fadeup .9s var(--ease) .3s both">
+        <a href="#contact" style="padding:16px 38px;font-weight:600;font-size:.95rem;background:var(--btn-bg);color:var(--btn-fg);letter-spacing:.04em;transition:.2s" style-hover="opacity:.88">Discuss a project</a>
+        <a href="Cases%20EN.dc.html" style="padding:16px 38px;font-weight:600;font-size:.95rem;color:var(--text);border:1px solid var(--line2);letter-spacing:.04em;transition:.2s" style-hover="border-color:var(--accent);color:var(--accent)">Case studies →</a>
+      </div>
+    </div>
+    <div style="border:1px solid var(--line);background:var(--panel);backdrop-filter:blur(10px);padding:28px;font-family:'JetBrains Mono',monospace;font-size:.82rem;line-height:2.15;color:var(--muted);animation:fadeup 1s var(--ease) .35s both">
+      <div style="color:var(--accent);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">// production <span style="width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block;animation:blink 2.2s steps(1) infinite"></span></div>
+      <div style="display:flex;justify-content:space-between"><span>api-cluster</span><b style="color:var(--ok);font-weight:600">● healthy</b></div>
+      <div style="display:flex;justify-content:space-between"><span>db-primary</span><b style="color:var(--ok);font-weight:600">● healthy</b></div>
+      <div style="display:flex;justify-content:space-between"><span>ai-inference</span><b style="color:var(--ok);font-weight:600">● healthy</b></div>
+      <div style="display:flex;justify-content:space-between"><span>ci/cd pipeline</span><b style="color:var(--ok);font-weight:600">● passing</b></div>
+      <div style="display:flex;justify-content:space-between"><span>failover</span><b style="color:var(--accent);font-weight:600">standby</b></div>
+      <div style="border-top:1px solid var(--line);margin-top:12px;padding-top:12px;display:flex;justify-content:space-between"><span>uptime / 2025</span><b style="color:var(--text);font-weight:600">99.98%</b></div>
+      <div style="display:flex;justify-content:space-between"><span>incident-free</span><b style="color:var(--text);font-weight:600">214 days</b></div>
+    </div>
+  </div>
+  <div style="max-width:1240px;margin:0 auto;padding:0 32px">
+    <div data-rg2="" style="display:grid;grid-template-columns:repeat(4,1fr);margin-top:96px;border-top:1px solid var(--line);animation:fadeup 1s var(--ease) .45s both">
+      <div style="padding:32px 28px 0 0"><b style="display:block;font-family:'Space Grotesk',sans-serif;font-size:clamp(1.9rem,2.8vw,2.5rem);font-weight:500;letter-spacing:-.02em;color:var(--accent)">&lt;60 sec</b><span style="color:var(--muted);font-size:.86rem;display:block;margin-top:6px;max-width:220px">from one command to a ready server</span></div>
+      <div style="padding:32px 28px 0;border-left:1px solid var(--line)"><b style="display:block;font-family:'Space Grotesk',sans-serif;font-size:clamp(1.9rem,2.8vw,2.5rem);font-weight:500;letter-spacing:-.02em">24/7</b><span style="color:var(--muted);font-size:.86rem;display:block;margin-top:6px;max-width:220px">monitoring and automatic failover</span></div>
+      <div style="padding:32px 28px 0;border-left:1px solid var(--line)"><b style="display:block;font-family:'Space Grotesk',sans-serif;font-size:clamp(1.9rem,2.8vw,2.5rem);font-weight:500;letter-spacing:-.02em">10</b><span style="color:var(--muted);font-size:.86rem;display:block;margin-top:6px;max-width:220px">services in a production GPU rental platform</span></div>
+      <div style="padding:32px 28px 0;border-left:1px solid var(--line)"><b style="display:block;font-family:'Space Grotesk',sans-serif;font-size:clamp(1.9rem,2.8vw,2.5rem);font-weight:500;letter-spacing:-.02em">$0</b><span style="color:var(--muted);font-size:.86rem;display:block;margin-top:6px;max-width:220px">in token bills — self-hosted AI on your hardware</span></div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="Services" style="padding:100px 0;border-top:1px solid var(--line)">
+  <div style="max-width:1240px;margin:0 auto;padding:0 32px">
+    <div data-rg="" style="display:grid;grid-template-columns:.85fr 1.15fr;gap:70px;margin-bottom:70px">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.76rem;letter-spacing:.32em;color:var(--accent);margin-bottom:24px">SERVICES</div>
+        <h2 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(2rem,3.6vw,3rem);font-weight:500;letter-spacing:-.025em;line-height:1.08;margin:0">DevOps as the foundation.<br><em style="font-style:italic;color:var(--accent)">AI as the multiplier.</em></h2>
+      </div>
+      <p style="color:var(--muted);font-size:1.08rem;align-self:end;margin:0;max-width:520px">We design and build infrastructure end to end — servers, containers, deployment, monitoring — as one coherent system, not a pile of scripts.</p>
+    </div>
+    <div style="border-top:1px solid var(--line)">
+      <sc-for list="{{ services }}" as="s" hint-placeholder-count="6">
+        <div data-rg="" style="display:grid;grid-template-columns:80px 1fr 1fr 40px;gap:32px;align-items:baseline;padding:34px 8px;border-bottom:1px solid var(--line);transition:background .3s" style-hover="background:var(--accent-dim)">
+          <span style="font-family:'JetBrains Mono',monospace;color:var(--muted);font-size:.8rem">{{ s.num }}</span>
+          <h3 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(1.2rem,1.9vw,1.55rem);font-weight:500;letter-spacing:-.01em;margin:0">{{ s.title }}</h3>
+          <p style="color:var(--muted);font-size:.94rem;margin:0;max-width:460px">{{ s.text }}</p>
+          <span style="color:var(--accent);font-size:1.2rem;justify-self:end">→</span>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display:flex;gap:14px;margin-top:56px">
+      <a href="Services%20EN.dc.html" style="padding:16px 38px;font-weight:600;font-size:.95rem;background:var(--btn-bg);color:var(--btn-fg);letter-spacing:.04em" style-hover="opacity:.88">Pricing &amp; calculator</a>
+      <a href="Work%20EN.dc.html" style="padding:16px 38px;font-weight:600;font-size:.95rem;color:var(--text);border:1px solid var(--line2);letter-spacing:.04em" style-hover="border-color:var(--accent);color:var(--accent)">How we work →</a>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="Cases" style="padding:100px 0;border-top:1px solid var(--line)">
+  <div style="max-width:1240px;margin:0 auto;padding:0 32px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:56px">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.76rem;letter-spacing:.32em;color:var(--accent);margin-bottom:24px">SELECTED WORK</div>
+        <h2 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(2rem,3.6vw,3rem);font-weight:500;letter-spacing:-.025em;line-height:1.08;margin:0">Running in production<br>right now</h2>
+      </div>
+      <a href="Cases%20EN.dc.html" style="color:var(--accent);font-weight:600;font-size:.95rem;border-bottom:1px solid var(--line2);padding-bottom:3px" style-hover="border-color:var(--accent)">All case studies →</a>
+    </div>
+    <div data-rg="" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line)">
+      <div style="background:var(--bg);padding:36px 32px" style-hover="background:var(--accent-dim)">
+        <b style="font-family:'Space Grotesk',sans-serif;font-size:2.3rem;font-weight:500;letter-spacing:-.02em;color:var(--accent)">10</b>
+        <h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.12rem;font-weight:600;margin:14px 0 10px">GPU rental platform</h3>
+        <p style="color:var(--muted);font-size:.92rem;margin:0">Node onboarding, job orchestration, metering and billing — ten services acting as one.</p>
+      </div>
+      <div style="background:var(--bg);padding:36px 32px" style-hover="background:var(--accent-dim)">
+        <b style="font-family:'Space Grotesk',sans-serif;font-size:2.3rem;font-weight:500;letter-spacing:-.02em;color:var(--accent)">~1 min</b>
+        <h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.12rem;font-weight:600;margin:14px 0 10px">A website that repairs itself</h3>
+        <p style="color:var(--muted);font-size:.92rem;margin:0">Complete server loss → new VPS, full stack and AI-generated content — no humans involved.</p>
+      </div>
+      <div style="background:var(--bg);padding:36px 32px" style-hover="background:var(--accent-dim)">
+        <b style="font-family:'Space Grotesk',sans-serif;font-size:2.3rem;font-weight:500;letter-spacing:-.02em;color:var(--accent)">24/7</b>
+        <h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.12rem;font-weight:600;margin:14px 0 10px">Hardware under watch</h3>
+        <p style="color:var(--muted);font-size:.92rem;margin:0">Dozens of devices under constant checks — we learn of failures before customers do.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" data-screen-label="Contact" style="padding:110px 0 40px;border-top:1px solid var(--line)">
+  <div style="max-width:1240px;margin:0 auto;padding:0 32px">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:.76rem;letter-spacing:.32em;color:var(--accent);margin-bottom:26px">CONTACT</div>
+    <h2 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(2.4rem,5vw,4rem);font-weight:500;letter-spacing:-.03em;line-height:1.04;max-width:820px;margin:0 0 20px">Describe the task — we reply with a solution <em style="font-style:italic;color:var(--accent)">within a day</em>.</h2>
+    <p style="color:var(--muted);max-width:520px;margin:0 0 44px;font-size:1.08rem">Two sentences are enough. The initial consultation is free and non-binding.</p>
+    <div style="display:flex;gap:14px;flex-wrap:wrap">
+      <a href="https://t.me/sugarisbad_bot?start=src-home-en" style="padding:16px 38px;font-weight:600;font-size:.95rem;background:var(--btn-bg);color:var(--btn-fg);letter-spacing:.04em" style-hover="opacity:.88">Leave a request via bot</a>
+      <a href="https://calendly.com/opsmith/30min" style="padding:16px 38px;font-weight:600;font-size:.95rem;color:var(--text);border:1px solid var(--line2);letter-spacing:.04em" style-hover="border-color:var(--accent);color:var(--accent)">Book a 30-min call</a>
+      <a href="mailto:contact@opsmith.ru" style="padding:16px 38px;font-weight:600;font-size:.95rem;color:var(--text);border:1px solid var(--line2);letter-spacing:.04em" style-hover="border-color:var(--accent);color:var(--accent)">contact@opsmith.ru</a>
+    </div>
+  </div>
+</section>
+
+<footer style="border-top:1px solid var(--line);padding:44px 0;margin-top:60px;color:var(--muted)">
+  <div style="max-width:1240px;margin:0 auto;padding:0 32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:18px">
+    <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:.14em;color:var(--text);font-size:.95rem">OPSMITH</span>
+    <div style="display:flex;gap:26px;font-size:.9rem"><a href="mailto:contact@opsmith.ru" style-hover="color:var(--accent)">contact@opsmith.ru</a></div>
+    <span style="font-size:.84rem;font-family:'JetBrains Mono',monospace">devops · automation · self-hosted ai</span>
+  </div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 1440}}">
+class Component extends DCLogic {
+  renderVals() {
+    const services = [
+      { num: '01', title: 'VPS / Linux setup & hardening', text: 'Turnkey servers: nginx, systemd, firewall, SSH hardening, health checks. Everything via cloud-init — no manual tweaks in production.' },
+      { num: '02', title: 'Docker & containerization', text: 'Compose stacks with databases, caches and queues, multi-stage builds, private registries. One file — the project runs anywhere.' },
+      { num: '03', title: 'CI/CD & auto-deploy', text: 'Push to main — tests, build, deploy. Staging, rollbacks, secrets. Releases stop being an event.' },
+      { num: '04', title: 'Monitoring & resilience', text: 'Metrics, logs, Telegram alerts. Monitoring catches a failure — the system switches to standby on its own.' },
+      { num: '05', title: 'Telegram bots & notifications', text: 'Lead intake, server health alerts, task management from the chat. Your whole infrastructure — in your Telegram.' },
+      { num: '06', title: 'Self-hosted AI', text: 'Your own neural network on your hardware via Ollama: no data leaks, no token bills. A ready HTTP API.' },
+    ];
+    return { services };
+  }
+}
+</script>
+</body>
+</html>

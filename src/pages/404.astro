@@ -8,15 +8,15 @@ const ru = t('ru');
 const en = t('en');
 ---
 
-<Base title={`404 — ${ru.notFound.title}`} description={ru.notFound.text} noindex>
-  <Header locale="ru" path="" />
+<Base title={`404 — ${ru.notFound.title}`} description={ru.notFound.text} noindex bg="page">
+  <Header locale="ru" path="" cta="contact" />
 
-  <section class="hero hero-compact">
+  <section class="hero-404">
     <div class="wrap">
-      <span class="eyebrow">// 404</span>
-      <h1>{ru.notFound.title}</h1>
-      <p class="sub">{ru.notFound.text}<br />{en.notFound.text}</p>
-      <div class="hero-cta">
+      <span class="kicker fx">// 404</span>
+      <h1 class="h1 fx-1">{ru.notFound.title}</h1>
+      <p class="lead fx-2">{ru.notFound.text}<br />{en.notFound.text}</p>
+      <div class="cta-row fx-3">
         <a href="/" class="btn btn-primary">{ru.notFound.btnHome}</a>
         <a href="/en/" class="btn btn-ghost">{en.notFound.btnHome}</a>
       </div>

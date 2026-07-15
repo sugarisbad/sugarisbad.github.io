@@ -1,142 +1,51 @@
 ---
+// Услуги и цены: hero + калькулятор заказа (полный прайс из pricing.ts).
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Calculator from '../components/Calculator.astro';
-import Contact from '../components/Contact.astro';
 import Footer from '../components/Footer.astro';
-import { contacts } from '../data/site';
+import { PRICING } from '../data/pricing';
 import { t, type Locale } from '../i18n';
 
 interface Props {
-  locale: Locale;
+  locale?: Locale;
 }
-const { locale } = Astro.props;
+const { locale = 'ru' } = Astro.props;
 const dict = t(locale);
 
-// Кнопки заказа ведут в бота с кодом услуги и языка — видно, откуда пришёл клиент.
-const order = (slug: string) =>
-  contacts.botUrl ? `${contacts.botUrl}?start=${slug}${locale === 'en' ? '-en' : ''}` : '#contact';
-
 // Каталог услуг с ценами: расширенные сниппеты с ценой в Яндексе и Google.
-const priceNum = (p: string) => parseInt(p.replace(/[^\d]/g, ''), 10) || 0;
-const catalogLd = {
+const offersLd = {
   '@context': 'https://schema.org',
   '@type': 'OfferCatalog',
-  name: dict.servicesPage.listH2,
-  itemListElement: dict.priceGroups.flatMap((g) =>
-    g.items.map((i) => ({
+  name: dict.servicesPage.title,
+  itemListElement: PRICING.flatMap((g) =>
+    g.items.map((it) => ({
       '@type': 'Offer',
-      itemOffered: { '@type': 'Service', name: i.name, description: i.desc },
-      price: priceNum(i.price),
-      priceCurrency: locale === 'ru' ? 'RUB' : 'USD',
-      availability: 'https://schema.org/InStock',
+      itemOffered: { '@type': 'Service', name: locale === 'ru' ? it.name_ru : it.name_en },
+      price: it.rub,
+      priceCurrency: 'RUB',
     }))
   ),
 };
 ---
 
-<Base title={dict.servicesPage.title} description={dict.servicesPage.desc} locale={locale} path="services/">
-  <script type="application/ld+json" slot="head" set:html={JSON.stringify(catalogLd)} />
-  <Header locale={locale} path="services/" />
+<Base title={dict.servicesPage.title} description={dict.servicesPage.desc} locale={locale} path="services/" bg="services">
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(offersLd)} />
 
-  <!-- HERO -->
-  <section class="hero hero-compact">
-    <div class="wrap">
-      <div class="badge"><span class="live"></span> {dict.servicesPage.badge}</div>
-      <h1 set:html={dict.servicesPage.h1} />
-      <p class="sub">{dict.servicesPage.sub}</p>
-    </div>
-  </section>
+  <Header locale={locale} path="services/" active="services" cta="call" />
 
-  <!-- PLANS -->
-  <section class="section-tight">
+  <section class="hero-services">
     <div class="wrap">
-      <div class="section-head reveal">
-        <span class="eyebrow">{dict.servicesPage.plansEyebrow}</span>
-        <h2>{dict.servicesPage.plansH2}</h2>
-      </div>
-      <div class="price-grid reveal">
-        {dict.plans.map((p) => (
-          <div class={`price${p.featured ? ' featured' : ''}`}>
-            <h3>{p.title}</h3>
-            <p class="desc">{p.desc}</p>
-            <div class="amount">{p.price}</div>
-            <span class="meta">{p.meta}</span>
-            <ul>{p.features.map((f) => <li>{f}</li>)}</ul>
-            <a href={order(p.slug)} class={`btn ${p.featured ? 'btn-primary' : 'btn-ghost'}`}>{p.cta}</a>
-          </div>
-        ))}
-      </div>
-      <p class="price-note" set:html={dict.servicesPage.priceNote1} />
-    </div>
-  </section>
-
-  <!-- BUNDLES: честные связки — дешевле суммы позиций из прайса -->
-  <section class="section-tight">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <span class="eyebrow">{dict.bundles.eyebrow}</span>
-        <h2>{dict.bundles.h2}</h2>
-        <p class="lead">{dict.bundles.lead}</p>
-      </div>
-      <div class="bundle-grid reveal">
-        {dict.bundles.items.map((b) => (
-          <div class="bundle">
-            <h3>{b.title}</h3>
-            <p class="desc">{b.desc}</p>
-            <div class="bundle-price">
-              <s class="mono">{b.oldPrice}</s>
-              <b>{b.price}</b>
-              <span class="bundle-save">{b.save}</span>
-            </div>
-            <a href={order(b.slug)} class="btn btn-ghost">{b.cta}</a>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- PRICE LIST -->
-  <section class="plist-section">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <span class="eyebrow">{dict.servicesPage.listEyebrow}</span>
-        <h2>{dict.servicesPage.listH2}</h2>
-      </div>
-      {dict.priceGroups.map((g) => (
-        <div class="pgroup reveal">
-          <div class="pgroup-head">
-            <span class="pgroup-ico">{g.icon}</span>
-            <h2>{g.title}</h2>
-          </div>
-          <div class="plist">
-            {g.items.map((item) => (
-              <div class="pitem">
-                <div class="pitem-info">
-                  <h3>{item.name}</h3>
-                  <p>{item.desc}</p>
-                </div>
-                <div class="pitem-meta">
-                  <b class="grad-text">{item.price}</b>
-                  <span class="mono">{item.time}</span>
-                  <a href={order(item.slug)} class="btn btn-ghost btn-sm">{dict.servicesPage.orderBtn}</a>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      ))}
-      <p class="price-note" set:html={dict.servicesPage.priceNote2} />
+      <span class="kicker fx">{dict.servicesPage.kicker}</span>
+      <h1 class="h1 fx-1" set:html={dict.servicesPage.h1} />
+      <p class="lead fx-2">{dict.servicesPage.sub}</p>
+      {locale === 'en' && (
+        <p class="rate-note fx-2" id="rate-note" data-text={dict.servicesPage.rateNote}>{dict.servicesPage.rateNote}</p>
+      )}
     </div>
   </section>
 
   <Calculator locale={locale} />
 
-  <Contact
-    locale={locale}
-    title={dict.servicesPage.contactTitle}
-    text={dict.servicesPage.contactText}
-    source="src-services"
-  />
-  <Footer locale={locale} />
+  <Footer locale={locale} flush />
 </Base>

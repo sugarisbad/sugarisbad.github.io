@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:ital,wght@0,400;0,500;0,600;0,700&amp;family=Manrope:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark light;--bg:#0b0b0d;--panel:rgba(17,17,20,.72);--line:rgba(216,201,163,.14);--line2:rgba(216,201,163,.34);--text:#f2ede1;--muted:#8a8578;--accent:#d8c9a3;--accent-dim:rgba(216,201,163,.08);--ok:#7fd4a8;--btn-bg:#d8c9a3;--btn-fg:#0b0b0d;--ease:cubic-bezier(.2,.7,.2,1)}
+@media (prefers-color-scheme: light){:root{--bg:#f5f2ea;--panel:rgba(251,249,244,.78);--line:rgba(110,102,80,.18);--line2:rgba(110,102,80,.4);--text:#17150f;--muted:#6e6650;--accent:#9b8a5c;--accent-dim:rgba(155,138,92,.08);--ok:#2c9e68;--btn-bg:#17150f;--btn-fg:#f5f2ea}}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Manrope',system-ui,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+@keyframes lineflow{from{stroke-dashoffset:800}to{stroke-dashoffset:0}}
+@keyframes fadeup{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@media (max-width:920px){[data-rhide]{display:none!important}[data-rg]{grid-template-columns:1fr!important}[data-rg2]{grid-template-columns:1fr 1fr!important}nav{gap:14px!important}h1{font-size:2.4rem!important}}
+::selection{background:var(--accent);color:var(--bg)}
+</style>
+</helmet>
+<div style="position:fixed;inset:0;z-index:0;pointer-events:none">
+  <svg viewBox="0 0 1440 900" style="position:absolute;inset:0;width:100%;height:100%" preserveAspectRatio="xMidYMid slice">
+    <path d="M -60 620 C 330 570 560 680 930 600 S 1400 500 1560 550" fill="none" stroke="var(--accent)" stroke-width="1" opacity=".26" stroke-dasharray="800" style="animation:lineflow 12s linear infinite"></path>
+    <path d="M -60 200 C 360 240 640 150 980 210 S 1420 290 1560 250" fill="none" stroke="var(--muted)" stroke-width="1" opacity=".12" stroke-dasharray="800" style="animation:lineflow 20s linear infinite"></path>
+  </svg>
+  <div style="position:absolute;inset:0;background-image:linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:140px 100%;opacity:.5"></div>
+</div>
+
+<div style="position:relative;z-index:1">
+<header style="position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);background:var(--panel);border-bottom:1px solid var(--line)">
+  <div style="max-width:1240px;margin:0 auto;padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:72px">
+    <a href="Home%20EN.dc.html" style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.02rem;letter-spacing:.14em">OPSMITH</a>
+    <nav style="display:flex;gap:38px;align-items:center">
+      <a data-rhide="" href="Cases%20EN.dc.html" style="color:var(--text);font-size:.9rem;font-weight:600;letter-spacing:.02em;border-bottom:1px solid var(--accent);padding-bottom:2px">Case studies</a>
+      <a data-rhide="" href="Services%20EN.dc.html" style="color:var(--muted);font-size:.9rem;font-weight:500" style-hover="color:var(--text)">Services &amp; pricing</a>
+      <a data-rhide="" href="Work%20EN.dc.html" style="color:var(--muted);font-size:.9rem;font-weight:500" style-hover="color:var(--text)">Process</a>
+      <div style="display:flex;gap:2px;border:1px solid var(--line2);padding:3px;font-family:'JetBrains Mono',monospace">
+        <a href="Cases%20RU.dc.html" style="padding:3px 10px;font-size:.78rem;font-weight:700;color:var(--muted)" style-hover="color:var(--text)">RU</a>
+        <a href="Cases%20EN.dc.html" style="padding:3px 10px;font-size:.78rem;font-weight:700;background:var(--accent);color:var(--bg)">EN</a>
+      </div>
+      <a href="Home%20EN.dc.html#contact" style="border:1px solid var(--line2);padding:10px 24px;color:var(--text);font-weight:600;font-size:.9rem;letter-spacing:.04em;transition:.2s" style-hover="background:var(--accent);color:var(--bg);border-color:var(--accent)">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<section style="padding:110px 0 70px">
+  <div style="max-width:1240px;margin:0 auto;padding:0 32px">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:.76rem;letter-spacing:.32em;color:var(--accent);margin-bottom:28px;animation:fadeup .7s var(--ease) both">CASE STUDIES</div>
+    <h1 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(2.6rem,5vw,4.4rem);font-weight:500;letter-spacing:-.03em;line-height:1.04;margin:0 0 24px;max-width:860px;animation:fadeup .85s var(--ease) .08s both">Systems that run <em style="font-style:italic;color:var(--accent)">without us</em>.</h1>
+    <p style="color:var(--muted);font-size:1.12rem;max-width:600px;margin:0;animation:fadeup .85s var(--ease) .16s both">Not demos or pet projects — real platforms in production. What it was, what we built, what it delivered.</p>
+  </div>
+</section>
+
+<section style="padding:0 0 110px">
+  <div style="max-width:1240px;margin:0 auto;padding:0 32px;display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line)">
+    <sc-for list="{{ cases }}" as="c" hint-placeholder-count="3">
+      <div data-rg="" style="background:var(--bg);display:grid;grid-template-columns:1.35fr 1fr;transition:background .3s" style-hover="background:var(--accent-dim)">
+        <div style="padding:52px 56px">
+          <div style="display:flex;align-items:baseline;gap:18px;margin-bottom:22px">
+            <span style="font-family:'JetBrains Mono',monospace;color:var(--muted);font-size:.78rem">{{ c.num }}</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.14em;color:var(--accent);border:1px solid var(--line2);padding:4px 12px">{{ c.badge }}</span>
+          </div>
+          <h2 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(1.5rem,2.4vw,2rem);font-weight:500;letter-spacing:-.02em;line-height:1.12;margin:0 0 18px">{{ c.title }}</h2>
+          <p style="color:var(--muted);font-size:.98rem;margin:0 0 12px"><b style="color:var(--text);font-weight:600">Problem. </b>{{ c.problem }}</p>
+          <p style="color:var(--muted);font-size:.98rem;margin:0 0 24px"><b style="color:var(--text);font-weight:600">Solution. </b>{{ c.solution }}</p>
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            <sc-for list="{{ c.stack }}" as="t" hint-placeholder-count="5">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);border:1px solid var(--line);padding:4px 10px">{{ t }}</span>
+            </sc-for>
+          </div>
+        </div>
+        <div style="border-left:1px solid var(--line);padding:52px 56px;display:flex;flex-direction:column;justify-content:center;gap:30px">
+          <sc-for list="{{ c.metrics }}" as="m" hint-placeholder-count="3">
+            <div>
+              <b style="display:block;font-family:'Space Grotesk',sans-serif;font-size:clamp(1.7rem,2.6vw,2.3rem);font-weight:500;letter-spacing:-.02em;line-height:1;color:var(--accent)">{{ m.value }}</b>
+              <span style="color:var(--muted);font-size:.88rem;display:block;margin-top:7px">{{ m.label }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<section style="border-top:1px solid var(--line);padding:100px 0 40px">
+  <div style="max-width:1240px;margin:0 auto;padding:0 32px">
+    <h2 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:500;letter-spacing:-.03em;line-height:1.05;max-width:760px;margin:0 0 20px">Need this kind of <em style="font-style:italic;color:var(--accent)">reliability</em>?</h2>
+    <p style="color:var(--muted);max-width:520px;margin:0 0 40px;font-size:1.08rem">Tell us what hurts in your infrastructure — we'll propose a solution and estimate within a day.</p>
+    <div style="display:flex;gap:14px;flex-wrap:wrap">
+      <a href="https://t.me/sugarisbad_bot?start=src-cases-en" style="padding:16px 38px;font-weight:600;font-size:.95rem;background:var(--btn-bg);color:var(--btn-fg);letter-spacing:.04em" style-hover="opacity:.88">Discuss a project</a>
+      <a href="https://calendly.com/opsmith/30min" style="padding:16px 38px;font-weight:600;font-size:.95rem;color:var(--text);border:1px solid var(--line2);letter-spacing:.04em" style-hover="border-color:var(--accent);color:var(--accent)">Book a call</a>
+      <a href="Services%20EN.dc.html" style="padding:16px 38px;font-weight:600;font-size:.95rem;color:var(--text);border:1px solid var(--line2);letter-spacing:.04em" style-hover="border-color:var(--accent);color:var(--accent)">Services &amp; pricing →</a>
+    </div>
+  </div>
+</section>
+
+<footer style="border-top:1px solid var(--line);padding:44px 0;margin-top:60px;color:var(--muted)">
+  <div style="max-width:1240px;margin:0 auto;padding:0 32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:18px">
+    <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:.14em;color:var(--text);font-size:.95rem">OPSMITH</span>
+    <div style="display:flex;gap:26px;font-size:.9rem"><a href="mailto:contact@opsmith.ru" style-hover="color:var(--accent)">contact@opsmith.ru</a></div>
+    <span style="font-size:.84rem;font-family:'JetBrains Mono',monospace">devops · automation · self-hosted ai</span>
+  </div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 1440}}">
+class Component extends DCLogic {
+  renderVals() {
+    const cases = [
+      { num: 'case_01', badge: 'GPU · PLATFORM', title: 'GPU rental marketplace', problem: 'The client needed a platform that connects third-party GPU machines, hands them to customers for workloads, and takes over all accounting and billing.', solution: 'A system of 10 services: node registration, job orchestration, usage metering, automatic billing and a control panel. All containerized, with monitoring and self-recovery.', stack: ['Docker', 'docker-compose', 'Python', 'FastAPI', 'PostgreSQL', 'Grafana', 'nginx'], metrics: [ { value: '10', label: 'services acting as one' }, { value: '24/7', label: 'monitoring of nodes and jobs' }, { value: 'auto', label: 'billing and GPU-hour metering' } ] },
+      { num: 'case_02', badge: 'SELF-HEALING', title: 'A website that repairs itself', problem: 'A stretch goal: the site had to survive complete loss of its server with zero human involvement.', solution: 'Monitoring detects the outage → a script rents a new VPS → cloud-init provisions the stack → a neural network fills the site with content → traffic switches over. The whole cycle takes about a minute.', stack: ['Bash', 'cloud-init', 'Ollama', 'nginx', 'Python', 'systemd'], metrics: [ { value: '~1 min', label: 'from outage to a new server' }, { value: '0', label: 'manual steps during failure' }, { value: 'AI', label: 'content generated on the fly' } ] },
+      { num: 'case_03', badge: 'MONITORING', title: 'Round-the-clock hardware watch', problem: 'Dozens of physical devices across locations — issues had to surface before customers noticed.', solution: 'A single health-check system with metrics and logs, Telegram alerts with severity levels. The on-call sees the problem in chat and reacts by runbook — often before any complaint.', stack: ['VictoriaMetrics', 'Grafana', 'Telegram Bot', 'Python', 'systemd'], metrics: [ { value: '24/7', label: 'continuous device monitoring' }, { value: 'dozens', label: 'of devices under watch' }, { value: 'first', label: 'we learn of failures before clients' } ] },
+    ];
+    return { cases };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,71 +1,76 @@
 ---
+// Кейсы: hero + 3 кейса-строки «таблицей» (метрики справа) + CTA.
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
-import Contact from '../components/Contact.astro';
 import Footer from '../components/Footer.astro';
-import { t, type Locale } from '../i18n';
+import { contacts } from '../data/site';
+import { t, localeUrl, type Locale } from '../i18n';
 
 interface Props {
-  locale: Locale;
+  locale?: Locale;
 }
-const { locale } = Astro.props;
+const { locale = 'ru' } = Astro.props;
 const dict = t(locale);
+const base = import.meta.env.BASE_URL;
+const p = (s: string) => localeUrl(locale, s, base);
+
+// Метка источника для бота: src-cases / src-cases-en
+const botLink = `${contacts.botUrl}?start=src-cases${locale === 'en' ? '-en' : ''}`;
 ---
 
-<Base title={dict.casesPage.title} description={dict.casesPage.desc} locale={locale} path="cases/">
-  <Header locale={locale} path="cases/" />
+<Base title={dict.casesPage.title} description={dict.casesPage.desc} locale={locale} path="cases/" bg="page">
+  <Header locale={locale} path="cases/" active="cases" cta="contact" />
 
-  <!-- HERO -->
-  <section class="hero hero-compact">
+  <section class="hero-page">
     <div class="wrap">
-      <span class="eyebrow">{dict.casesPage.eyebrow}</span>
-      <h1>{dict.casesPage.h1}</h1>
-      <p class="sub">{dict.casesPage.sub}</p>
+      <span class="kicker fx">{dict.casesPage.kicker}</span>
+      <h1 class="h1 fx-1" set:html={dict.casesPage.h1} />
+      <p class="lead fx-2">{dict.casesPage.sub}</p>
     </div>
   </section>
 
-  <!-- CASES -->
-  <section class="section-tight">
+  <section class="cases-wrap">
     <div class="wrap">
-      <div class="cases-grid reveal">
-        {dict.cases.map((c) => (
-          <article class="card case-card">
-            <div class="gborder-fx"></div>
-            <div class="case-card-top">
-              <div class="ico">{c.icon}</div>
-              <div class="case-stat"><b class="grad-text">{c.stat.value}</b><span>{c.stat.label}</span></div>
+      <div class="case-list">
+        {dict.casesPage.items.map((c) => (
+          <article class="case">
+            <div class="case-main">
+              <div class="case-top">
+                <span class="case-num">{c.num}</span>
+                <span class="badge">{c.badge}</span>
+              </div>
+              <h2>{c.title}</h2>
+              <p><b>{dict.casesPage.problemLabel} </b>{c.problem}</p>
+              <p><b>{dict.casesPage.solutionLabel} </b>{c.solution}</p>
+              <div class="tags">
+                {c.stack.map((tag) => <span class="tag">{tag}</span>)}
+              </div>
             </div>
-            <h3>{c.title}</h3>
-            <p>{c.text}</p>
-            <ul class="tags">{c.tags.map((tag) => <li>{tag}</li>)}</ul>
+            <div class="case-side">
+              {c.metrics.map((m) => (
+                <div class="case-metric">
+                  <b>{m.value}</b>
+                  <span>{m.label}</span>
+                </div>
+              ))}
+            </div>
           </article>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- STACK (marquee) -->
-  <section class="stack-section">
+  <section class="cta-sec">
     <div class="wrap">
-      <div class="section-head reveal">
-        <span class="eyebrow">{dict.casesPage.stackEyebrow}</span>
-        <h2>{dict.casesPage.stackH2}</h2>
-        <p class="lead">{dict.casesPage.stackLead}</p>
-      </div>
-    </div>
-    <div class="marquee reveal" aria-label={dict.casesPage.marqueeAria}>
-      <div class="marquee-track">
-        {dict.stack.map((tech) => <span class="chip"><i></i>{tech}</span>)}
-        {dict.stack.map((tech) => <span class="chip" aria-hidden="true"><i></i>{tech}</span>)}
+      <h2 set:html={dict.casesPage.ctaH2} />
+      <p class="lead">{dict.casesPage.ctaText}</p>
+      <div class="cta-row">
+        <a href={botLink} class="btn btn-primary">{dict.casesPage.ctaBot}</a>
+        <a href={contacts.calendlyUrl} class="btn btn-ghost">{dict.casesPage.ctaCall}</a>
+        <a href={p('services/')} class="btn btn-ghost">{dict.casesPage.ctaServices}</a>
       </div>
     </div>
   </section>
 
-  <Contact
-    locale={locale}
-    title={dict.casesPage.contactTitle}
-    text={dict.casesPage.contactText}
-    source="src-cases"
-  />
   <Footer locale={locale} />
 </Base>
