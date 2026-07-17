@@ -168,6 +168,13 @@ CALC_BUNDLES: list[tuple[str, int, str]] = [
     ("hij", 6000, "Деплой без рук"),
     ("BC", 7200, "ИИ в контуре"),
     ("mo", 9000, "Kubernetes + GitOps"),
+    ("adcf", 4500, "Старт: сервер под ключ"),
+    ("ef", 2400, "Переезд без потерь"),
+    ("yz", 3000, "База под защитой"),
+    ("tu", 3500, "Полная наблюдаемость"),
+    ("vw", 5000, "Высокая доступность"),
+    ("tw", 4000, "Отказоустойчивость 24/7"),
+    ("jk", 2500, "Конвейер поставки"),
 ]
 
 
@@ -202,6 +209,7 @@ def parse_calc(slug: str) -> tuple[str, str]:
         if all(c in codes for c in combo_codes):
             total -= discount
             lines.append(f"🎁 Комбо «{name}» — скидка {fmt_rub(discount)} ₽")
+    total = max(total, 0)
     summary = f"Итого: от {fmt_rub(total)} ₽"
     if monthly:
         summary += f" + от {fmt_rub(monthly)} ₽/мес"

@@ -80,10 +80,57 @@ export const PRICING: PriceGroup[] = [
 ];
 
 // Комбо-скидки (в рублях): применяются автоматически, когда все позиции
-// связки отмечены. Бот считает так же по составу кодов.
+// связки отмечены; несколько связок в одном заказе суммируются.
+// Составы и суммы должны совпадать с CALC_BUNDLES в bot/bot.py.
 export const BUNDLES: { req: string[]; save: number }[] = [
   { req: ['vps-setup', 'monitoring'], save: 2500 },
   { req: ['dockerize', 'compose', 'cicd'], save: 6000 },
   { req: ['ollama', 'ai-bot'], save: 7200 },
   { req: ['k8s-cluster', 'gitops'], save: 9000 },
+  { req: ['vps-setup', 'nginx-ssl', 'hardening', 'backup'], save: 4500 },
+  { req: ['migration', 'backup'], save: 2400 },
+  { req: ['db-setup', 'db-replica'], save: 3000 },
+  { req: ['monitoring', 'logging'], save: 3500 },
+  { req: ['balancer', 'failover'], save: 5000 },
+  { req: ['monitoring', 'failover'], save: 4000 },
+  { req: ['cicd', 'registry'], save: 2500 },
+];
+
+// Готовые пакеты: одним кликом отмечают набор позиций в калькуляторе.
+// Цена пакета = сумма позиций минус комбо-скидки, которые собираются внутри
+// набора, — считается на месте из PRICING и BUNDLES (отдельных цен нет).
+export type Package = {
+  slug: string;
+  name_ru: string;
+  name_en: string;
+  desc_ru: string;
+  desc_en: string;
+  items: string[];
+};
+
+export const PACKAGES: Package[] = [
+  {
+    slug: 'start',
+    name_ru: 'Старт',
+    name_en: 'Start',
+    desc_ru: 'Сервер под ключ: настройка, домены и SSL, защита, бэкапы.',
+    desc_en: 'Turnkey server: setup, domains & SSL, hardening, backups.',
+    items: ['vps-setup', 'nginx-ssl', 'hardening', 'backup'],
+  },
+  {
+    slug: 'production',
+    name_ru: 'Продакшен',
+    name_en: 'Production',
+    desc_ru: 'Приложение в проде: сервер, контейнеры, автодеплой и мониторинг.',
+    desc_en: 'App in production: server, containers, auto-deploy and monitoring.',
+    items: ['vps-setup', 'dockerize', 'compose', 'cicd', 'monitoring'],
+  },
+  {
+    slug: 'scale',
+    name_ru: 'Масштаб',
+    name_en: 'Scale',
+    desc_ru: 'Кластер Kubernetes с GitOps, мониторингом и автоматическим failover.',
+    desc_en: 'Kubernetes cluster with GitOps, monitoring and automatic failover.',
+    items: ['k8s-cluster', 'gitops', 'monitoring', 'failover'],
+  },
 ];
