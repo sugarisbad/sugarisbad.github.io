@@ -53,6 +53,8 @@ BOT_TOKEN = os.environ["BOT_TOKEN"]
 ADMIN_CHAT_ID = int(os.environ["ADMIN_CHAT_ID"])
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "")  # напр. http://127.0.0.1:11434
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "gemma2")
+# на CPU генерация медленная — таймаут с запасом; заявки от LLM не зависят
+OLLAMA_TIMEOUT = int(os.environ.get("OLLAMA_TIMEOUT", "180"))
 ESPOCRM_URL = os.environ.get("ESPOCRM_URL", "")  # напр. https://qopq.online:8443
 ESPOCRM_API_KEY = os.environ.get("ESPOCRM_API_KEY", "")
 LEADS_DB = os.environ.get("LEADS_DB", "leads.db")
@@ -396,7 +398,7 @@ async def show_menu(message: Message) -> None:
 
 # ── LLM (опционально, через локальную Ollama) ────────────────────────────────
 
-async def ollama_generate(prompt: str) -> str:
+async def ollama_generate(prompt: str, max_tokens: int = 300) -> str:
     if not OLLAMA_URL:
         return ""
     try:
@@ -405,26 +407,38 @@ async def ollama_generate(prompt: str) -> str:
         async with aiohttp.ClientSession() as s:
             async with s.post(
                 f"{OLLAMA_URL.rstrip('/')}/api/generate",
-                json={"model": OLLAMA_MODEL, "prompt": prompt, "stream": False},
-                timeout=aiohttp.ClientTimeout(total=60),
+                json={
+                    "model": OLLAMA_MODEL,
+                    "prompt": prompt,
+                    "stream": False,
+                    # без «размышлений»: на CPU они съедают весь лимит токенов
+                    "think": False,
+                    "options": {"num_predict": max_tokens},
+                },
+                timeout=aiohttp.ClientTimeout(total=OLLAMA_TIMEOUT),
             ) as r:
+                if r.status != 200:
+                    log.warning("Ollama ответила %s: %s", r.status, (await r.text())[:200])
+                    return ""
                 data = await r.json()
                 return (data.get("response") or "").strip()
     except Exception as e:  # LLM — приятный бонус, основной сценарий важнее
-        log.warning("Ollama недоступна: %s", e)
+        log.warning("Ollama недоступна: %r", e)
         return ""
 
 
 async def analyze_task(text: str) -> str:
     return await ollama_generate(
-        "Ты — ассистент DevOps-инженера. Клиент оставил заявку. Составь короткий "
-        "разбор по-русски, строго в формате:\n"
+        "Ты — ассистент DevOps-инженера. Клиент оставил заявку. Сразу выдай ответ "
+        "по формату ниже — без вступлений, плана и рассуждений.\n"
+        "Короткий разбор по-русски, строго в формате:\n"
         "Суть: <одно предложение — что нужно клиенту>\n"
         "Услуга: <какая услуга подходит: настройка VPS / Docker и CI/CD / мониторинг / "
         "Telegram-бот / self-hosted ИИ / система под ключ / консультация>\n"
         "Срочность: <низкая / средняя / высокая — по тексту заявки>\n"
         "Вопросы: <1-2 уточняющих вопроса клиенту>\n"
-        f"\nТекст заявки:\n{text}"
+        f"\nТекст заявки:\n{text}",
+        max_tokens=350,
     )
 
 
@@ -432,11 +446,13 @@ async def draft_answer(question: str) -> str:
     return await ollama_generate(
         "Ты — ассистент DevOps-студии opsmith (настройка VPS, Docker и CI/CD, "
         "Kubernetes, мониторинг, базы данных, self-hosted ИИ, Telegram-боты). "
-        "Клиент задал вопрос в Telegram-боте. Ответь по-русски, дружелюбно и "
-        "коротко (до 100 слов). Не выдумывай цены и сроки — если спрашивают "
-        "точную стоимость, скажи, что смету зафиксирует инженер после короткого "
-        "разговора, и предложи оставить заявку.\n\n"
-        f"Вопрос клиента:\n{question}"
+        "Клиент задал вопрос в Telegram-боте. Сразу напиши ответ — без плана "
+        "и рассуждений. По-русски, дружелюбно и коротко (до 80 слов). "
+        "Не выдумывай цены и сроки — если спрашивают точную стоимость, скажи, "
+        "что смету зафиксирует инженер после короткого разговора, и предложи "
+        "оставить заявку.\n\n"
+        f"Вопрос клиента:\n{question}",
+        max_tokens=220,
     )
 
 
@@ -972,7 +988,6 @@ async def send_lead(bot: Bot, user, lead_id: int, data: dict) -> None:
         if user.username
         else f'<a href="tg://user?id={user.id}">профиль без юзернейма</a>'
     )
-    analysis = await analyze_task(task) if task else ""
 
     parts = [
         f"🆕 <b>Заявка #{lead_id}</b>",
@@ -985,8 +1000,6 @@ async def send_lead(bot: Bot, user, lead_id: int, data: dict) -> None:
         parts.append(f"🧮 <b>Заказ из калькулятора:</b>\n{html.escape(order)}")
     if task:
         parts.append(f"📝 <b>Задача:</b>\n{html.escape(task)}")
-    if analysis:
-        parts += ["", f"🤖 <b>Разбор (локальная LLM):</b>\n{html.escape(analysis)}"]
     parts += [
         "",
         "📇 <b>Контакты:</b>",
@@ -1005,9 +1018,26 @@ async def send_lead(bot: Bot, user, lead_id: int, data: dict) -> None:
         log.info("Заявка #%s от %s (id %s) доставлена", lead_id, name, user.id)
     except Exception:
         log.exception("Не удалось доставить заявку админу")
+    # LLM-разбор — фоном: заявка не ждёт медленную генерацию
+    if task:
+        asyncio.create_task(send_analysis(bot, lead_id, task))
     await create_crm_lead(
         name, task, phone, email, source, order, user.username or "", user.id
     )
+
+
+async def send_analysis(bot: Bot, lead_id: int, task: str) -> None:
+    analysis = await analyze_task(task)
+    if not analysis:
+        return
+    try:
+        await bot.send_message(
+            ADMIN_CHAT_ID,
+            f"🤖 <b>Разбор заявки #{lead_id} (локальная LLM):</b>\n{html.escape(analysis)}",
+            parse_mode="HTML",
+        )
+    except Exception:
+        log.exception("Не удалось доставить разбор заявки #%s", lead_id)
 
 
 # ── кнопки владельца под заявкой ─────────────────────────────────────────────
