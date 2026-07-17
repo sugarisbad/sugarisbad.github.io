@@ -18,7 +18,7 @@ const p = (s: string) => localeUrl(locale, s, base);
 const botLink = `${contacts.botUrl}?start=src-cases${locale === 'en' ? '-en' : ''}`;
 ---
 
-<Base title={dict.casesPage.title} description={dict.casesPage.desc} locale={locale} path="cases/" bg="page">
+<Base title={dict.casesPage.title} description={dict.casesPage.desc} locale={locale} path="cases/" bg="page" ogImage={`/og/cases${locale === 'en' ? '-en' : ''}.jpg`}>
   <Header locale={locale} path="cases/" active="cases" cta="contact" />
 
   <section class="hero-page">

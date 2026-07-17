@@ -21,6 +21,9 @@ export default defineConfig({
   // (GitHub Pages отдаёт статику с кэшем всего 10 минут, так что отдельный
   // CSS-файл всё равно не кэшировался бы надолго).
   build: { inlineStylesheets: 'always' },
+  // Подсветка кода в статьях блога: тема css-variables — цвета токенов задаются
+  // в global.css через --astro-code-*, т.е. палитрой Monolith в обеих темах.
+  markdown: { shikiConfig: { theme: 'css-variables' } },
   i18n: {
     defaultLocale: 'ru',
     locales: ['ru', 'en'],

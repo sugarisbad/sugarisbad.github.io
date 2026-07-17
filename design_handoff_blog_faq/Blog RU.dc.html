@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:ital,wght@0,400;0,500;0,600;0,700&amp;family=Manrope:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark light;--bg:#0b0b0d;--panel:rgba(17,17,20,.72);--line:rgba(216,201,163,.14);--line2:rgba(216,201,163,.34);--text:#f2ede1;--muted:#8a8578;--accent:#d8c9a3;--accent-dim:rgba(216,201,163,.08);--ok:#7fd4a8;--btn-bg:#d8c9a3;--btn-fg:#0b0b0d;--ease:cubic-bezier(.2,.7,.2,1)}
+@media (prefers-color-scheme: light){:root{--bg:#f5f2ea;--panel:rgba(251,249,244,.78);--line:rgba(110,102,80,.18);--line2:rgba(110,102,80,.4);--text:#17150f;--muted:#6e6650;--accent:#9b8a5c;--accent-dim:rgba(155,138,92,.08);--ok:#2c9e68;--btn-bg:#17150f;--btn-fg:#f5f2ea}}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Manrope',system-ui,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+@keyframes lineflow{from{stroke-dashoffset:800}to{stroke-dashoffset:0}}
+@keyframes fadeup{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes blink{50%{opacity:.25}}
+@media (max-width:920px){[data-rhide]{display:none!important}[data-rg]{grid-template-columns:1fr!important}nav{gap:14px!important}h1{font-size:2.4rem!important}}
+::selection{background:var(--accent);color:var(--bg)}
+</style>
+</helmet>
+<div style="position:fixed;inset:0;z-index:0;pointer-events:none">
+  <svg viewBox="0 0 1440 900" style="position:absolute;inset:0;width:100%;height:100%" preserveAspectRatio="xMidYMid slice">
+    <path d="M -60 620 C 330 570 560 680 930 600 S 1400 500 1560 550" fill="none" stroke="var(--accent)" stroke-width="1" opacity=".26" stroke-dasharray="800" style="animation:lineflow 12s linear infinite"></path>
+    <path d="M -60 200 C 360 240 640 150 980 210 S 1420 290 1560 250" fill="none" stroke="var(--muted)" stroke-width="1" opacity=".12" stroke-dasharray="800" style="animation:lineflow 20s linear infinite"></path>
+  </svg>
+  <div style="position:absolute;inset:0;background-image:linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:140px 100%;opacity:.5"></div>
+</div>
+
+<div style="position:relative;z-index:1">
+<header style="position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);background:var(--panel);border-bottom:1px solid var(--line)">
+  <div style="max-width:1240px;margin:0 auto;padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:72px">
+    <a href="Home%20RU.dc.html" style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.02rem;letter-spacing:.14em">OPSMITH</a>
+    <nav style="display:flex;gap:38px;align-items:center">
+      <a data-rhide="" href="Cases%20RU.dc.html" style="color:var(--muted);font-size:.9rem;font-weight:500" style-hover="color:var(--text)">Кейсы</a>
+      <a data-rhide="" href="Services%20RU.dc.html" style="color:var(--muted);font-size:.9rem;font-weight:500" style-hover="color:var(--text)">Услуги и цены</a>
+      <a data-rhide="" href="Work%20RU.dc.html" style="color:var(--muted);font-size:.9rem;font-weight:500" style-hover="color:var(--text)">Процесс</a>
+      <a data-rhide="" href="Blog%20RU.dc.html" style="color:var(--text);font-size:.9rem;font-weight:600;border-bottom:1px solid var(--accent);padding-bottom:2px">Блог</a>
+      <div style="display:flex;gap:2px;border:1px solid var(--line2);padding:3px;font-family:'JetBrains Mono',monospace">
+        <a href="Blog%20RU.dc.html" style="padding:3px 10px;font-size:.78rem;font-weight:700;background:var(--accent);color:var(--bg)">RU</a>
+        <a href="Blog%20EN.dc.html" style="padding:3px 10px;font-size:.78rem;font-weight:700;color:var(--muted)" style-hover="color:var(--text)">EN</a>
+      </div>
+      <a href="Home%20RU.dc.html#contact" style="border:1px solid var(--line2);padding:10px 24px;color:var(--text);font-weight:600;font-size:.9rem;letter-spacing:.04em;transition:.2s" style-hover="background:var(--accent);color:var(--bg);border-color:var(--accent)">Связаться</a>
+    </nav>
+  </div>
+</header>
+
+<section style="padding:110px 0 60px">
+  <div style="max-width:1240px;margin:0 auto;padding:0 32px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:24px">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.76rem;letter-spacing:.32em;color:var(--accent);margin-bottom:28px;animation:fadeup .7s var(--ease) both">БЛОГ</div>
+        <h1 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(2.6rem,5vw,4.4rem);font-weight:500;letter-spacing:-.03em;line-height:1.04;margin:0 0 24px;max-width:860px;animation:fadeup .85s var(--ease) .08s both">Инженерные заметки, <em style="font-style:italic;color:var(--accent)">без воды</em>.</h1>
+        <p style="color:var(--muted);font-size:1.12rem;max-width:620px;margin:0;animation:fadeup .85s var(--ease) .16s both">Практика по VPS, Docker, мониторингу и self-hosted ИИ. Всё проверено на продакшене клиентов — копируйте команды смело.</p>
+      </div>
+      <a href="rss.xml" style="font-family:'JetBrains Mono',monospace;font-size:.78rem;letter-spacing:.12em;color:var(--accent);border:1px solid var(--line2);padding:10px 20px;white-space:nowrap;animation:fadeup .85s var(--ease) .24s both" style-hover="background:var(--accent-dim);border-color:var(--accent)">RSS →</a>
+    </div>
+  </div>
+</section>
+
+<section style="padding:0 0 60px">
+  <div style="max-width:1240px;margin:0 auto;padding:0 32px">
+    <sc-if value="{{ showFeatured }}" hint-placeholder-val="{{ true }}">
+    <a href="Article%20RU.dc.html" data-rg="" style="display:grid;grid-template-columns:1.2fr .8fr;gap:0;border:1px solid var(--line);background:var(--panel);backdrop-filter:blur(12px);transition:background .3s;animation:fadeup .85s var(--ease) .3s both" style-hover="background:var(--accent-dim)">
+      <div style="padding:48px 44px">
+        <div style="display:flex;gap:16px;align-items:center;font-family:'JetBrains Mono',monospace;font-size:.74rem;letter-spacing:.14em;color:var(--accent);margin-bottom:22px"><span style="border:1px solid var(--line2);padding:4px 12px">СВЕЖЕЕ</span><span style="color:var(--muted)">12 июля 2026 · 9 мин</span></div>
+        <h2 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,2.6vw,2.3rem);font-weight:500;letter-spacing:-.02em;line-height:1.12;margin:0 0 16px">Настройка VPS под Docker: от cloud-init до продакшена</h2>
+        <p style="color:var(--muted);font-size:1rem;margin:0 0 26px;max-width:520px">Пошагово поднимаем сервер, который не стыдно показать: пользователи и SSH-ключи через cloud-init, Docker с логированием, firewall и автообновления.</p>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:.78rem;letter-spacing:.1em;color:var(--accent)">Читать статью →</span>
+      </div>
+      <div data-rhide="" style="border-left:1px solid var(--line);padding:48px 44px;font-family:'JetBrains Mono',monospace;font-size:.82rem;line-height:2.15;color:var(--muted)">
+        <div style="color:var(--text);margin-bottom:8px;display:flex;align-items:center;gap:10px"><span style="width:8px;height:8px;border-radius:50%;background:var(--ok);animation:blink 1.6s infinite"></span>vps-01 · provisioning</div>
+        <div>$ ssh deploy@vps-01</div>
+        <div><span style="color:var(--ok)">✓</span> cloud-init &nbsp;·· done</div>
+        <div><span style="color:var(--ok)">✓</span> docker 27.1 ·· active</div>
+        <div><span style="color:var(--ok)">✓</span> ufw &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ·· 22/80/443</div>
+        <div><span style="color:var(--accent)">●</span> node-exporter · listening</div>
+      </div>
+    </a>
+    </sc-if>
+  </div>
+</section>
+
+<section style="padding:0 0 100px">
+  <div style="max-width:1240px;margin:0 auto;padding:0 32px">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:36px">
+      <sc-for list="{{ cats }}" as="c" hint-placeholder-count="5">
+        <button onClick="{{ c.pick }}" style="{{ c.style }}" style-hover="border-color:var(--accent);color:var(--accent)">{{ c.label }}</button>
+      </sc-for>
+    </div>
+    <div style="border-top:1px solid var(--line)">
+      <sc-for list="{{ posts }}" as="p" hint-placeholder-count="5">
+        <a href="{{ p.href }}" data-rg="" style="display:grid;grid-template-columns:150px 1fr 320px 60px;gap:36px;align-items:baseline;padding:36px 8px;border-bottom:1px solid var(--line);transition:background .3s" style-hover="background:var(--accent-dim)">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.78rem;letter-spacing:.08em;color:var(--muted)">{{ p.date }}</span>
+          <span>
+            <h3 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(1.2rem,1.9vw,1.5rem);font-weight:500;letter-spacing:-.01em;margin:0 0 8px">{{ p.title }}</h3>
+            <span style="display:flex;gap:8px;flex-wrap:wrap">
+              <sc-for list="{{ p.tags }}" as="t" hint-placeholder-count="2">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.08em;color:var(--accent);border:1px solid var(--line);padding:3px 10px">{{ t }}</span>
+              </sc-for>
+            </span>
+          </span>
+          <p data-rhide="" style="color:var(--muted);font-size:.94rem;margin:0">{{ p.excerpt }}</p>
+          <span style="font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:1rem;justify-self:end">→</span>
+        </a>
+      </sc-for>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;margin-top:36px;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:.78rem;letter-spacing:.1em">
+      <span>{{ countLabel }}</span>
+      <a href="rss.xml" style="color:var(--accent)" style-hover="color:var(--text)">Подписаться через RSS →</a>
+    </div>
+  </div>
+</section>
+
+<section style="border-top:1px solid var(--line);padding:100px 0 40px">
+  <div style="max-width:1240px;margin:0 auto;padding:0 32px">
+    <h2 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:500;letter-spacing:-.03em;line-height:1.05;max-width:760px;margin:0 0 20px">Не хотите разбираться <em style="font-style:italic;color:var(--accent)">сами</em>?</h2>
+    <p style="color:var(--muted);max-width:520px;margin:0 0 40px;font-size:1.08rem">Сделаем то же самое за вас — с гарантией, документацией и передачей доступов.</p>
+    <div style="display:flex;gap:14px;flex-wrap:wrap">
+      <a href="https://t.me/sugarisbad_bot?start=src-blog" style="padding:16px 38px;font-weight:600;font-size:.95rem;background:var(--btn-bg);color:var(--btn-fg);letter-spacing:.04em" style-hover="opacity:.88">Написать в бот</a>
+      <a href="Services%20RU.dc.html" style="padding:16px 38px;font-weight:600;font-size:.95rem;color:var(--text);border:1px solid var(--line2);letter-spacing:.04em" style-hover="border-color:var(--accent);color:var(--accent)">Услуги и цены →</a>
+    </div>
+  </div>
+</section>
+
+<footer style="border-top:1px solid var(--line);padding:44px 0;margin-top:60px;color:var(--muted)">
+  <div style="max-width:1240px;margin:0 auto;padding:0 32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:18px">
+    <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:.14em;color:var(--text);font-size:.95rem">OPSMITH</span>
+    <div style="display:flex;gap:26px;font-size:.9rem"><a href="mailto:contact@opsmith.ru" style-hover="color:var(--accent)">contact@opsmith.ru</a><a href="rss.xml" style-hover="color:var(--accent)">RSS</a></div>
+    <span style="font-size:.84rem;font-family:'JetBrains Mono',monospace">devops · automation · self-hosted ai</span>
+  </div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 1440}, &quot;showFeatured&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state = { cat: 'all' };
+  renderVals() {
+    const all = [
+      { date: '12.07.2026', cat: 'vps', title: 'Настройка VPS под Docker: от cloud-init до продакшена', excerpt: 'Пользователи, SSH-ключи, Docker, firewall и автообновления — воспроизводимо, через код.', tags: ['vps', 'docker'], href: 'Article%20RU.dc.html' },
+      { date: '28.06.2026', cat: 'monitoring', title: 'Мониторинг сервера своими руками: Prometheus + Grafana за вечер', excerpt: 'Метрики, дашборд и алерты в Telegram — без SaaS-подписок и лишних агентов.', tags: ['мониторинг', 'prometheus'], href: '#' },
+      { date: '15.06.2026', cat: 'ai', title: 'Self-hosted LLM в проде: Ollama, квантование и лимиты железа', excerpt: 'Какая модель влезет в ваш сервер, сколько это стоит и когда API всё-таки дешевле.', tags: ['self-hosted ai', 'ollama'], href: '#' },
+      { date: '30.05.2026', cat: 'cicd', title: 'CI/CD для маленькой команды: GitHub Actions без боли', excerpt: 'Деплой по пушу в main, секреты, откаты. Один workflow-файл, который можно скопировать.', tags: ['ci/cd', 'github actions'], href: '#' },
+      { date: '11.05.2026', cat: 'vps', title: 'Бэкапы, которые восстанавливаются: 3-2-1 на практике', excerpt: 'restic + S3-совместимое хранилище, проверка восстановления по cron и алерт, если бэкап молчит.', tags: ['vps', 'бэкапы'], href: '#' },
+      { date: '19.04.2026', cat: 'docker', title: 'Failover без Kubernetes: когда k8s — перебор', excerpt: 'docker compose + healthchecks + запасной сервер: 99.9% доступности без кластера.', tags: ['docker', 'failover'], href: '#' },
+    ];
+    const labels = [['all', 'Все'], ['vps', 'VPS'], ['docker', 'Docker'], ['monitoring', 'Мониторинг'], ['cicd', 'CI/CD'], ['ai', 'Self-hosted ИИ']];
+    const base = "font-family:'JetBrains Mono',monospace;font-size:.74rem;letter-spacing:.1em;padding:8px 18px;background:none;cursor:pointer;transition:.2s;";
+    const cats = labels.map(([id, label]) => ({
+      label, pick: () => this.setState({ cat: id }),
+      style: base + (this.state.cat === id ? 'border:1px solid var(--accent);color:var(--bg);background:var(--accent)' : 'border:1px solid var(--line2);color:var(--muted)'),
+    }));
+    const posts = this.state.cat === 'all' ? all : all.filter(p => p.cat === this.state.cat);
+    return { cats, posts, countLabel: `${posts.length} ${posts.length === 1 ? 'статья' : posts.length < 5 ? 'статьи' : 'статей'}`, showFeatured: (this.props.showFeatured ?? true) && this.state.cat === 'all' };
+  }
+}
+</script>
+</body>
+</html>

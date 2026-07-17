@@ -16,6 +16,17 @@ const p = (s: string) => localeUrl(locale, s, base);
 
 // Метка источника для бота: src-work / src-work-en
 const botLink = `${contacts.botUrl}?start=src-work${locale === 'en' ? '-en' : ''}`;
+
+// FAQPage: те же 6 вопросов, что в видимом аккордеоне (llms.txt обещает FAQ здесь)
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: dict.workPage.faq.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
 // В референсах порядок CTA различается: RU — бот главный, EN — Calendly главный.
 const ctaButtons =
   locale === 'ru'
@@ -31,7 +42,9 @@ const ctaButtons =
       ];
 ---
 
-<Base title={dict.workPage.title} description={dict.workPage.desc} locale={locale} path="work/" bg="page">
+<Base title={dict.workPage.title} description={dict.workPage.desc} locale={locale} path="work/" bg="page" ogImage={`/og/work${locale === 'en' ? '-en' : ''}.jpg`}>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(faqLd)} />
+
   <Header locale={locale} path="work/" active="work" cta={locale === 'ru' ? 'contact' : 'call'} />
 
   <section class="hero-page">
@@ -67,6 +80,30 @@ const ctaButtons =
             <h3>{pr.title}</h3>
             <p>{pr.text}</p>
           </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="faq-sec">
+    <div class="wrap">
+      <div class="faq-head">
+        <div>
+          <span class="kicker">{dict.workPage.faqKicker}</span>
+          <h2 class="h2" set:html={dict.workPage.faqH2} />
+        </div>
+        <span class="faq-hint">{dict.workPage.faqHint} <a href={botLink}>{dict.workPage.faqHintLink}</a></span>
+      </div>
+      <div class="faq-list">
+        {dict.workPage.faq.map((f, i) => (
+          <details class="faq-item" name="faq" open={i === 0}>
+            <summary>
+              <span class="num">/ 0{i + 1}</span>
+              <span class="q">{f.q}</span>
+              <span class="mark" aria-hidden="true"></span>
+            </summary>
+            <div class="a"><p>{f.a}</p></div>
+          </details>
         ))}
       </div>
     </div>

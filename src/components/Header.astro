@@ -7,7 +7,7 @@ interface Props {
   /** Путь текущей страницы без префикса локали — для переключателя языка. */
   path?: string;
   /** Активный раздел (подчёркивается акцентом). Не задан — главная. */
-  active?: 'cases' | 'services' | 'work';
+  active?: 'cases' | 'services' | 'work' | 'blog';
   /** Правая кнопка: contact → #contact (на главной) / главная#contact, call → Calendly. */
   cta?: 'contact' | 'call';
 }
@@ -27,6 +27,7 @@ const ctaLabel = cta === 'call' ? dict.nav.call : dict.nav.contact;
       <a class={`nav-link${active === 'cases' ? ' active' : ''}`} href={p('cases/')}>{dict.nav.cases}</a>
       <a class={`nav-link${active === 'services' ? ' active' : ''}`} href={p('services/')}>{dict.nav.services}</a>
       <a class={`nav-link${active === 'work' ? ' active' : ''}`} href={p('work/')}>{dict.nav.work}</a>
+      <a class={`nav-link${active === 'blog' ? ' active' : ''}`} href={p('blog/')}>{dict.nav.blog}</a>
       <div class="lang-switch" aria-label={dict.nav.langLabel}>
         <a href={localeUrl('ru', path, base)} data-lang="ru" class={locale === 'ru' ? 'active' : ''} aria-current={locale === 'ru' ? 'true' : undefined}>RU</a>
         <a href={localeUrl('en', path, base)} data-lang="en" class={locale === 'en' ? 'active' : ''} aria-current={locale === 'en' ? 'true' : undefined}>EN</a>

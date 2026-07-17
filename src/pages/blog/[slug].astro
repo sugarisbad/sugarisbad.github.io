@@ -1,0 +1,13 @@
+---
+import { getCollection } from 'astro:content';
+import Article from '../../views/Article.astro';
+
+export async function getStaticPaths() {
+  const all = (await getCollection('blog', ({ id }) => id.startsWith('ru/')))
+    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+  return all.map((entry) => ({ params: { slug: entry.id.split('/')[1] }, props: { entry, all } }));
+}
+const { entry, all } = Astro.props;
+---
+
+<Article entry={entry} all={all} locale="ru" />

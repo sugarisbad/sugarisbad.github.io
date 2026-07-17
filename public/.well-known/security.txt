@@ -1,0 +1,5 @@
+Contact: mailto:contact@opsmith.ru
+Contact: https://t.me/sugarisbaddy
+Expires: 2027-07-01T00:00:00.000Z
+Preferred-Languages: ru, en
+Canonical: https://opsmith.ru/.well-known/security.txt

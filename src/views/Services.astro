@@ -29,7 +29,7 @@ const offersLd = {
 };
 ---
 
-<Base title={dict.servicesPage.title} description={dict.servicesPage.desc} locale={locale} path="services/" bg="services">
+<Base title={dict.servicesPage.title} description={dict.servicesPage.desc} locale={locale} path="services/" bg="services" ogImage={`/og/services${locale === 'en' ? '-en' : ''}.jpg`}>
   <script slot="head" type="application/ld+json" set:html={JSON.stringify(offersLd)} />
 
   <Header locale={locale} path="services/" active="services" cta="call" />

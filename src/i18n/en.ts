@@ -1,7 +1,7 @@
 // Английский словарь. Структура — как у ru (тип Dict).
 // Тексты страниц — из дизайн-референсов design_handoff_opsmith (EN-версии).
 
-import type { Dict, Locale, ServiceRow, CasePreview, CaseItem, Step, Principle } from './ru';
+import type { Dict, Locale, ServiceRow, CasePreview, CaseItem, Step, Principle, FaqItem, BlogCat } from './ru';
 
 export const en: Dict = {
   code: 'en' as Locale,
@@ -20,6 +20,7 @@ export const en: Dict = {
     cases: 'Case studies',
     services: 'Services & pricing',
     work: 'Process',
+    blog: 'Blog',
     contact: 'Contact',
     call: 'Book a call',
     langLabel: 'Language',
@@ -196,6 +197,57 @@ export const en: Dict = {
     ctaBot: 'Message the bot',
     ctaCall: 'Book a 30-min call',
     ctaCalc: 'Build an order →',
+    faqKicker: 'FAQ',
+    faqH2: 'Common <em>questions</em>.',
+    faqHint: "can't find yours? →",
+    faqHintLink: 'ask in the bot',
+    // Цены синхронизированы с src/data/pricing.ts (8 400 ₽ → $95, 12 000 ₽/мес → $135/mo).
+    faq: [
+      { q: 'How much does a VPS setup cost?', a: 'From ~$95 for a basic Docker-ready setup: users and SSH keys via cloud-init, firewall, unattended upgrades. The exact quote is fixed in writing after a short call and does not grow mid-project.' },
+      { q: 'Do you work with existing infrastructure?', a: 'Yes. We start with an audit: review what is deployed, find risks and bottlenecks, come back with a plan. Nothing is broken or migrated without sign-off — plan first, changes second.' },
+      { q: 'What if something breaks after handover?', a: 'All work comes with a warranty period: if the problem is in our setup, we fix it for free. After that — optional retainer support from ~$135/mo with monitoring and incident response.' },
+      { q: 'What are typical timelines?', a: 'VPS setup — 1–2 days, monitoring — 2–3 days, self-hosted AI — from a week, turnkey systems — from a month. Timelines are fixed in the quote together with the price.' },
+      { q: 'Do you need root access to our servers?', a: 'During the work — yes, via a separate user under your control. After handover all access stays with you; our accounts are removed or revoked. Everything is reproducible from code in your repository.' },
+      { q: 'How does payment work?', a: 'In stages per the quote: part upfront, part after handover once you verify the result. Retainers are billed monthly. We work under a written contract.' },
+    ] as FaqItem[],
+  },
+
+  blogPage: {
+    title: 'OPSMITH blog: VPS & Docker setup, server monitoring, CI/CD, self-hosted AI — engineering notes',
+    desc: 'Engineering articles from a DevOps studio: VPS setup for Docker, Prometheus + Grafana monitoring, self-hosted LLMs (Ollama), CI/CD with GitHub Actions, backups and failover. All tested in production.',
+    kicker: 'BLOG',
+    h1: 'Engineering notes, <em>no fluff</em>.',
+    sub: 'Hands-on guides on VPS, Docker, monitoring and self-hosted AI. Everything is tested on client production — copy the commands with confidence.',
+    rssBtn: 'RSS →',
+    rssTitle: 'OPSMITH — engineering blog',
+    latestBadge: 'LATEST',
+    readMore: 'Read the article →',
+    cats: [
+      { id: 'all', label: 'All' },
+      { id: 'vps', label: 'VPS' },
+      { id: 'docker', label: 'Docker' },
+      { id: 'monitoring', label: 'Monitoring' },
+      { id: 'cicd', label: 'CI/CD' },
+      { id: 'ai', label: 'Self-hosted AI' },
+    ] as BlogCat[],
+    countForms: ['article', 'articles', 'articles'],
+    rssSubscribe: 'Subscribe via RSS →',
+    ctaH2: "Don't want to do it <em>yourself</em>?",
+    ctaText: "We'll do the same for you — with a guarantee, documentation and full handover of access.",
+    ctaBot: 'Message the bot',
+    ctaServices: 'Services & pricing →',
+    back: '← BLOG',
+    minShort: 'min',
+    minRead: 'min read',
+    tocTitle: 'CONTENTS',
+    authorLabel: 'author',
+    authorName: 'OPSMITH · devops',
+    prevLabel: '← PREVIOUS',
+    nextLabel: 'NEXT →',
+    ctaCardTitle: 'No time to do it <em>yourself</em>?',
+    ctaCardText: "We'll do it turnkey — with documentation and configs that stay with you.",
+    ctaCardBot: 'Message the bot',
+    ctaCardCalc: 'Estimate in the calculator →',
   },
 
   notFound: {

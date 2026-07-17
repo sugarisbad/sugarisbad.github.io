@@ -2,21 +2,23 @@
 
 > opsmith — DevOps-студия: настройка и защита Linux/VPS-серверов, Docker, CI/CD-пайплайны, мониторинг и отказоустойчивость, self-hosted AI (Ollama), Telegram-боты. Работаем удалённо по всему миру, фиксированная письменная смета до старта, 30 дней бесплатной поддержки после сдачи.
 
-Сайт двуязычный: русские страницы в корне, английские — с префиксом `/en/`. Контакт с инженером напрямую, без менеджеров: Telegram @sugarisbaddy, почта dk0x@proton.me, заявка через бота t.me/sugarisbad_bot. Ставка $55/час (4 800 ₽/час), пакеты и прайс — на странице услуг.
+Сайт двуязычный: русские страницы в корне, английские — с префиксом `/en/`. Контакт с инженером напрямую, без менеджеров: Telegram @sugarisbaddy, почта contact@opsmith.ru, заявка через бота t.me/sugarisbad_bot. Часовая ставка от 3 600 ₽ / $40, пакеты и прайс — на странице услуг.
 
 ## Основные страницы
 
 - [Главная](https://opsmith.ru/): что делает студия — серверы, контейнеры, деплой, мониторинг как единая система
 - [Кейсы](https://opsmith.ru/cases/): реальные проекты — платформа аренды GPU, самовосстанавливающийся сайт, мониторинг оборудования 24/7 — и стек технологий
-- [Услуги и цены](https://opsmith.ru/services/): пакеты, полный прайс (настройка VPS от 4 800 ₽ / $95, CI/CD, мониторинг, Ollama от $275), связки со скидкой
-- [Как мы работаем](https://opsmith.ru/work/): процесс, гарантии, сравнение с агентствами и штатным админом, FAQ
+- [Услуги и цены](https://opsmith.ru/services/): пакеты, полный прайс (настройка VPS от 8 400 ₽ / $95, CI/CD, мониторинг, Ollama от 24 000 ₽ / $265), связки со скидкой
+- [Как мы работаем](https://opsmith.ru/work/): процесс, гарантии, FAQ (цены, сроки, доступы, оплата)
+- [Блог](https://opsmith.ru/blog/): инженерные статьи — настройка VPS под Docker, мониторинг Prometheus + Grafana, self-hosted LLM (Ollama), CI/CD на GitHub Actions, бэкапы 3-2-1, failover без Kubernetes; [RSS](https://opsmith.ru/rss.xml)
 
 ## In English
 
 - [Home](https://opsmith.ru/en/): DevOps studio — server setup, Docker, CI/CD, turnkey automation
 - [Case studies](https://opsmith.ru/en/cases/): real infrastructure projects and the technology stack
-- [Services & pricing](https://opsmith.ru/en/services/): packages and full price list, server setup from $95, self-hosted LLM from $275
+- [Services & pricing](https://opsmith.ru/en/services/): packages and full price list, server setup from $95, self-hosted LLM from $265
 - [How we work](https://opsmith.ru/en/work/): process, fixed written quotes, guarantees, FAQ
+- [Blog](https://opsmith.ru/en/blog/): engineering articles on VPS, Docker, monitoring, CI/CD and self-hosted AI; [RSS](https://opsmith.ru/en/rss.xml)
 
 ## Контакты
 
