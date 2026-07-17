@@ -1,0 +1,115 @@
+---
+// Статья блога: шапка с метой, тело + sticky-оглавление, CTA-карточка, prev/next.
+// Референс: design_handoff_blog_faq/Article RU.dc.html
+import { render, type CollectionEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { contacts } from '../data/site';
+import { t, localeUrl, type Locale } from '../i18n';
+
+interface Props {
+  entry: CollectionEntry<'blog'>;
+  /** Все статьи локали, отсортированы по дате (новые сверху) — для prev/next. */
+  all: CollectionEntry<'blog'>[];
+  locale?: Locale;
+}
+const { entry, all, locale = 'ru' } = Astro.props;
+const dict = t(locale);
+const base = import.meta.env.BASE_URL;
+const p = (s: string) => localeUrl(locale, s, base);
+
+const { Content, headings } = await render(entry);
+const toc = headings.filter((h) => h.depth === 2);
+
+const slugOf = (id: string) => id.split('/')[1];
+const slug = slugOf(entry.id);
+const botLink = `${contacts.botUrl}?start=src-blog${locale === 'en' ? '-en' : ''}`;
+const rssHref = locale === 'ru' ? '/rss.xml' : '/en/rss.xml';
+
+const longDate = (d: Date) =>
+  locale === 'ru'
+    ? d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }).replace(' г.', '')
+    : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+// «← предыдущая» — статья старше, «следующая →» — новее; по кругу, чтобы обе были всегда.
+const i = all.findIndex((e) => e.id === entry.id);
+const prev = all[(i + 1) % all.length];
+const next = all[(i - 1 + all.length) % all.length];
+
+// BlogPosting: разметка статьи для поисковиков
+const site = (Astro.site?.href ?? 'https://opsmith.ru/').replace(/\/$/, '');
+const postingLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: entry.data.title,
+  description: entry.data.description,
+  datePublished: entry.data.pubDate.toISOString().slice(0, 10),
+  inLanguage: locale,
+  author: { '@type': 'Organization', name: 'OPSMITH', url: `${site}/` },
+  mainEntityOfPage: `${site}${p(`blog/${slug}/`)}`,
+};
+---
+
+<Base title={`${entry.data.title} — OPSMITH`} description={entry.data.description} locale={locale} path={`blog/${slug}/`} bg="page" ogImage={`/og/blog${locale === 'en' ? '-en' : ''}.jpg`}>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(postingLd)} />
+
+  <Header locale={locale} path={`blog/${slug}/`} active="blog" cta="contact" />
+
+  <section class="article-hero">
+    <div class="wrap">
+      <a class="article-back fx" href={p('blog/')}>{dict.blogPage.back}</a>
+      <div class="article-meta fx">
+        {entry.data.tags.map((tag) => <span class="badge">{tag.toUpperCase()}</span>)}
+        <span class="date">{longDate(entry.data.pubDate)} · {entry.data.minutes} {dict.blogPage.minRead}</span>
+      </div>
+      <h1 class="fx-1" set:html={entry.data.titleHtml ?? entry.data.title} />
+      <p class="lead fx-2">{entry.data.description}</p>
+    </div>
+  </section>
+
+  <section class="article-body-wrap">
+    <div class="wrap article-grid">
+      <article class="article">
+        <Content />
+        <div class="article-cta">
+          <h3 set:html={entry.data.ctaTitle ?? dict.blogPage.ctaCardTitle} />
+          <p>{entry.data.ctaText ?? dict.blogPage.ctaCardText}</p>
+          <div class="cta-row">
+            <a href={botLink} class="btn btn-primary">{dict.blogPage.ctaCardBot}</a>
+            <a href={p('services/')} class="btn btn-ghost">{dict.blogPage.ctaCardCalc}</a>
+          </div>
+        </div>
+      </article>
+
+      <aside class="toc">
+        <div class="toc-title">{dict.blogPage.tocTitle}</div>
+        <div class="toc-links">
+          {toc.map((h, n) => (
+            <a href={`#${h.slug}`}><span class="n">/ 0{n + 1}</span>{h.text}</a>
+          ))}
+        </div>
+        <div class="toc-author">
+          <b>{dict.blogPage.authorLabel}</b>
+          <div>{dict.blogPage.authorName}</div>
+          <a href={rssHref}>RSS →</a>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="pn-sec">
+    <div class="wrap pn">
+      <a href={p(`blog/${slugOf(prev.id)}/`)}>
+        <div class="pn-label">{dict.blogPage.prevLabel}</div>
+        <div class="pn-title">{prev.data.title}</div>
+      </a>
+      <a href={p(`blog/${slugOf(next.id)}/`)}>
+        <div class="pn-label">{dict.blogPage.nextLabel}</div>
+        <div class="pn-title">{next.data.title}</div>
+      </a>
+    </div>
+  </section>
+
+  <Footer locale={locale} flush />
+</Base>

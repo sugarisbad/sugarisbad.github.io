@@ -1,0 +1,143 @@
+---
+// Блог: hero с RSS, featured-карточка (свежая статья), фильтр по темам,
+// строки-«таблица», CTA. Референс: design_handoff_blog_faq/Blog {RU,EN}.dc.html
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { contacts } from '../data/site';
+import { t, localeUrl, type Locale } from '../i18n';
+
+interface Props {
+  locale?: Locale;
+}
+const { locale = 'ru' } = Astro.props;
+const dict = t(locale);
+const base = import.meta.env.BASE_URL;
+const p = (s: string) => localeUrl(locale, s, base);
+
+const botLink = `${contacts.botUrl}?start=src-blog${locale === 'en' ? '-en' : ''}`;
+const rssHref = locale === 'ru' ? '/rss.xml' : '/en/rss.xml';
+
+const posts = (await getCollection('blog', ({ id }) => id.startsWith(`${locale}/`)))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const [featured] = posts;
+
+// Даты: RU — 12.07.2026 в списке, «12 июля 2026» в featured; EN — ISO / Jul 12, 2026.
+const listDate = (d: Date) =>
+  locale === 'ru'
+    ? d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    : d.toISOString().slice(0, 10);
+const longDate = (d: Date) =>
+  locale === 'ru'
+    ? d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }).replace(' г.', '')
+    : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+const slugOf = (id: string) => id.split('/')[1];
+---
+
+<Base title={dict.blogPage.title} description={dict.blogPage.desc} locale={locale} path="blog/" bg="page" ogImage={`/og/blog${locale === 'en' ? '-en' : ''}.jpg`}>
+  <Header locale={locale} path="blog/" active="blog" cta="contact" />
+
+  <section class="blog-hero">
+    <div class="wrap blog-hero-row">
+      <div>
+        <span class="kicker fx">{dict.blogPage.kicker}</span>
+        <h1 class="h1 fx-1" set:html={dict.blogPage.h1} />
+        <p class="lead fx-2">{dict.blogPage.sub}</p>
+      </div>
+      <a class="rss-btn fx-3" href={rssHref}>{dict.blogPage.rssBtn}</a>
+    </div>
+  </section>
+
+  {featured && (
+    <section class="featured-wrap">
+      <div class="wrap">
+        <a class="featured fx-3" id="featured" href={p(`blog/${slugOf(featured.id)}/`)}>
+          <div class="featured-main">
+            <div class="featured-meta">
+              <span class="badge">{dict.blogPage.latestBadge}</span>
+              <span class="date">{longDate(featured.data.pubDate)} · {featured.data.minutes} {dict.blogPage.minShort}</span>
+            </div>
+            <h2>{featured.data.title}</h2>
+            <p>{featured.data.description}</p>
+            <span class="featured-more">{dict.blogPage.readMore}</span>
+          </div>
+          <div class="featured-term" aria-hidden="true">
+            <div class="term-head"><span class="term-dot"></span>vps-01 · provisioning</div>
+            <div>$ ssh deploy@vps-01</div>
+            <div><span class="ok">✓</span> cloud-init &nbsp;·· done</div>
+            <div><span class="ok">✓</span> docker 27.1 ·· active</div>
+            <div><span class="ok">✓</span> ufw &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ·· 22/80/443</div>
+            <div><span class="accent">●</span> node-exporter · listening</div>
+          </div>
+        </a>
+      </div>
+    </section>
+  )}
+
+  <section class="blog-list-wrap">
+    <div class="wrap">
+      <div class="blog-cats" role="group">
+        {dict.blogPage.cats.map((c, i) => (
+          <button class={`chip${i === 0 ? ' active' : ''}`} data-cat={c.id}>{c.label}</button>
+        ))}
+      </div>
+      <div class="post-rows">
+        {posts.map((post) => (
+          <a class="post-row" data-cat={post.data.cat} href={p(`blog/${slugOf(post.id)}/`)}>
+            <span class="date">{listDate(post.data.pubDate)}</span>
+            <span>
+              <h3>{post.data.title}</h3>
+              <span class="post-tags">{post.data.tags.map((tag) => <span>{tag}</span>)}</span>
+            </span>
+            <p class="excerpt">{post.data.description}</p>
+            <span class="arrow">→</span>
+          </a>
+        ))}
+      </div>
+      <div class="blog-foot">
+        <span id="post-count" data-forms={dict.blogPage.countForms.join('|')}>
+          {posts.length} {dict.blogPage.countForms[posts.length === 1 ? 0 : posts.length < 5 ? 1 : 2]}
+        </span>
+        <a href={rssHref}>{dict.blogPage.rssSubscribe}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-sec">
+    <div class="wrap">
+      <h2 set:html={dict.blogPage.ctaH2} />
+      <p class="lead">{dict.blogPage.ctaText}</p>
+      <div class="cta-row">
+        <a href={botLink} class="btn btn-primary">{dict.blogPage.ctaBot}</a>
+        <a href={p('services/')} class="btn btn-ghost">{dict.blogPage.ctaServices}</a>
+      </div>
+    </div>
+  </section>
+
+  <Footer locale={locale} />
+</Base>
+
+<script>
+  // Фильтр по темам: мгновенный, на клиенте. Featured виден только на «Все».
+  const chips = document.querySelectorAll<HTMLButtonElement>('.blog-cats .chip');
+  const rows = document.querySelectorAll<HTMLAnchorElement>('.post-row');
+  const featured = document.getElementById('featured');
+  const countEl = document.getElementById('post-count');
+  const forms = (countEl?.dataset.forms ?? '').split('|');
+  const plural = (n: number) => forms[n === 1 ? 0 : n < 5 ? 1 : 2] ?? '';
+  chips.forEach((chip) =>
+    chip.addEventListener('click', () => {
+      const cat = chip.dataset.cat ?? 'all';
+      chips.forEach((c) => c.classList.toggle('active', c === chip));
+      let shown = 0;
+      rows.forEach((row) => {
+        const show = cat === 'all' || row.dataset.cat === cat;
+        row.style.display = show ? '' : 'none';
+        if (show) shown++;
+      });
+      if (featured) featured.style.display = cat === 'all' ? '' : 'none';
+      if (countEl) countEl.textContent = `${shown} ${plural(shown)}`;
+    })
+  );
+</script>

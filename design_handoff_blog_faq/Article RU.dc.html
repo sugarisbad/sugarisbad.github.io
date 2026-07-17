@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:ital,wght@0,400;0,500;0,600;0,700&amp;family=Manrope:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark light;--bg:#0b0b0d;--panel:rgba(17,17,20,.72);--line:rgba(216,201,163,.14);--line2:rgba(216,201,163,.34);--text:#f2ede1;--muted:#8a8578;--accent:#d8c9a3;--accent-dim:rgba(216,201,163,.08);--ok:#7fd4a8;--btn-bg:#d8c9a3;--btn-fg:#0b0b0d;--ease:cubic-bezier(.2,.7,.2,1)}
+@media (prefers-color-scheme: light){:root{--bg:#f5f2ea;--panel:rgba(251,249,244,.78);--line:rgba(110,102,80,.18);--line2:rgba(110,102,80,.4);--text:#17150f;--muted:#6e6650;--accent:#9b8a5c;--accent-dim:rgba(155,138,92,.08);--ok:#2c9e68;--btn-bg:#17150f;--btn-fg:#f5f2ea}}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Manrope',system-ui,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+@keyframes lineflow{from{stroke-dashoffset:800}to{stroke-dashoffset:0}}
+@keyframes fadeup{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@media (max-width:920px){[data-rhide]{display:none!important}[data-rg]{grid-template-columns:1fr!important}nav{gap:14px!important}h1{font-size:2.2rem!important}}
+::selection{background:var(--accent);color:var(--bg)}
+</style>
+</helmet>
+<div style="position:fixed;inset:0;z-index:0;pointer-events:none">
+  <svg viewBox="0 0 1440 900" style="position:absolute;inset:0;width:100%;height:100%" preserveAspectRatio="xMidYMid slice">
+    <path d="M -60 620 C 330 570 560 680 930 600 S 1400 500 1560 550" fill="none" stroke="var(--accent)" stroke-width="1" opacity=".26" stroke-dasharray="800" style="animation:lineflow 12s linear infinite"></path>
+    <path d="M -60 200 C 360 240 640 150 980 210 S 1420 290 1560 250" fill="none" stroke="var(--muted)" stroke-width="1" opacity=".12" stroke-dasharray="800" style="animation:lineflow 20s linear infinite"></path>
+  </svg>
+  <div style="position:absolute;inset:0;background-image:linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:140px 100%;opacity:.5"></div>
+</div>
+
+<div style="position:relative;z-index:1">
+<header style="position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);background:var(--panel);border-bottom:1px solid var(--line)">
+  <div style="max-width:1240px;margin:0 auto;padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:72px">
+    <a href="Home%20RU.dc.html" style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.02rem;letter-spacing:.14em">OPSMITH</a>
+    <nav style="display:flex;gap:38px;align-items:center">
+      <a data-rhide="" href="Cases%20RU.dc.html" style="color:var(--muted);font-size:.9rem;font-weight:500" style-hover="color:var(--text)">Кейсы</a>
+      <a data-rhide="" href="Services%20RU.dc.html" style="color:var(--muted);font-size:.9rem;font-weight:500" style-hover="color:var(--text)">Услуги и цены</a>
+      <a data-rhide="" href="Work%20RU.dc.html" style="color:var(--muted);font-size:.9rem;font-weight:500" style-hover="color:var(--text)">Процесс</a>
+      <a data-rhide="" href="Blog%20RU.dc.html" style="color:var(--text);font-size:.9rem;font-weight:600;border-bottom:1px solid var(--accent);padding-bottom:2px">Блог</a>
+      <div style="display:flex;gap:2px;border:1px solid var(--line2);padding:3px;font-family:'JetBrains Mono',monospace">
+        <a href="Article%20RU.dc.html" style="padding:3px 10px;font-size:.78rem;font-weight:700;background:var(--accent);color:var(--bg)">RU</a>
+        <a href="Blog%20EN.dc.html" style="padding:3px 10px;font-size:.78rem;font-weight:700;color:var(--muted)" style-hover="color:var(--text)">EN</a>
+      </div>
+      <a href="Home%20RU.dc.html#contact" style="border:1px solid var(--line2);padding:10px 24px;color:var(--text);font-weight:600;font-size:.9rem;letter-spacing:.04em;transition:.2s" style-hover="background:var(--accent);color:var(--bg);border-color:var(--accent)">Связаться</a>
+    </nav>
+  </div>
+</header>
+
+<section style="padding:100px 0 56px;border-bottom:1px solid var(--line)">
+  <div style="max-width:1240px;margin:0 auto;padding:0 32px">
+    <a href="Blog%20RU.dc.html" style="font-family:'JetBrains Mono',monospace;font-size:.76rem;letter-spacing:.14em;color:var(--muted);display:inline-block;margin-bottom:34px;animation:fadeup .7s var(--ease) both" style-hover="color:var(--accent)">← БЛОГ</a>
+    <div style="display:flex;gap:16px;align-items:center;font-family:'JetBrains Mono',monospace;font-size:.76rem;letter-spacing:.14em;color:var(--accent);margin-bottom:26px;flex-wrap:wrap;animation:fadeup .7s var(--ease) .05s both">
+      <span style="border:1px solid var(--line2);padding:4px 12px">VPS</span>
+      <span style="border:1px solid var(--line2);padding:4px 12px">DOCKER</span>
+      <span style="color:var(--muted)">12 июля 2026 · 9 мин чтения</span>
+    </div>
+    <h1 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(2.2rem,4.4vw,3.8rem);font-weight:500;letter-spacing:-.03em;line-height:1.06;margin:0 0 24px;max-width:900px;animation:fadeup .85s var(--ease) .08s both">Настройка VPS под Docker: от cloud-init <em style="font-style:italic;color:var(--accent)">до продакшена</em></h1>
+    <p style="color:var(--muted);font-size:1.12rem;max-width:680px;margin:0;animation:fadeup .85s var(--ease) .16s both">Пошагово поднимаем сервер, который не стыдно показать: пользователи и SSH-ключи через cloud-init, Docker с правильным логированием, firewall и автообновления. Всё — воспроизводимо, через код.</p>
+  </div>
+</section>
+
+<section style="padding:70px 0 90px">
+  <div data-rg="" style="max-width:1240px;margin:0 auto;padding:0 32px;display:grid;grid-template-columns:1fr 300px;gap:80px;align-items:start">
+    <article style="max-width:720px;font-size:1.02rem">
+
+      <h2 id="s1" style="font-family:'Space Grotesk',sans-serif;font-size:1.7rem;font-weight:500;letter-spacing:-.02em;margin:0 0 18px"><span style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--accent);letter-spacing:.1em;margin-right:14px">/ 01</span>Зачем cloud-init, если есть руки</h2>
+      <p style="color:var(--muted);margin:0 0 18px">Ручная настройка по SSH работает ровно до второго сервера. cloud-init выполняет конфигурацию при первом старте VPS — пользователи, ключи, пакеты, — и тот же файл поднимет идентичный сервер через год. У всех крупных провайдеров поле «user data» есть прямо в форме создания сервера.</p>
+      <p style="color:var(--muted);margin:0 0 40px">Минимальный конфиг: отдельный пользователь <code style="font-family:'JetBrains Mono',monospace;font-size:.86em;color:var(--accent);border:1px solid var(--line);padding:1px 7px">deploy</code> с ключом вместо пароля, запрет root-логина, свежие пакеты.</p>
+      <pre style="font-family:'JetBrains Mono',monospace;font-size:.84rem;line-height:1.8;background:var(--panel);border:1px solid var(--line);padding:26px 30px;overflow-x:auto;margin:0 0 56px;color:var(--text)"><span style="color:var(--muted)">#cloud-config</span>
+users:
+  - name: <span style="color:var(--accent)">deploy</span>
+    groups: [sudo, docker]
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAA… you@laptop
+    sudo: ALL=(ALL) NOPASSWD:ALL
+ssh_pwauth: <span style="color:var(--accent)">false</span>
+disable_root: <span style="color:var(--accent)">true</span>
+package_update: true
+package_upgrade: true</pre>
+
+      <h2 id="s2" style="font-family:'Space Grotesk',sans-serif;font-size:1.7rem;font-weight:500;letter-spacing:-.02em;margin:0 0 18px"><span style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--accent);letter-spacing:.1em;margin-right:14px">/ 02</span>Docker: официальный репозиторий и лимиты логов</h2>
+      <p style="color:var(--muted);margin:0 0 18px">Ставьте Docker из официального репозитория, а не из пакетов дистрибутива — там версии отстают на полгода. И сразу ограничьте логи: контейнер, который пишет в stdout без лимита, за пару месяцев съест весь диск. Это самая частая причина «сервер внезапно умер» из тех, что мы разбираем.</p>
+      <pre style="font-family:'JetBrains Mono',monospace;font-size:.84rem;line-height:1.8;background:var(--panel);border:1px solid var(--line);padding:26px 30px;overflow-x:auto;margin:0 0 26px;color:var(--text)"><span style="color:var(--muted)"># /etc/docker/daemon.json</span>
+{
+  "log-driver": "json-file",
+  "log-opts": { "max-size": "<span style="color:var(--accent)">10m</span>", "max-file": "<span style="color:var(--accent)">3</span>" }
+}</pre>
+      <div style="border-left:2px solid var(--accent);padding:4px 0 4px 26px;margin:0 0 56px;color:var(--muted);font-size:.98rem"><span style="font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.14em;color:var(--accent);display:block;margin-bottom:6px">ИЗ ПРАКТИКИ</span>После перезаписи daemon.json нужен <code style="font-family:'JetBrains Mono',monospace;font-size:.86em;color:var(--accent);border:1px solid var(--line);padding:1px 7px">systemctl restart docker</code> — уже запущенные контейнеры сохранят старый лог-драйвер до пересоздания.</div>
+
+      <h2 id="s3" style="font-family:'Space Grotesk',sans-serif;font-size:1.7rem;font-weight:500;letter-spacing:-.02em;margin:0 0 18px"><span style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--accent);letter-spacing:.1em;margin-right:14px">/ 03</span>Firewall: три порта, не больше</h2>
+      <p style="color:var(--muted);margin:0 0 18px">Наружу смотрят только 22, 80 и 443. Всё остальное — базы, метрики, панели — доступно через SSH-туннель или VPN. Важный нюанс: Docker пишет правила напрямую в iptables в обход ufw, поэтому порт, опубликованный через <code style="font-family:'JetBrains Mono',monospace;font-size:.86em;color:var(--accent);border:1px solid var(--line);padding:1px 7px">-p 5432:5432</code>, будет открыт всему интернету, что бы ни говорил ufw. Публикуйте порты только на 127.0.0.1.</p>
+      <pre style="font-family:'JetBrains Mono',monospace;font-size:.84rem;line-height:1.8;background:var(--panel);border:1px solid var(--line);padding:26px 30px;overflow-x:auto;margin:0 0 56px;color:var(--text)">$ ufw default deny incoming
+$ ufw allow <span style="color:var(--accent)">22</span>/tcp comment 'ssh'
+$ ufw allow <span style="color:var(--accent)">80,443</span>/tcp comment 'web'
+$ ufw enable
+<span style="color:var(--muted)"># порты наружу — только через 127.0.0.1:</span>
+ports: ["<span style="color:var(--accent)">127.0.0.1:</span>5432:5432"]</pre>
+
+      <h2 id="s4" style="font-family:'Space Grotesk',sans-serif;font-size:1.7rem;font-weight:500;letter-spacing:-.02em;margin:0 0 18px"><span style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--accent);letter-spacing:.1em;margin-right:14px">/ 04</span>Чек-лист перед продакшеном</h2>
+      <p style="color:var(--muted);margin:0 0 22px">Сервер готов, когда на каждый пункт можно ответить «да» — и показать, где это лежит в коде:</p>
+      <div style="border:1px solid var(--line);margin:0 0 56px">
+        <sc-for list="{{ checklist }}" as="c" hint-placeholder-count="6">
+          <div style="display:grid;grid-template-columns:52px 1fr;align-items:baseline;padding:16px 24px;border-bottom:1px solid var(--line);transition:background .3s" style-hover="background:var(--accent-dim)">
+            <span style="font-family:'JetBrains Mono',monospace;color:var(--ok);font-size:.9rem">✓</span>
+            <span style="color:var(--muted);font-size:.96rem">{{ c }}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="border:1px solid var(--line);background:var(--panel);padding:40px 40px">
+        <h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:500;letter-spacing:-.01em;margin:0 0 10px">Некогда настраивать <em style="font-style:italic;color:var(--accent)">самому</em>?</h3>
+        <p style="color:var(--muted);margin:0 0 26px;font-size:.98rem">Настроим VPS под Docker под ключ — от 7 000 ₽, с cloud-init-конфигом, который останется у вас.</p>
+        <div style="display:flex;gap:14px;flex-wrap:wrap">
+          <a href="https://t.me/sugarisbad_bot?start=src-blog" style="padding:14px 32px;font-weight:600;font-size:.92rem;background:var(--btn-bg);color:var(--btn-fg);letter-spacing:.04em" style-hover="opacity:.88">Написать в бот</a>
+          <a href="Services%20RU.dc.html" style="padding:14px 32px;font-weight:600;font-size:.92rem;color:var(--text);border:1px solid var(--line2);letter-spacing:.04em" style-hover="border-color:var(--accent);color:var(--accent)">Посчитать в калькуляторе →</a>
+        </div>
+      </div>
+    </article>
+
+    <aside data-rhide="" style="position:sticky;top:104px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.32em;color:var(--accent);margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--line2)">СОДЕРЖАНИЕ</div>
+      <div style="display:flex;flex-direction:column;gap:14px;font-size:.9rem">
+        <a href="#s1" style="color:var(--muted)" style-hover="color:var(--accent)">/ 01 &nbsp;Зачем cloud-init</a>
+        <a href="#s2" style="color:var(--muted)" style-hover="color:var(--accent)">/ 02 &nbsp;Docker и лимиты логов</a>
+        <a href="#s3" style="color:var(--muted)" style-hover="color:var(--accent)">/ 03 &nbsp;Firewall</a>
+        <a href="#s4" style="color:var(--muted)" style-hover="color:var(--accent)">/ 04 &nbsp;Чек-лист</a>
+      </div>
+      <div style="margin-top:36px;padding-top:24px;border-top:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:.76rem;line-height:2.1;color:var(--muted)">
+        <div style="color:var(--text);margin-bottom:4px">автор</div>
+        <div>OPSMITH · devops</div>
+        <a href="rss.xml" style="color:var(--accent);display:inline-block;margin-top:14px" style-hover="color:var(--text)">RSS →</a>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section style="border-top:1px solid var(--line)">
+  <div data-rg="" style="max-width:1240px;margin:0 auto;padding:0 32px;display:grid;grid-template-columns:1fr 1fr">
+    <a href="Blog%20RU.dc.html" style="padding:40px 8px;border-right:1px solid var(--line);transition:background .3s" style-hover="background:var(--accent-dim)">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.14em;color:var(--muted);margin-bottom:10px">← ПРЕДЫДУЩАЯ</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:1.15rem;font-weight:500">Failover без Kubernetes: когда k8s — перебор</div>
+    </a>
+    <a href="Blog%20RU.dc.html" style="padding:40px 8px;text-align:right;transition:background .3s" style-hover="background:var(--accent-dim)">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.14em;color:var(--muted);margin-bottom:10px">СЛЕДУЮЩАЯ →</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:1.15rem;font-weight:500">Мониторинг сервера своими руками: Prometheus + Grafana</div>
+    </a>
+  </div>
+</section>
+
+<footer style="border-top:1px solid var(--line);padding:44px 0;color:var(--muted)">
+  <div style="max-width:1240px;margin:0 auto;padding:0 32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:18px">
+    <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:.14em;color:var(--text);font-size:.95rem">OPSMITH</span>
+    <div style="display:flex;gap:26px;font-size:.9rem"><a href="mailto:contact@opsmith.ru" style-hover="color:var(--accent)">contact@opsmith.ru</a><a href="rss.xml" style-hover="color:var(--accent)">RSS</a></div>
+    <span style="font-size:.84rem;font-family:'JetBrains Mono',monospace">devops · automation · self-hosted ai</span>
+  </div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 1440}}">
+class Component extends DCLogic {
+  renderVals() {
+    return { checklist: [
+      'Вход только по SSH-ключу, root-логин запрещён',
+      'Docker из официального репозитория, логи ограничены (10m × 3)',
+      'ufw: наружу только 22, 80, 443; служебные порты — на 127.0.0.1',
+      'unattended-upgrades включены для security-обновлений',
+      'compose-файлы и cloud-init лежат в git-репозитории',
+      'Бэкапы настроены и хотя бы раз восстановлены',
+    ] };
+  }
+}
+</script>
+</body>
+</html>

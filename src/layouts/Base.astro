@@ -17,15 +17,17 @@ interface Props {
   noindex?: boolean;
   /** Вариант фоновой анимации: home — 3 линии + пятно, services — 1 линия, page — 2 линии. */
   bg?: 'home' | 'page' | 'services';
+  /** OG-превью страницы (путь от корня). Не задано — общий /og.jpg. */
+  ogImage?: string;
 }
-const { title, description, locale = 'ru', path = '', noindex = false, bg = 'page' } = Astro.props;
+const { title, description, locale = 'ru', path = '', noindex = false, bg = 'page', ogImage: ogPath } = Astro.props;
 const dict = t(locale);
 
 const site = (Astro.site?.href ?? 'https://opsmith.ru/').replace(/\/$/, '');
 const urlRu = `${site}${localeUrl('ru', path)}`;
 const urlEn = `${site}${localeUrl('en', path)}`;
 const canonical = locale === 'ru' ? urlRu : urlEn;
-const ogImage = `${site}/og.jpg`;
+const ogImage = `${site}${ogPath ?? '/og.jpg'}`;
 
 // Микроразметка: кто автор сайта и что это за сайт.
 const personLd = {
@@ -100,6 +102,7 @@ const breadcrumbLd =
       </>
     )}
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="application/rss+xml" title="OPSMITH" href={locale === 'ru' ? '/rss.xml' : '/en/rss.xml'} />
 
     <!-- Подтверждение прав в поисковиках (дублирует DNS TXT-записи) -->
     <meta name="yandex-verification" content="915cbe8fccc35863" />
@@ -125,6 +128,7 @@ const breadcrumbLd =
     <meta name="twitter:image" content={ogImage} />
 
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
