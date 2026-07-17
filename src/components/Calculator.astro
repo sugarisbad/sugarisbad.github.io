@@ -5,7 +5,7 @@
 // RU — рубли из pricing.ts; EN — доллары по курсу ЦБ (fetch на клиенте,
 // fallback FALLBACK_USD_RATE), округление вверх до $5, минимум $5.
 import { contacts } from '../data/site';
-import { PRICING, BUNDLES, FALLBACK_USD_RATE, CBR_RATE_URL } from '../data/pricing';
+import { PRICING, BUNDLES, PACKAGES, FALLBACK_USD_RATE, CBR_RATE_URL } from '../data/pricing';
 import { t, type Locale } from '../i18n';
 
 interface Props {
@@ -27,14 +27,57 @@ const priceLabel = (it: (typeof PRICING)[number]['items'][number]) => {
 };
 
 // Слаги связок → строки кодов: скрипту достаточно сверить коды заказа.
-const codeBySlug = new Map(PRICING.flatMap((g) => g.items.map((it) => [it.slug, it.code])));
-const bundles = BUNDLES.map((b) => ({ codes: b.req.map((s) => codeBySlug.get(s) ?? '').join(''), save: b.save }));
+const itemBySlug = new Map(PRICING.flatMap((g) => g.items.map((it) => [it.slug, it])));
+const codeBySlug = (s: string) => itemBySlug.get(s)?.code ?? '';
+const bundles = BUNDLES.map((b) => ({ codes: b.req.map(codeBySlug).join(''), save: b.save }));
+
+// Готовые пакеты: набор кодов + суммы (сумма позиций, скидка внутри набора, итог).
+// EN считается так же, как итог в панели: usd() по каждой позиции, скидка — round.
+// Клиент на EN перерисует по живому курсу (repaintPackages).
+const packages = PACKAGES.map((p) => {
+  const codes = p.items.map(codeBySlug).join('');
+  const items = p.items.map((s) => itemBySlug.get(s)!);
+  const inPkg = (b: (typeof BUNDLES)[number]) =>
+    [...b.req.map(codeBySlug).join('')].every((c) => codes.includes(c));
+  const sum =
+    locale === 'ru'
+      ? items.reduce((acc, it) => acc + it.rub, 0)
+      : items.reduce((acc, it) => acc + usd(it.rub, FALLBACK_USD_RATE), 0);
+  const save = BUNDLES.reduce(
+    (acc, b) => acc + (inPkg(b) ? (locale === 'ru' ? b.save : Math.round(b.save / FALLBACK_USD_RATE)) : 0),
+    0
+  );
+  return { ...p, codes, sum, final: sum - save };
+});
+const pkgPrice = (n: number) =>
+  locale === 'ru' ? `${n.toLocaleString('ru-RU')} ₽` : `$${n.toLocaleString('en-US')}`;
 
 // Метка «своя задача»: custom / custom-en
 const customLink = `${contacts.botUrl}?start=custom${locale === 'en' ? '-en' : ''}`;
 ---
 
 <section class="calc-wrap" id="calc">
+  <div class="wrap">
+    <div class="calc-group-title pkg-title">{dict.servicesPage.packagesKicker}</div>
+    <div class="pkg-grid">
+      {packages.map((p) => (
+        <button class="pkg" data-codes={p.codes} type="button">
+          <span class="pkg-name">{locale === 'ru' ? p.name_ru : p.name_en}</span>
+          <span class="pkg-desc">{locale === 'ru' ? p.desc_ru : p.desc_en}</span>
+          <span class="pkg-items">
+            {p.items.map((s) => (
+              <span>✓ {locale === 'ru' ? itemBySlug.get(s)?.name_ru : itemBySlug.get(s)?.name_en}</span>
+            ))}
+          </span>
+          <span class="pkg-price-row">
+            <s class="pkg-price-old">{pkgPrice(p.sum)}</s>
+            <b class="pkg-price-new">{calc.fromPrefix}{pkgPrice(p.final)}</b>
+          </span>
+          <span class="pkg-btn" data-select={dict.servicesPage.pkgSelect} data-selected={dict.servicesPage.pkgSelected}>{dict.servicesPage.pkgSelect}</span>
+        </button>
+      ))}
+    </div>
+  </div>
   <div class="wrap calc-grid">
     <div>
       {PRICING.map((g) => (
@@ -83,6 +126,14 @@ const customLink = `${contacts.botUrl}?start=custom${locale === 'en' ? '-en' : '
       data-monthly-suffix={calc.monthlySuffix}
     >
       <div class="calc-count">{calc.countLabel} <b id="calc-count">0</b></div>
+      <div class="calc-line" id="calc-items" hidden>
+        <span>{calc.itemsSumLabel}</span>
+        <b id="calc-items-sum">—</b>
+      </div>
+      <div class="calc-line combo" id="calc-combo" hidden>
+        <span>{calc.comboLabel}</span>
+        <b id="calc-combo-sum">—</b>
+      </div>
       <div class="calc-total">
         <span>{calc.totalLabel}</span>
         <b id="calc-total">—</b>
@@ -90,10 +141,6 @@ const customLink = `${contacts.botUrl}?start=custom${locale === 'en' ? '-en' : '
       <div class="calc-line monthly" id="calc-monthly" hidden>
         <span>{calc.monthlyLabel}</span>
         <b id="calc-monthly-sum">—</b>
-      </div>
-      <div class="calc-line combo" id="calc-combo" hidden>
-        <span>{calc.comboLabel}</span>
-        <b id="calc-combo-sum">—</b>
       </div>
       <a
         class="calc-send"
@@ -121,12 +168,16 @@ const customLink = `${contacts.botUrl}?start=custom${locale === 'en' ? '-en' : '
 
     const boxes = [...root.querySelectorAll<HTMLInputElement>('input[type=checkbox]')];
     const countEl = document.getElementById('calc-count')!;
+    const itemsRow = document.getElementById('calc-items')!;
+    const itemsEl = document.getElementById('calc-items-sum')!;
     const totalEl = document.getElementById('calc-total')!;
     const monthlyRow = document.getElementById('calc-monthly')!;
     const monthlyEl = document.getElementById('calc-monthly-sum')!;
     const comboRow = document.getElementById('calc-combo')!;
     const comboEl = document.getElementById('calc-combo-sum')!;
     const btn = document.getElementById('calc-send') as HTMLAnchorElement;
+    const pkgs = [...root.querySelectorAll<HTMLButtonElement>('.pkg')];
+    const boxByCode = new Map(boxes.map((b) => [b.dataset.code ?? '', b]));
 
     // округление вверх до $5, минимум $5 — как в референсе
     const usd = (rub: number) => Math.max(5, Math.ceil(rub / rate / 5) * 5);
@@ -147,21 +198,33 @@ const customLink = `${contacts.botUrl}?start=custom${locale === 'en' ? '-en' : '
         if (b.dataset.monthly) monthly += p;
         else total += p;
       });
-      // комбо-скидка: в заказе собралась связка целиком
+      // комбо-скидки: за каждую полностью собранную связку, суммируются
       let combo = 0;
       bundles.forEach((bl) => {
         if ([...bl.codes].every((c) => codes.includes(c)))
           combo += locale === 'ru' ? bl.save : Math.round(bl.save / rate);
       });
-      total = Math.max(total - combo, 0);
+      // экономика на виду: сумма позиций → −скидка → итого (не выше суммы позиций)
+      const itemsSum = total;
+      total = Math.max(itemsSum - combo, 0);
 
       const fmt = locale === 'ru' ? fmtRub : fmtUsd;
       countEl.textContent = String(count);
-      totalEl.textContent = count ? `${fromPrefix}${fmt(total)}` : '—';
+      itemsRow.hidden = combo === 0 || itemsSum === 0;
+      itemsEl.textContent = fmt(itemsSum);
+      // без fromPrefix: подпись строки уже говорит «ИТОГО, ОТ»
+      totalEl.textContent = count ? fmt(total) : '—';
       monthlyRow.hidden = monthly === 0;
       monthlyEl.textContent = `${fromPrefix}${fmt(monthly)}${monthlySuffix}`;
       comboRow.hidden = combo === 0;
       comboEl.textContent = `−${fmt(combo)}`;
+      // подсветка карточек пакетов: активна, когда весь её состав отмечен
+      pkgs.forEach((pk) => {
+        const active = [...(pk.dataset.codes ?? '')].every((c) => boxByCode.get(c)?.checked);
+        pk.classList.toggle('active', active);
+        const label = pk.querySelector<HTMLElement>('.pkg-btn')!;
+        label.textContent = (active ? label.dataset.selected : label.dataset.select) ?? '';
+      });
       if (count && botUrl) {
         btn.href = `${botUrl}?start=calc-${codes}`;
         btn.removeAttribute('aria-disabled');
@@ -174,6 +237,19 @@ const customLink = `${contacts.botUrl}?start=custom${locale === 'en' ? '-en' : '
     };
 
     boxes.forEach((b) => b.addEventListener('change', update));
+
+    // Пакет: клик отмечает весь состав; повторный клик по выбранному — снимает
+    pkgs.forEach((pk) =>
+      pk.addEventListener('click', () => {
+        const codes = [...(pk.dataset.codes ?? '')];
+        const allChecked = codes.every((c) => boxByCode.get(c)?.checked);
+        codes.forEach((c) => {
+          const box = boxByCode.get(c);
+          if (box) box.checked = !allChecked;
+        });
+        update();
+      })
+    );
     update();
 
     // EN: живой курс ЦБ → пересчёт цен позиций и итога, примечание под hero
@@ -184,6 +260,19 @@ const customLink = `${contacts.botUrl}?start=custom${locale === 'en' ? '-en' : '
           el.textContent = `${el.dataset.from ? fromPrefix : ''}${fmtUsd(usd(rub))}${el.dataset.suffix ?? ''}`;
         });
       };
+      // цены пакетов — той же арифметикой, что и панель итога
+      const repaintPackages = () => {
+        pkgs.forEach((pk) => {
+          const codes = [...(pk.dataset.codes ?? '')];
+          const sum = codes.reduce((acc, c) => acc + usd(Number(boxByCode.get(c)?.dataset.rub) || 0), 0);
+          const save = bundles.reduce(
+            (acc, bl) => acc + ([...bl.codes].every((c) => codes.includes(c)) ? Math.round(bl.save / rate) : 0),
+            0
+          );
+          pk.querySelector<HTMLElement>('.pkg-price-old')!.textContent = fmtUsd(sum);
+          pk.querySelector<HTMLElement>('.pkg-price-new')!.textContent = `${fromPrefix}${fmtUsd(Math.max(sum - save, 0))}`;
+        });
+      };
       fetch(summary.dataset.rateUrl ?? '')
         .then((r) => r.json())
         .then((d) => {
@@ -191,6 +280,7 @@ const customLink = `${contacts.botUrl}?start=custom${locale === 'en' ? '-en' : '
           if (!v) throw new Error('no rate');
           rate = v;
           repaintPrices();
+          repaintPackages();
           update();
           const note = document.getElementById('rate-note');
           if (note) note.textContent = `${note.dataset.text} · today $1 = ${v.toFixed(2)} ₽`;
