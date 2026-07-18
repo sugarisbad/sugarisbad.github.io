@@ -54,7 +54,7 @@ const orgLd = {
   name: brand,
   description: dict.home.desc,
   url: `${site}/`,
-  logo: ogImage,
+  logo: `${site}/icon-512.png`,
   image: ogImage,
   email: `mailto:${contacts.email}`,
   founder: { '@type': 'Person', name: dict.seo.personName, jobTitle: dict.seo.jobTitle },
@@ -88,8 +88,25 @@ const breadcrumbLd =
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b0b0d" />
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f2ea" />
+    <meta name="theme-color" content="#0b0b0d" />
+    <!-- Тема — по местному времени посетителя: 07–19 светлая, иначе тёмная.
+         Скрипт инлайновый и стоит до контента, чтобы не было мигания темы. -->
+    <script is:inline>
+      (function () {
+        var meta;
+        function applyTheme() {
+          var h = new Date().getHours();
+          var theme = h >= 7 && h < 19 ? 'light' : 'dark';
+          if (document.documentElement.getAttribute('data-theme') === theme) return;
+          document.documentElement.setAttribute('data-theme', theme);
+          meta = meta || document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', theme === 'light' ? '#f5f2ea' : '#0b0b0d');
+        }
+        applyTheme();
+        // Вкладка может жить сутками — проверяем границу дня раз в минуту.
+        setInterval(applyTheme, 60000);
+      })();
+    </script>
     {noindex ? (
       <meta name="robots" content="noindex, nofollow" />
     ) : (
