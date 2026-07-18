@@ -1,13 +1,15 @@
 /* ─────────────────────────────────────────────────────────────────────────
    OPSMITH — стиль «Monolith»: люкс-минимализм, острые углы, шампань-акцент.
-   Тема выбирается автоматически (prefers-color-scheme), всё на CSS-переменных.
+   Тема выбирается по местному времени клиента (скрипт в Base.astro ставит
+   data-theme на <html>: 07–19 — light, иначе dark), всё на CSS-переменных.
+   Без JS работает запасной вариант по prefers-color-scheme.
    Дизайн-референсы: design_handoff_opsmith/*.dc.html
    ───────────────────────────────────────────────────────────────────────── */
 
 /* Шрифты подключаются в Base.astro из @fontsource-variable (self-hosted). */
 
 :root {
-  color-scheme: dark light;
+  color-scheme: dark;
   --bg: #0b0b0d;
   --panel: rgba(17, 17, 20, 0.72);
   --line: rgba(216, 201, 163, 0.14);
@@ -24,8 +26,25 @@
   --font-body: 'Manrope Variable', 'Manrope', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', monospace;
 }
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: #f5f2ea;
+  --panel: rgba(251, 249, 244, 0.78);
+  --line: rgba(110, 102, 80, 0.18);
+  --line2: rgba(110, 102, 80, 0.4);
+  --text: #17150f;
+  --muted: #6e6650;
+  --accent: #9b8a5c;
+  --accent-dim: rgba(155, 138, 92, 0.08);
+  --ok: #2c9e68;
+  --btn-bg: #17150f;
+  --btn-fg: #f5f2ea;
+}
+/* Без JS data-theme не выставится — тогда уважаем системную светлую тему.
+   Держать список переменных в синхроне с блоком выше. */
 @media (prefers-color-scheme: light) {
-  :root {
+  :root:not([data-theme]) {
+    color-scheme: light;
     --bg: #f5f2ea;
     --panel: rgba(251, 249, 244, 0.78);
     --line: rgba(110, 102, 80, 0.18);
@@ -120,11 +139,15 @@ header {
   gap: 14px;
 }
 .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   font-family: var(--font-head);
   font-weight: 700;
   font-size: 1.02rem;
   letter-spacing: 0.14em;
 }
+.brand .brand-mark { color: var(--accent); flex-shrink: 0; }
 nav.nav-links { display: flex; gap: 38px; align-items: center; }
 .nav-link {
   color: var(--muted);
