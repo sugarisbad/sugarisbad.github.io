@@ -24,6 +24,7 @@ export const en: Dict = {
     contact: 'Contact',
     call: 'Book a call',
     langLabel: 'Language',
+    menuLabel: 'Menu',
   },
 
   footer: {
@@ -47,10 +48,8 @@ export const en: Dict = {
         { name: 'ci/cd pipeline', value: '● passing', tone: 'ok' },
         { name: 'failover', value: 'standby', tone: 'accent' },
       ],
-      foot: [
-        { name: 'uptime / 2025', value: '99.98%' },
-        { name: 'incident-free', value: '214 days' },
-      ],
+      foot: [{ name: 'uptime / 2025', value: '99.98%' }],
+      incidentFree: 'incident-free',
     },
     stats: [
       { value: '<60 sec', label: 'from one command to a ready server', accent: true },

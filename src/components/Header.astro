@@ -34,6 +34,43 @@ const ctaLabel = cta === 'call' ? dict.nav.call : dict.nav.contact;
         <a href={localeUrl('en', path, base)} data-lang="en" class={locale === 'en' ? 'active' : ''} aria-current={locale === 'en' ? 'true' : undefined}>EN</a>
       </div>
       <a class="nav-cta" href={ctaHref}>{ctaLabel}</a>
+      <button class="nav-burger" type="button" aria-label={dict.nav.menuLabel} aria-expanded="false" aria-controls="mobile-menu">
+        <span></span><span></span><span></span>
+      </button>
     </nav>
   </div>
+  <!-- Мобильная навигация: раскрывается бургером, ≤920px (десктопные ссылки скрыты) -->
+  <nav class="mobile-menu" id="mobile-menu" hidden aria-label={dict.nav.menuLabel}>
+    <a class={`mobile-link${active === 'cases' ? ' active' : ''}`} href={p('cases/')}>{dict.nav.cases}</a>
+    <a class={`mobile-link${active === 'services' ? ' active' : ''}`} href={p('services/')}>{dict.nav.services}</a>
+    <a class={`mobile-link${active === 'work' ? ' active' : ''}`} href={p('work/')}>{dict.nav.work}</a>
+    <a class={`mobile-link${active === 'blog' ? ' active' : ''}`} href={p('blog/')}>{dict.nav.blog}</a>
+    <!-- Дубль переключателя языка: на узких экранах верхний скрыт ради места -->
+    <div class="mobile-langs lang-switch" aria-label={dict.nav.langLabel}>
+      <a href={localeUrl('ru', path, base)} data-lang="ru" class={locale === 'ru' ? 'active' : ''} aria-current={locale === 'ru' ? 'true' : undefined}>RU</a>
+      <a href={localeUrl('en', path, base)} data-lang="en" class={locale === 'en' ? 'active' : ''} aria-current={locale === 'en' ? 'true' : undefined}>EN</a>
+    </div>
+  </nav>
 </header>
+
+<script>
+  // Бургер-меню: тоггл по кнопке, закрытие по ссылке, Escape и клику мимо шапки.
+  const burger = document.querySelector<HTMLButtonElement>('.nav-burger');
+  const menu = document.getElementById('mobile-menu');
+  if (burger && menu) {
+    const setOpen = (open: boolean) => {
+      burger.setAttribute('aria-expanded', String(open));
+      menu.hidden = !open;
+    };
+    burger.addEventListener('click', () => setOpen(menu.hidden));
+    menu.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('a')) setOpen(false);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !menu.hidden) setOpen(false);
+    });
+    document.addEventListener('click', (e) => {
+      if (!menu.hidden && !(e.target as HTMLElement).closest('header')) setOpen(false);
+    });
+  }
+</script>

@@ -41,6 +41,7 @@ export const ru = {
     contact: 'Связаться',
     call: 'Созвон',
     langLabel: 'Язык',
+    menuLabel: 'Меню',
   },
 
   footer: {
@@ -64,10 +65,9 @@ export const ru = {
         { name: 'ci/cd pipeline', value: '● passing', tone: 'ok' },
         { name: 'failover', value: 'standby', tone: 'accent' },
       ],
-      foot: [
-        { name: 'uptime / 2025', value: '99.98%' },
-        { name: 'без инцидентов', value: '214 дней' },
-      ],
+      foot: [{ name: 'uptime / 2025', value: '99.98%' }],
+      // Значение считается от incidentFreeSince (src/data/uptime.ts) и растёт каждый день.
+      incidentFree: 'без инцидентов',
     },
     stats: [
       { value: '<60 сек', label: 'от команды до готового сервера', accent: true },

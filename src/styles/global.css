@@ -191,6 +191,54 @@ nav.nav-links { display: flex; gap: 38px; align-items: center; }
 }
 .nav-cta:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
 
+/* ── Мобильное меню (бургер показывается в responsive-блоке ≤920px) ── */
+.nav-burger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  padding: 8px;
+  border: 1px solid var(--line2);
+  background: none;
+  cursor: pointer;
+}
+.nav-burger span {
+  display: block;
+  height: 2px;
+  background: var(--text);
+  transition: transform 0.25s var(--ease), opacity 0.2s;
+}
+.nav-burger[aria-expanded='true'] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-burger[aria-expanded='true'] span:nth-child(2) { opacity: 0; }
+.nav-burger[aria-expanded='true'] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.mobile-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  flex-direction: column;
+  padding: 6px 24px 14px;
+  /* Непрозрачный фон: за панелью контент страницы, полупрозрачность мешает читать */
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+.mobile-menu a {
+  padding: 13px 2px;
+  color: var(--muted);
+  font-size: 0.98rem;
+  border-bottom: 1px solid var(--line);
+  transition: color 0.2s;
+}
+.mobile-menu a:hover { color: var(--text); }
+.mobile-menu a.active { color: var(--accent); }
+/* Дубль RU/EN внутри меню: пилюли как в верхнем .lang-switch, показывается ≤560px */
+.mobile-menu .mobile-langs { display: none; margin-top: 14px; align-self: flex-start; }
+.mobile-menu .mobile-langs a { padding: 3px 10px; font-size: 0.78rem; color: var(--muted); border-bottom: none; }
+.mobile-menu .mobile-langs a.active { background: var(--accent); color: var(--bg); }
+
 /* ── Кнопки ── */
 .btn {
   display: inline-block;
@@ -1167,6 +1215,8 @@ footer.flush { margin-top: 0; }
 @media (max-width: 920px) {
   nav.nav-links { gap: 14px; }
   .nav-link { display: none; }
+  .nav-burger { display: flex; }
+  .mobile-menu:not([hidden]) { display: flex; animation: fadeup 0.25s var(--ease); }
   .featured { grid-template-columns: 1fr; }
   .featured-term { display: none; }
   .post-row { grid-template-columns: 100px 1fr 40px; gap: 18px; }
@@ -1193,4 +1243,10 @@ footer.flush { margin-top: 0; }
   .step-num { font-size: 1.7rem; }
   .principles-sec .tiles { grid-template-columns: 1fr; }
   .calc-summary { position: static; }
+}
+
+/* Совсем узкие экраны: верхний RU/EN не помещается — уезжает в мобильное меню */
+@media (max-width: 560px) {
+  .nav-links > .lang-switch { display: none; }
+  .mobile-menu .mobile-langs { display: flex; }
 }
