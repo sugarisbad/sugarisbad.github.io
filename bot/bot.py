@@ -413,7 +413,9 @@ async def ollama_generate(prompt: str, max_tokens: int = 300) -> str:
                     "stream": False,
                     # без «размышлений»: на CPU они съедают весь лимит токенов
                     "think": False,
-                    "options": {"num_predict": max_tokens},
+                    # stop: gemma4:e2b иногда пишет служебный <channel|> и
+                    # повторяет ответ — обрезаем; другим моделям не мешает
+                    "options": {"num_predict": max_tokens, "stop": ["<channel|>"]},
                 },
                 timeout=aiohttp.ClientTimeout(total=OLLAMA_TIMEOUT),
             ) as r:
