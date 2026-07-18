@@ -436,9 +436,8 @@ CONSULT_SYSTEM = (
     "6. Выясни: что за проект, что нужно сделать, масштаб (сколько серверов, какой "
     "трафик), срочность.\n"
     "7. Когда информации достаточно — перечисли подходящие услуги с ценами «от», "
-    "напомни про точную смету от инженера и спроси, передать ли заявку. Тег "
-    f"{CONSULT_DONE_TAG} добавляй в самый конец ответа ТОЛЬКО после того, как клиент "
-    "явно согласился передать заявку — не в том же сообщении, где ты спрашиваешь.\n\n"
+    "напомни, что точную смету зафиксирует инженер, и закончи сообщение вопросом: "
+    "«Передать заявку инженеру?»\n\n"
     "Прайс — (код) услуга — цена:\n" + price_list_text()
 )
 
@@ -1249,15 +1248,24 @@ AI_INTRO = (
 )
 DIRECT_INTRO = "Напишите сообщение — передам инженеру напрямую, он ответит здесь же. Выйти — /menu."
 
-KB_CHAT = kb([KeyboardButton(text=TO_ENGINEER)], [KeyboardButton(text=CANCEL)])
+KB_CHAT = kb([KeyboardButton(text=TO_ENGINEER), KeyboardButton(text=CANCEL)])
 
 _chat_busy: set[int] = set()  # кто ждёт ответ ИИ — не принимаем новое, пока думает
 
-# явное согласие клиента передать заявку (для тега [ГОТОВО] без переспроса)
+# короткое явное согласие клиента передать заявку
 CONSENT_RE = re.compile(
-    r"\b(да|давай(те)?|передав\w*|хорошо|ок|окей|согласен|согласна|конечно|yes)\b",
+    r"\b(да|давай(те)?|передав\w*|подтвержда\w*|хорошо|ок|окей|согласен|согласна|"
+    r"конечно|поехали|yes)\b",
     re.IGNORECASE,
 )
+
+
+def offered_handoff(history: list[dict]) -> bool:
+    """Последняя реплика ИИ предлагала передать заявку инженеру?"""
+    last_ai = next(
+        (m["content"] for m in reversed(history) if m["role"] == "assistant"), ""
+    ).lower()
+    return "заявк" in last_ai and "переда" in last_ai
 
 
 async def relay_to_admin(bot: Bot, message: Message, header: str = "Вопрос от клиента") -> None:
@@ -1327,6 +1335,17 @@ async def chat_ai_turn(message: Message, state: FSMContext, bot: Bot) -> None:
         return
     data = await state.get_data()
     history = list(data.get("chat_history", []))
+    # ИИ предложил передать заявку, клиент коротко согласился — передаём сразу,
+    # без похода в LLM (модель может «забыть» завершить диалог или переспросить)
+    if (
+        len(message.text) <= 40
+        and CONSENT_RE.search(message.text)
+        and offered_handoff(history)
+    ):
+        history.append({"role": "user", "content": message.text})
+        await state.update_data(chat_history=history)
+        await finish_consult(message, state, bot, message.from_user)
+        return
     history.append({"role": "user", "content": message.text[:2000]})
     _chat_busy.add(uid)
     try:
@@ -1353,50 +1372,13 @@ async def chat_ai_turn(message: Message, state: FSMContext, bot: Bot) -> None:
             log.exception("Не удалось переслать вопрос админу")
             await message.answer("Что-то пошло не так — попробуйте ещё раз чуть позже 🙏")
         return
-    done = CONSULT_DONE_TAG in reply
+    # тег из старых промптов вычищаем на всякий случай; решение о передаче
+    # принимает не модель, а согласие клиента (см. проверку выше)
     reply = reply.replace(CONSULT_DONE_TAG, "").strip()
     history.append({"role": "assistant", "content": reply})
     await state.update_data(chat_history=history[-24:])
     if reply:
         await message.answer(reply, reply_markup=KB_CHAT)
-    if done:
-        # модели случается ставить тег вместе с вопросом «передавать?» —
-        # без явного согласия клиента заявку не отправляем, только спрашиваем.
-        # Согласие — короткая явная реплика («да», «передавайте»), а не «да» в
-        # длинном ответе про детали проекта.
-        if len(message.text) <= 30 and CONSENT_RE.search(message.text):
-            await finish_consult(message, state, bot, message.from_user)
-        else:
-            await message.answer(
-                "Передать заявку инженеру?",
-                reply_markup=ikb([
-                    btn("✅ Да, передать", "consult_go"),
-                    btn("💬 Продолжить диалог", "consult_more"),
-                ]),
-            )
-
-
-@router.callback_query(ChatMode.active, F.data == "consult_go")
-async def cb_consult_go(callback: CallbackQuery, state: FSMContext, bot: Bot) -> None:
-    await callback.answer()
-    try:
-        await callback.message.edit_reply_markup(reply_markup=None)
-    except Exception:
-        pass
-    await finish_consult(callback.message, state, bot, callback.from_user)
-
-
-@router.callback_query(ChatMode.active, F.data == "consult_more")
-async def cb_consult_more(callback: CallbackQuery) -> None:
-    await callback.answer()
-    try:
-        await callback.message.edit_reply_markup(reply_markup=None)
-    except Exception:
-        pass
-    await callback.message.answer(
-        "Хорошо, продолжаем 🙂 Расскажите, что ещё важно учесть, или задайте вопрос.",
-        reply_markup=KB_CHAT,
-    )
 
 
 def transcript_text(history: list[dict]) -> str:
