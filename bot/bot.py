@@ -436,8 +436,9 @@ CONSULT_SYSTEM = (
     "6. Выясни: что за проект, что нужно сделать, масштаб (сколько серверов, какой "
     "трафик), срочность.\n"
     "7. Когда информации достаточно — перечисли подходящие услуги с ценами «от», "
-    "напомни про точную смету от инженера и спроси, передать ли заявку. Если клиент "
-    f"согласен — добавь в самый конец ответа тег {CONSULT_DONE_TAG}.\n\n"
+    "напомни про точную смету от инженера и спроси, передать ли заявку. Тег "
+    f"{CONSULT_DONE_TAG} добавляй в самый конец ответа ТОЛЬКО после того, как клиент "
+    "явно согласился передать заявку — не в том же сообщении, где ты спрашиваешь.\n\n"
     "Прайс — (код) услуга — цена:\n" + price_list_text()
 )
 
@@ -1252,6 +1253,12 @@ KB_CHAT = kb([KeyboardButton(text=TO_ENGINEER)], [KeyboardButton(text=CANCEL)])
 
 _chat_busy: set[int] = set()  # кто ждёт ответ ИИ — не принимаем новое, пока думает
 
+# явное согласие клиента передать заявку (для тега [ГОТОВО] без переспроса)
+CONSENT_RE = re.compile(
+    r"\b(да|давай(те)?|передав\w*|хорошо|ок|окей|согласен|согласна|конечно|yes)\b",
+    re.IGNORECASE,
+)
+
 
 async def relay_to_admin(bot: Bot, message: Message, header: str = "Вопрос от клиента") -> None:
     user = message.from_user
@@ -1306,7 +1313,7 @@ async def cb_chat(callback: CallbackQuery, state: FSMContext) -> None:
 async def chat_to_engineer(message: Message, state: FSMContext, bot: Bot) -> None:
     data = await state.get_data()
     if data.get("chat_history"):
-        await finish_consult(message, state, bot)
+        await finish_consult(message, state, bot, message.from_user)
     else:
         await state.set_state(ChatMode.direct)
         await message.answer(DIRECT_INTRO, reply_markup=kb([KeyboardButton(text=CANCEL)]))
@@ -1353,7 +1360,43 @@ async def chat_ai_turn(message: Message, state: FSMContext, bot: Bot) -> None:
     if reply:
         await message.answer(reply, reply_markup=KB_CHAT)
     if done:
-        await finish_consult(message, state, bot)
+        # модели случается ставить тег вместе с вопросом «передавать?» —
+        # без явного согласия клиента заявку не отправляем, только спрашиваем.
+        # Согласие — короткая явная реплика («да», «передавайте»), а не «да» в
+        # длинном ответе про детали проекта.
+        if len(message.text) <= 30 and CONSENT_RE.search(message.text):
+            await finish_consult(message, state, bot, message.from_user)
+        else:
+            await message.answer(
+                "Передать заявку инженеру?",
+                reply_markup=ikb([
+                    btn("✅ Да, передать", "consult_go"),
+                    btn("💬 Продолжить диалог", "consult_more"),
+                ]),
+            )
+
+
+@router.callback_query(ChatMode.active, F.data == "consult_go")
+async def cb_consult_go(callback: CallbackQuery, state: FSMContext, bot: Bot) -> None:
+    await callback.answer()
+    try:
+        await callback.message.edit_reply_markup(reply_markup=None)
+    except Exception:
+        pass
+    await finish_consult(callback.message, state, bot, callback.from_user)
+
+
+@router.callback_query(ChatMode.active, F.data == "consult_more")
+async def cb_consult_more(callback: CallbackQuery) -> None:
+    await callback.answer()
+    try:
+        await callback.message.edit_reply_markup(reply_markup=None)
+    except Exception:
+        pass
+    await callback.message.answer(
+        "Хорошо, продолжаем 🙂 Расскажите, что ещё важно учесть, или задайте вопрос.",
+        reply_markup=KB_CHAT,
+    )
 
 
 def transcript_text(history: list[dict]) -> str:
@@ -1362,8 +1405,12 @@ def transcript_text(history: list[dict]) -> str:
     )
 
 
-async def finish_consult(message: Message, state: FSMContext, bot: Bot) -> None:
-    """Итог ИИ-консультации: сводка, оценка по прайсу, заявка в БД, всё — инженеру."""
+async def finish_consult(message: Message, state: FSMContext, bot: Bot, user) -> None:
+    """Итог ИИ-консультации: сводка, оценка по прайсу, заявка в БД, всё — инженеру.
+
+    user — клиент (Telegram User); передаётся отдельно, потому что при вызове
+    из callback message принадлежит боту.
+    """
     data = await state.get_data()
     history = data.get("chat_history", [])
     await state.clear()
@@ -1391,7 +1438,6 @@ async def finish_consult(message: Message, state: FSMContext, bot: Bot) -> None:
         codes = "".join(c for c in m.group(1) if c in CALC_ITEMS)
         order, _ = parse_calc(f"calc-{codes}")
 
-    user = message.from_user
     task_text = (summary or transcript[:1500]).strip()
     lead_id = db_add_lead(
         user.id, user.username or "", user.full_name[:80], task_text,
