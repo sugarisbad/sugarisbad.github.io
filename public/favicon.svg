@@ -1,10 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- Рамка + «OP», как в favicons/master-512.png; оттенок акцента подстраивается под тему -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
+  <!-- Знак «монолит»: геометрия из export-1c/favicon.svg; оттенок акцента подстраивается под тему -->
   <style>
-    path, rect { stroke: #9b8a5c; }
-    @media (prefers-color-scheme: dark) { path, rect { stroke: #d8c9a3; } }
+    rect { fill: #9b8a5c; }
+    @media (prefers-color-scheme: dark) { rect { fill: #d8c9a3; } }
   </style>
-  <rect x="18" y="18" width="476" height="476" fill="none" stroke-width="36"/>
-  <rect x="141" y="166" width="112" height="164" rx="56" fill="none" stroke-width="34"/>
-  <path d="M310 332 V166 H370 A56 56 0 0 1 370 278 H310" fill="none" stroke-width="34"/>
+  <rect x="18" y="6" width="26" height="84"/>
+  <rect x="44" y="21" width="34" height="5"/>
+  <rect x="44" y="45" width="24" height="5"/>
+  <rect x="44" y="69" width="34" height="5"/>
 </svg>

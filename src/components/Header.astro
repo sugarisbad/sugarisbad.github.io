@@ -1,6 +1,7 @@
 ---
 import { brand, contacts } from '../data/site';
 import { t, localeUrl, type Locale } from '../i18n';
+import LogoMark from './LogoMark.astro';
 
 interface Props {
   locale?: Locale;
@@ -22,7 +23,7 @@ const ctaLabel = cta === 'call' ? dict.nav.call : dict.nav.contact;
 
 <header>
   <div class="wrap nav">
-    <a class="brand" href={p('')}>{brand}</a>
+    <a class="brand" href={p('')}><LogoMark size={20} />{brand}</a>
     <nav class="nav-links">
       <a class={`nav-link${active === 'cases' ? ' active' : ''}`} href={p('cases/')}>{dict.nav.cases}</a>
       <a class={`nav-link${active === 'services' ? ' active' : ''}`} href={p('services/')}>{dict.nav.services}</a>
