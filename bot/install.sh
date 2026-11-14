@@ -21,7 +21,8 @@ python3 -m venv --help >/dev/null 2>&1 || { echo "Нужен venv: apt install -
 id tgbot &>/dev/null || useradd -r -s /usr/sbin/nologin tgbot
 
 mkdir -p "$DIR"
-cp "$SRC/bot.py" "$SRC/requirements.txt" "$DIR/"
+cp "$SRC/bot.py" "$SRC/admin.py" "$SRC/storage.py" "$SRC/delivery.py" \
+   "$SRC/maintenance.py" "$SRC/requirements.txt" "$DIR/"
 
 # .env: берём готовый рядом со скриптом, иначе спрашиваем
 if [ ! -f "$DIR/.env" ]; then

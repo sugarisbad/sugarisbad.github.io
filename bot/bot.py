@@ -3,8 +3,8 @@
 
 Что умеет:
 - Главное меню: заявка, каталог услуг с ценами, FAQ, «мои заявки», вопрос инженеру.
-- Форма заявки (имя → задача → телефон → почта) с предпросмотром и
-  редактированием любого поля перед отправкой.
+- Короткая форма: имя из Telegram → задача → удобный способ связи → предпросмотр.
+- Сохраняемые черновики, очередь доставки, вложения, админка и напоминания.
 - Каталог услуг по категориям — цены совпадают с прайсом сайта
   (src/data/pricing.ts); из карточки услуги можно сразу оформить заявку.
 - Заявки сохраняются в SQLite: у каждой номер и статус (новая → в работе →
@@ -37,14 +37,18 @@ import os
 import re
 import sqlite3
 import time
+import uuid
 from datetime import datetime, timedelta, timezone
 
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.filters import Command, CommandObject, CommandStart, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
+from aiogram.fsm.storage.memory import SimpleEventIsolation
 from aiogram.types import (
     BotCommand,
+    BotCommandScopeAllPrivateChats,
+    BotCommandScopeChat,
     CallbackQuery,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
@@ -53,6 +57,11 @@ from aiogram.types import (
     ReplyKeyboardMarkup,
     ReplyKeyboardRemove,
 )
+
+from admin import STATUS_LABELS, admin_lead_kb, build_admin_router, is_admin
+from delivery import attachment_from, attachment_jobs, conversation_text, message_jobs, SplitMessages
+from maintenance import configure_logging, delivery_loop, maintenance_loop
+from storage import SQLiteStorage, Store
 
 BOT_TOKEN = os.environ["BOT_TOKEN"]
 ADMIN_CHAT_ID = int(os.environ["ADMIN_CHAT_ID"])
@@ -64,6 +73,11 @@ OLLAMA_TIMEOUT = int(os.environ.get("OLLAMA_TIMEOUT", "300"))
 ESPOCRM_URL = os.environ.get("ESPOCRM_URL", "")  # напр. https://qopq.online:8443
 ESPOCRM_API_KEY = os.environ.get("ESPOCRM_API_KEY", "")
 LEADS_DB = os.environ.get("LEADS_DB", "leads.db")
+LOG_DIR = os.environ.get("LOG_DIR", "logs")
+BACKUP_DIR = os.environ.get("BACKUP_DIR", "backups")
+BACKUP_KEEP = max(1, int(os.environ.get("BACKUP_KEEP", "14")))
+REMINDER_MINUTES = max(1, int(os.environ.get("REMINDER_MINUTES", "120")))
+REMINDER_REPEAT_MINUTES = max(1, int(os.environ.get("REMINDER_REPEAT_MINUTES", "1440")))
 
 SITE_URL = "https://opsmith.ru"
 CALENDLY_URL = "https://calendly.com/opsmith/30min"
@@ -76,17 +90,21 @@ EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 LEAD_COOLDOWN_S = 120
 _last_lead_at: dict[int, float] = {}
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+configure_logging(LOG_DIR, BOT_TOKEN)
 log = logging.getLogger("orders-bot")
 
 router = Router()
+router.message.filter(F.chat.type == "private")
+router.callback_query.filter(F.message.chat.type == "private")
 
 
 class Form(StatesGroup):
     name = State()
     task = State()
+    contact = State()
     phone = State()
     email = State()
+    attachments = State()
     confirm = State()
 
 
@@ -95,13 +113,14 @@ class ChatMode(StatesGroup):
     direct = State()  # клиент пишет инженеру напрямую (без ИИ)
 
 
-class AdminReply(StatesGroup):
-    wait = State()  # владелец пишет ответ клиенту
-
-
 SKIP = "Пропустить"
 CANCEL = "Отмена"
 TO_ENGINEER = "📨 Передать инженеру"
+CONTACT_HERE = "💬 Связаться здесь"
+CONTACT_PHONE = "📞 По телефону"
+CONTACT_EMAIL = "✉ По почте"
+ATTACH_DONE = "Готово, дальше"
+MAX_ATTACHMENTS = 10
 
 # Deep-link payload (t.me/<bot>?start=<slug>) → откуда пришёл клиент.
 # Слаги должны совпадать с src/data/pricing.ts на сайте.
@@ -257,29 +276,10 @@ FAQ: list[tuple[str, str]] = [
      "Для абонентки — ежемесячно. Работаем по договору с самозанятым/ИП."),
 ]
 
-STATUS_LABELS = {"new": "🆕 новая", "work": "🔧 в работе", "done": "✅ закрыта"}
-
-
 # ── база заявок (SQLite) ─────────────────────────────────────────────────────
 
-db = sqlite3.connect(LEADS_DB)
-db.row_factory = sqlite3.Row
-db.execute(
-    """CREATE TABLE IF NOT EXISTS leads (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        ts TEXT NOT NULL,
-        user_id INTEGER NOT NULL,
-        username TEXT,
-        name TEXT,
-        task TEXT,
-        phone TEXT,
-        email TEXT,
-        source TEXT,
-        order_text TEXT,
-        status TEXT NOT NULL DEFAULT 'new'
-    )"""
-)
-db.commit()
+store = Store(LEADS_DB, reminder_seconds=REMINDER_MINUTES * 60)
+db = store.db
 
 
 def db_add_lead(user_id: int, username: str, name: str, task: str,
@@ -300,18 +300,12 @@ def db_user_leads(user_id: int) -> list[sqlite3.Row]:
     ).fetchall()
 
 
-def db_set_status(lead_id: int, status: str) -> sqlite3.Row | None:
-    db.execute("UPDATE leads SET status = ? WHERE id = ?", (status, lead_id))
-    db.commit()
-    return db.execute("SELECT * FROM leads WHERE id = ?", (lead_id,)).fetchone()
-
-
 def db_stats() -> dict:
     by_status = {r["status"]: r["n"] for r in db.execute(
         "SELECT status, COUNT(*) AS n FROM leads GROUP BY status")}
     week_from = (datetime.now(MSK) - timedelta(days=7)).isoformat(timespec="seconds")
     week = db.execute(
-        "SELECT COUNT(*) AS n FROM leads WHERE ts >= ?", (week_from,)).fetchone()["n"]
+        "SELECT COUNT(*) AS n FROM leads WHERE julianday(ts) >= julianday(?)", (week_from,)).fetchone()["n"]
     return {"by_status": by_status, "total": sum(by_status.values()), "week": week}
 
 
@@ -381,8 +375,8 @@ KB_PHONE = kb(
 )
 
 
-def main_menu_kb() -> InlineKeyboardMarkup:
-    return ikb(
+def main_menu_kb(user_id: int | None = None, chat_id: int | None = None) -> InlineKeyboardMarkup:
+    markup = ikb(
         [btn("📝 Оставить заявку", "lead")],
         [btn("🛠 Услуги и цены", "svc"), btn("❓ FAQ", "faq")],
         [btn("💬 Обсудить задачу", "ai"), btn("📂 Мои заявки", "my")],
@@ -391,6 +385,9 @@ def main_menu_kb() -> InlineKeyboardMarkup:
             InlineKeyboardButton(text="📅 Созвон 30 мин", url=CALENDLY_URL),
         ],
     )
+    if is_admin(user_id, chat_id, ADMIN_CHAT_ID):
+        markup.inline_keyboard.append([btn("🗂 Управление заявками", "adm:home")])
+    return markup
 
 
 MENU_TEXT = (
@@ -400,8 +397,13 @@ MENU_TEXT = (
 )
 
 
-async def show_menu(message: Message) -> None:
-    await message.answer(MENU_TEXT, parse_mode="HTML", reply_markup=main_menu_kb())
+async def show_menu(message: Message, user_id: int | None = None) -> None:
+    if user_id is None:
+        # В callback message — сообщение бота, а chat — личный чат получателя.
+        user_id = (message.from_user.id if message.from_user and not message.from_user.is_bot
+                   else message.chat.id)
+    markup = main_menu_kb(user_id, message.chat.id)
+    await message.answer(MENU_TEXT, parse_mode="HTML", reply_markup=markup)
 
 
 # ── ИИ-консультант: промпты ──────────────────────────────────────────────────
@@ -605,10 +607,40 @@ async def create_crm_lead(
 
 # ── команды и главное меню ───────────────────────────────────────────────────
 
+@router.message(Command("admin", "leads", "find", "stats"), F.from_user.id != ADMIN_CHAT_ID)
+async def private_admin_command(message: Message) -> None:
+    # Не раскрываем админские функции и не передаём эти команды в форму/ИИ.
+    await show_menu(message)
+
+
+@router.callback_query(
+    F.data.startswith("adm:") | F.data.startswith("st:") | F.data.startswith("re:"),
+    (F.from_user.id != ADMIN_CHAT_ID) | (F.message.chat.id != ADMIN_CHAT_ID),
+)
+async def private_admin_callback(callback: CallbackQuery) -> None:
+    await callback.answer()
+
+
 @router.message(CommandStart())
 async def cmd_start(message: Message, state: FSMContext, command: CommandObject) -> None:
+    if await state.get_state():
+        await state.update_data(pending_start=command.args or "")
+        await offer_resume(message)
+        return
+    await start_new(message, state, command.args or "")
+
+
+async def offer_resume(message: Message) -> None:
+    await message.answer(
+        "У вас есть незавершённый диалог. Продолжим?",
+        reply_markup=ikb([btn("▶️ Продолжить", "draft:resume")],
+                         [btn("🆕 Начать заново", "draft:new")]),
+    )
+
+
+async def start_new(message: Message, state: FSMContext, slug: str = "") -> None:
     await state.clear()
-    slug = (command.args or "").strip()
+    slug = slug.strip()
     if not slug:
         await show_menu(message)
         return
@@ -636,21 +668,93 @@ async def cmd_start(message: Message, state: FSMContext, command: CommandObject)
 
 
 async def start_form(message: Message, state: FSMContext, intro: str = "") -> None:
-    """Запуск формы заявки: спрашиваем имя (данные source/order уже в state)."""
-    await state.set_state(Form.name)
-    # кнопка с именем из Telegram-профиля — чтобы не печатать руками
-    first_name = (message.chat.first_name or "").strip()
-    name_rows = []
-    if 2 <= len(first_name) <= 80:
-        name_rows.append([KeyboardButton(text=first_name)])
-    name_rows.append([KeyboardButton(text=CANCEL)])
+    """Имя из Telegram; клиент сразу переходит к описанию задачи."""
+    name = " ".join(filter(None, (message.chat.first_name, message.chat.last_name))).strip()[:80]
+    await state.update_data(name=name, phone="", email="", attachments=[],
+                            submission_key=uuid.uuid4().hex)
+    if len(name) < 2:
+        await state.set_state(Form.name)
+        await message.answer(intro + "Как вас зовут?", parse_mode="HTML",
+                             reply_markup=kb([KeyboardButton(text=CANCEL)]))
+        return
     await message.answer(
-        intro + "Я приму вашу заявку и сразу передам её инженеру opsmith — "
-        "он ответит в течение дня.\n\n"
-        "Как вас зовут? Напишите или нажмите кнопку ниже.",
-        parse_mode="HTML",
-        reply_markup=kb(*name_rows),
+        intro + f"Имя из Telegram: <b>{html.escape(name)}</b>. Его можно изменить перед отправкой.",
+        parse_mode="HTML", reply_markup=ReplyKeyboardRemove(),
     )
+    await ask_task(message, state)
+
+
+async def ask_task(message: Message, state: FSMContext) -> None:
+    await state.set_state(Form.task)
+    data = await state.get_data()
+    text = (
+        "Состав заказа уже есть. Добавьте описание проекта и сроки или нажмите «Пропустить»."
+        if data.get("order") else
+        "Опишите задачу: что за проект, что нужно сделать и какие сроки."
+    )
+    await message.answer(
+        text + "\nМожно приложить скриншоты, файлы или голосовое сообщение.",
+        reply_markup=KB_SKIP if data.get("order") else kb([KeyboardButton(text=CANCEL)]),
+    )
+
+
+async def ask_contact(message: Message, state: FSMContext) -> None:
+    await state.set_state(Form.contact)
+    await message.answer(
+        "Где удобнее получить ответ?",
+        reply_markup=kb([KeyboardButton(text=CONTACT_HERE)],
+                        [KeyboardButton(text=CONTACT_PHONE), KeyboardButton(text=CONTACT_EMAIL)],
+                        [KeyboardButton(text=CANCEL)]),
+    )
+
+
+async def resume_dialog(message: Message, state: FSMContext) -> None:
+    current = await state.get_state()
+    if current == Form.confirm.state:
+        await show_preview(message, state)
+    elif current == Form.task.state:
+        data = await state.get_data()
+        if data.get("attachments"):
+            await message.answer("Вложения сохранены. Можно добавить ещё или продолжить.",
+                                 reply_markup=kb([KeyboardButton(text=ATTACH_DONE)], [KeyboardButton(text=CANCEL)]))
+        else:
+            await ask_task(message, state)
+    elif current == Form.contact.state:
+        await ask_contact(message, state)
+    elif current == Form.phone.state:
+        await message.answer("Отправьте телефон или пропустите этот шаг.", reply_markup=KB_PHONE)
+    elif current == Form.email.state:
+        await message.answer("Напишите почту или пропустите этот шаг.", reply_markup=KB_SKIP)
+    elif current == Form.name.state:
+        await message.answer("Как вас зовут?", reply_markup=kb([KeyboardButton(text=CANCEL)]))
+    elif current == Form.attachments.state:
+        await message.answer("Отправляйте вложения. Когда закончите, нажмите «Готово, дальше».",
+                             reply_markup=kb([KeyboardButton(text=ATTACH_DONE)], [KeyboardButton(text=CANCEL)]))
+    elif current in (ChatMode.active.state, ChatMode.direct.state):
+        await message.answer("Диалог сохранён. Можете продолжать писать.",
+                             reply_markup=KB_CHAT if current == ChatMode.active.state else kb([KeyboardButton(text=CANCEL)]))
+    elif current and current.startswith("AdminInput:") and message.chat.id == ADMIN_CHAT_ID:
+        await message.answer("Режим админки сохранён. Продолжайте ввод или откройте /admin.")
+    else:
+        await show_menu(message)
+
+
+@router.message(Command("resume"))
+async def cmd_resume(message: Message, state: FSMContext):
+    await resume_dialog(message, state)
+
+
+@router.callback_query(F.data == "draft:resume")
+async def cb_resume(callback: CallbackQuery, state: FSMContext):
+    await callback.answer()
+    await resume_dialog(callback.message, state)
+
+
+@router.callback_query(F.data == "draft:new")
+async def cb_new(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    await callback.answer()
+    await start_new(callback.message, state, data.get("pending_start", ""))
 
 
 async def leave_state(message: Message, state: FSMContext, bot: Bot) -> None:
@@ -670,7 +774,8 @@ async def cmd_menu(message: Message, state: FSMContext, bot: Bot) -> None:
     await leave_state(message, state, bot)
     await message.answer(
         "Команды:\n"
-        "/start — начать сначала\n"
+        "/start — главное меню / продолжить\n"
+        "/resume — продолжить сохранённый диалог\n"
         "/services — услуги и цены\n"
         "/faq — частые вопросы\n"
         "/ask — обсудить задачу (ИИ-помощник)\n"
@@ -695,10 +800,11 @@ async def cb_menu(callback: CallbackQuery, state: FSMContext) -> None:
     await callback.answer()
     try:
         await callback.message.edit_text(
-            MENU_TEXT, parse_mode="HTML", reply_markup=main_menu_kb()
+            MENU_TEXT, parse_mode="HTML",
+            reply_markup=main_menu_kb(callback.from_user.id, callback.message.chat.id),
         )
     except Exception:
-        await show_menu(callback.message)
+        await show_menu(callback.message, callback.from_user.id)
 
 
 # ── каталог услуг ────────────────────────────────────────────────────────────
@@ -761,6 +867,10 @@ async def cb_order_item(callback: CallbackQuery, state: FSMContext) -> None:
     item = CALC_ITEMS.get(code)
     if not item:
         return
+    if (await state.get_state() or "").startswith("Form:"):
+        await state.update_data(pending_start=f"calc-{code}")
+        await offer_resume(callback.message)
+        return
     name = item[0]
     await state.clear()
     await state.update_data(source=f"{name} (каталог в боте)", order="")
@@ -773,6 +883,10 @@ async def cb_order_item(callback: CallbackQuery, state: FSMContext) -> None:
 @router.callback_query(F.data == "lead")
 async def cb_lead(callback: CallbackQuery, state: FSMContext) -> None:
     await callback.answer()
+    if (await state.get_state() or "").startswith("Form:"):
+        await state.update_data(pending_start="custom")
+        await offer_resume(callback.message)
+        return
     await state.clear()
     await start_form(callback.message, state)
 
@@ -832,7 +946,7 @@ def my_leads_text(user_id: int) -> str:
         return "У вас пока нет заявок. Оформим первую? 🙂"
     lines = ["📂 <b>Ваши заявки:</b>", ""]
     for r in rows:
-        ts = datetime.fromisoformat(r["ts"]).strftime("%d.%m.%Y")
+        ts = datetime.fromisoformat(r["ts"]).astimezone(MSK).strftime("%d.%m.%Y")
         about = r["source"] or (r["task"] or "")[:60] or "заявка"
         lines.append(
             f"<b>#{r['id']}</b> · {ts} · {STATUS_LABELS.get(r['status'], r['status'])}\n"
@@ -866,7 +980,7 @@ async def cb_my(callback: CallbackQuery) -> None:
 
 @router.message(Command("stats"))
 async def cmd_stats(message: Message) -> None:
-    if message.chat.id != ADMIN_CHAT_ID:
+    if not is_admin(message.from_user.id, message.chat.id, ADMIN_CHAT_ID):
         return
     s = db_stats()
     by = s["by_status"]
@@ -894,22 +1008,7 @@ async def form_name(message: Message, state: FSMContext) -> None:
         await state.update_data(editing=None)
         await show_preview(message, state)
         return
-    await state.set_state(Form.task)
-    if data.get("order"):
-        # состав заказа уже известен из калькулятора — описание опционально
-        await message.answer(
-            f"Приятно познакомиться, {name}!\n\n"
-            "Состав заказа у меня уже есть. Хотите добавить пару слов о проекте "
-            "и сроках? Напишите — или нажмите «Пропустить».",
-            reply_markup=KB_SKIP,
-        )
-    else:
-        await message.answer(
-            f"Приятно познакомиться, {name}!\n\n"
-            "Опишите задачу свободным текстом: что за проект, что нужно сделать, "
-            "какие сроки. Пишите как умеете — переведу на технический сам 🙂",
-            reply_markup=kb([KeyboardButton(text=CANCEL)]),
-        )
+    await ask_task(message, state)
 
 
 @router.message(Form.task, F.text)
@@ -917,9 +1016,11 @@ async def form_task(message: Message, state: FSMContext) -> None:
     task = message.text.strip()
     data = await state.get_data()
     has_order = bool(data.get("order"))
-    if task == SKIP and has_order:
+    if task == ATTACH_DONE and data.get("attachments"):
+        task = data.get("task") or "Задача во вложениях."
+    elif task == SKIP and has_order:
         task = ""
-    elif len(task) < 15 and not has_order:
+    elif len(task) < 15 and not has_order and not data.get("attachments"):
         await message.answer(
             "Расскажите чуть подробнее (хотя бы пару предложений) — "
             "так оценка будет точнее."
@@ -930,16 +1031,60 @@ async def form_task(message: Message, state: FSMContext) -> None:
         await state.update_data(editing=None)
         await show_preview(message, state)
         return
-    await state.set_state(Form.phone)
-    await message.answer(
-        "Принял! Оставите телефон для связи? Можно отправить кнопкой ниже, "
-        "написать вручную или пропустить.",
-        reply_markup=KB_PHONE,
-    )
+    await ask_contact(message, state)
+
+
+@router.message(Form.contact, F.text)
+async def form_contact(message: Message, state: FSMContext) -> None:
+    if message.text in (CONTACT_HERE, SKIP):
+        await state.update_data(phone="", email="")
+        await show_preview(message, state)
+    elif message.text == CONTACT_PHONE:
+        await state.set_state(Form.phone)
+        await message.answer("Отправьте номер кнопкой или напишите его.", reply_markup=KB_PHONE)
+    elif message.text == CONTACT_EMAIL:
+        await state.set_state(Form.email)
+        await message.answer("Напишите адрес почты.", reply_markup=KB_SKIP)
+    else:
+        await ask_contact(message, state)
+
+
+@router.message(Form.attachments, F.text == ATTACH_DONE)
+async def attachments_done(message: Message, state: FSMContext):
+    await show_preview(message, state)
+
+
+@router.message(StateFilter(Form.task, Form.attachments, Form.confirm, Form.contact, Form.phone, Form.email),
+                F.photo | F.document | F.voice | F.video | F.audio | F.animation | F.video_note | F.sticker)
+async def form_attachment(message: Message, state: FSMContext):
+    data = await state.get_data()
+    attachments = list(data.get("attachments", []))
+    if len(attachments) >= MAX_ATTACHMENTS:
+        await message.answer(f"В одной заявке можно приложить до {MAX_ATTACHMENTS} файлов.")
+        return
+    attachment = attachment_from(message)
+    attachments.append(attachment)
+    await state.update_data(attachments=attachments)
+    current = await state.get_state()
+    if current == Form.task.state:
+        if attachment.get("caption"):
+            description = "\n".join(filter(None, (data.get("task", ""), attachment["caption"])))
+            await state.update_data(task=description)
+        await message.answer(
+            f"📎 Вложение сохранено ({len(attachments)}/{MAX_ATTACHMENTS}). Добавьте описание, ещё файл или продолжите.",
+            reply_markup=kb([KeyboardButton(text=ATTACH_DONE)], [KeyboardButton(text=CANCEL)]),
+        )
+    elif current == Form.confirm.state:
+        await show_preview(message, state)
+    else:
+        await message.answer(f"📎 Вложение сохранено ({len(attachments)}/{MAX_ATTACHMENTS}).")
 
 
 @router.message(Form.phone, F.contact)
 async def form_phone_contact(message: Message, state: FSMContext) -> None:
+    if message.contact.user_id and message.contact.user_id != message.from_user.id:
+        await message.answer("Пришлите свой контакт кнопкой ниже или напишите номер вручную.")
+        return
     await state.update_data(phone=message.contact.phone_number)
     await after_phone(message, state)
 
@@ -958,16 +1103,8 @@ async def form_phone_text(message: Message, state: FSMContext) -> None:
 
 
 async def after_phone(message: Message, state: FSMContext) -> None:
-    data = await state.get_data()
-    if data.get("editing"):
-        await state.update_data(editing=None)
-        await show_preview(message, state)
-        return
-    await state.set_state(Form.email)
-    await message.answer(
-        "И почта — если удобнее переписываться письмами (или «Пропустить»).",
-        reply_markup=KB_SKIP,
-    )
+    await state.update_data(editing=None)
+    await show_preview(message, state)
 
 
 @router.message(Form.email, F.text)
@@ -995,14 +1132,18 @@ def preview_text(data: dict) -> str:
     parts.append(f"📝 Задача: {html.escape(task)}")
     parts.append(f"📞 Телефон: {html.escape(data.get('phone') or '—')}")
     parts.append(f"✉ Почта: {html.escape(data.get('email') or '—')}")
+    if not data.get("phone") and not data.get("email"):
+        parts.append("💬 Ответим здесь, в Telegram.")
+    parts.append(f"📎 Вложений: {len(data.get('attachments', []))}")
     return "\n".join(parts)
 
 
-def confirm_kb() -> InlineKeyboardMarkup:
+def confirm_kb(data: dict) -> InlineKeyboardMarkup:
     return ikb(
-        [btn("✅ Всё верно — отправить", "send")],
+        [btn("✅ Всё верно — отправить", f"send:{data['submission_key']}")],
         [btn("✏️ Имя", "edit:name"), btn("✏️ Задача", "edit:task")],
         [btn("✏️ Телефон", "edit:phone"), btn("✏️ Почта", "edit:email")],
+        [btn("📎 Добавить вложения", "form:files")],
         [btn("❌ Отмена", "abort")],
     )
 
@@ -1010,9 +1151,20 @@ def confirm_kb() -> InlineKeyboardMarkup:
 async def show_preview(message: Message, state: FSMContext) -> None:
     await state.set_state(Form.confirm)
     data = await state.get_data()
+    if not data.get("submission_key"):
+        await state.update_data(submission_key=uuid.uuid4().hex)
+        data = await state.get_data()
+    await message.answer("Заявка готова к проверке.", reply_markup=ReplyKeyboardRemove())
     await message.answer(
-        preview_text(data), parse_mode="HTML", reply_markup=confirm_kb()
+        preview_text(data), parse_mode="HTML", reply_markup=confirm_kb(data)
     )
+
+
+@router.callback_query(Form.confirm, F.data == "form:files")
+async def cb_form_files(callback: CallbackQuery, state: FSMContext):
+    await callback.answer()
+    await state.set_state(Form.attachments)
+    await resume_dialog(callback.message, state)
 
 
 @router.message(Form.confirm, F.text)
@@ -1054,44 +1206,43 @@ async def cb_abort(callback: CallbackQuery, state: FSMContext) -> None:
     await show_menu(callback.message)
 
 
-@router.callback_query(Form.confirm, F.data == "send")
+@router.callback_query(Form.confirm, F.data.startswith("send:"))
 async def cb_send(callback: CallbackQuery, state: FSMContext, bot: Bot) -> None:
     user_id = callback.from_user.id
+    data = await state.get_data()
+    submission_key = data.get("submission_key")
+    if callback.data != f"send:{submission_key}":
+        await callback.answer("Это старая версия формы. Откройте /resume.", show_alert=True)
+        return
     now = time.monotonic()
     if now - _last_lead_at.get(user_id, -LEAD_COOLDOWN_S) < LEAD_COOLDOWN_S:
         await callback.answer(
             "Заявка уже отправлена — инженер скоро ответит 🙂", show_alert=True
         )
         return
+    lead_id, created = store.create_lead(
+        user_id, callback.from_user.username or "", data, submission_key,
+        lambda lead_id: lead_notification_jobs(callback.from_user, lead_id, data),
+    )
     _last_lead_at[user_id] = now
-
-    data = await state.get_data()
+    # Сбрасываем черновик только после атомарного сохранения заявки и уведомлений.
     await state.clear()
     try:
         await callback.message.edit_reply_markup(reply_markup=None)
     except Exception:
         pass
-    await callback.answer()
-
-    lead_id = db_add_lead(
-        user_id, callback.from_user.username or "",
-        data.get("name", ""), data.get("task", ""), data.get("phone", ""),
-        data.get("email", ""), data.get("source", ""), data.get("order", ""),
-    )
-    await callback.message.answer(
-        f"Готово, заявка <b>#{lead_id}</b> ушла! 🚀\n"
-        "Инженер opsmith свяжется с вами в течение дня. Спасибо!\n\n"
-        "Статус можно смотреть в «📂 Мои заявки». Если хотите что-то добавить — "
-        "жмите «💬 Написать инженеру».",
-        parse_mode="HTML",
-        reply_markup=ikb(
-            [btn("📂 Мои заявки", "my"), btn("💬 Написать инженеру", "chat")],
-        ),
-    )
-    await send_lead(bot, callback.from_user, lead_id, data)
+    await callback.answer(f"Заявка #{lead_id} сохранена")
+    if created:
+        if data.get("task") and OLLAMA_URL:
+            asyncio.create_task(send_analysis(bot, lead_id, data["task"]))
+        asyncio.create_task(create_crm_lead(
+            data.get("name", ""), data.get("task", ""), data.get("phone", ""),
+            data.get("email", ""), data.get("source", ""), data.get("order", ""),
+            callback.from_user.username or "", user_id,
+        ))
 
 
-async def send_lead(bot: Bot, user, lead_id: int, data: dict) -> None:
+def lead_notification_jobs(user, lead_id: int, data: dict) -> list[dict]:
     name = data.get("name", "")
     task = data.get("task", "")
     phone = data.get("phone", "")
@@ -1124,21 +1275,16 @@ async def send_lead(bot: Bot, user, lead_id: int, data: dict) -> None:
         "",
         f"🕒 {datetime.now(MSK):%d.%m.%Y %H:%M} МСК",
     ]
-    try:
-        await bot.send_message(
-            ADMIN_CHAT_ID, "\n".join(parts), parse_mode="HTML",
-            disable_web_page_preview=True,
-            reply_markup=admin_lead_kb(lead_id, user.id),
-        )
-        log.info("Заявка #%s от %s (id %s) доставлена", lead_id, name, user.id)
-    except Exception:
-        log.exception("Не удалось доставить заявку админу")
-    # LLM-разбор — фоном: заявка не ждёт медленную генерацию
-    if task:
-        asyncio.create_task(send_analysis(bot, lead_id, task))
-    await create_crm_lead(
-        name, task, phone, email, source, order, user.username or "", user.id
+    markup = admin_lead_kb(lead_id, user.id)
+    jobs = message_jobs(ADMIN_CHAT_ID, "\n".join(parts), markup)
+    jobs += attachment_jobs(ADMIN_CHAT_ID, data.get("attachments", []))
+    jobs += message_jobs(
+        user.id,
+        f"✅ Заявка <b>#{lead_id}</b> принята и сохранена.\n"
+        "Инженер ответит здесь. Статус доступен в «Мои заявки».",
+        ikb([btn("📂 Мои заявки", "my"), btn("💬 Дополнить", "chat")]),
     )
+    return jobs
 
 
 async def send_analysis(bot: Bot, lead_id: int, task: str) -> None:
@@ -1153,90 +1299,6 @@ async def send_analysis(bot: Bot, lead_id: int, task: str) -> None:
         )
     except Exception:
         log.exception("Не удалось доставить разбор заявки #%s", lead_id)
-
-
-# ── кнопки владельца под заявкой ─────────────────────────────────────────────
-
-def admin_lead_kb(lead_id: int, client_id: int) -> InlineKeyboardMarkup:
-    return ikb(
-        [btn("✍️ Ответить", f"re:{client_id}"), btn("🔧 В работу", f"st:{lead_id}:work")],
-        [btn("✅ Закрыта", f"st:{lead_id}:done")],
-    )
-
-
-@router.callback_query(F.data.startswith("st:"))
-async def cb_set_status(callback: CallbackQuery, bot: Bot) -> None:
-    if callback.message.chat.id != ADMIN_CHAT_ID:
-        await callback.answer()
-        return
-    try:
-        _, lead_id_s, status = callback.data.split(":")
-        lead_id = int(lead_id_s)
-    except ValueError:
-        await callback.answer()
-        return
-    row = db_set_status(lead_id, status)
-    if not row:
-        await callback.answer("Заявка не найдена", show_alert=True)
-        return
-    label = STATUS_LABELS.get(status, status)
-    await callback.answer(f"Статус: {label}")
-    try:
-        await callback.message.edit_text(
-            callback.message.html_text + f"\n\n<b>Статус: {label}</b>",
-            parse_mode="HTML", disable_web_page_preview=True,
-            reply_markup=admin_lead_kb(lead_id, row["user_id"]),
-        )
-    except Exception:
-        pass
-    # уведомляем клиента о движении по заявке
-    notice = {
-        "work": f"🔧 Ваша заявка #{lead_id} взята в работу — инженер уже занимается ей.",
-        "done": f"✅ Заявка #{lead_id} закрыта. Спасибо, что обратились! "
-                "Если что-то ещё понадобится — просто напишите /start 🙂",
-    }.get(status)
-    if notice:
-        try:
-            await bot.send_message(row["user_id"], notice)
-        except Exception as e:
-            log.warning("Не удалось уведомить клиента %s: %s", row["user_id"], e)
-
-
-@router.callback_query(F.data.startswith("re:"))
-async def cb_admin_reply(callback: CallbackQuery, state: FSMContext) -> None:
-    if callback.message.chat.id != ADMIN_CHAT_ID:
-        await callback.answer()
-        return
-    try:
-        target_id = int(callback.data.split(":", 1)[1])
-    except ValueError:
-        await callback.answer()
-        return
-    await state.set_state(AdminReply.wait)
-    await state.update_data(reply_to=target_id)
-    await callback.answer()
-    await callback.message.answer(
-        f"✍️ Пишите ответ — отправлю клиенту (id {target_id}). /cancel — передумать."
-    )
-
-
-@router.message(AdminReply.wait, F.text)
-async def admin_reply_send(message: Message, state: FSMContext, bot: Bot) -> None:
-    data = await state.get_data()
-    target_id = data.get("reply_to")
-    await state.clear()
-    if not target_id:
-        return
-    try:
-        await bot.send_message(
-            target_id,
-            f"👨‍🔧 <b>Сообщение от инженера opsmith:</b>\n\n{html.escape(message.text)}",
-            parse_mode="HTML",
-            reply_markup=ikb([btn("↩️ Ответить", "chat")]),
-        )
-        await message.answer("Отправлено ✅")
-    except Exception as e:
-        await message.answer(f"Не удалось отправить: {e}")
 
 
 # ── ИИ-консультант и чат с инженером ─────────────────────────────────────────
@@ -1271,13 +1333,24 @@ def offered_handoff(history: list[dict]) -> bool:
 async def relay_to_admin(bot: Bot, message: Message, header: str = "Вопрос от клиента") -> None:
     user = message.from_user
     tg_line = f"@{user.username}" if user.username else f"id {user.id}"
-    await bot.send_message(
+    lead = store.latest_lead(user.id)
+    lead_id = lead["id"] if lead else None
+    title = header + (f" · заявка #{lead_id}" if lead_id else "")
+    markup = admin_lead_kb(lead_id, user.id) if lead_id else ikb([btn("✍️ Ответить", f"re:{user.id}")])
+    jobs = message_jobs(
         ADMIN_CHAT_ID,
-        f"💬 <b>{header}</b> — {html.escape(user.full_name)} "
-        f"({tg_line}, id {user.id}):\n\n{html.escape(message.text)}",
-        parse_mode="HTML",
-        reply_markup=ikb([btn("✍️ Ответить", f"re:{user.id}")]),
+        f"💬 <b>{html.escape(title)}</b> — {html.escape(user.full_name)} "
+        f"({tg_line}, id {user.id}):\n\n{html.escape(message.text or 'Вложение')}",
+        markup,
     )
+    attachment = attachment_from(message)
+    if attachment:
+        jobs += attachment_jobs(ADMIN_CHAT_ID, [attachment], markup)
+    with db:
+        if store.enqueue(jobs, f"incoming:{message.chat.id}:{message.message_id}"):
+            store.wait_for_reply(user.id, lead_id)
+            store.record_message(f"incoming:{message.chat.id}:{message.message_id}", user.id, "Клиент",
+                                 conversation_text(message.text or "", [attachment] if attachment else []))
 
 
 async def start_ai_chat(message: Message, state: FSMContext, intro: bool = True) -> None:
@@ -1483,7 +1556,7 @@ async def send_abandoned_chat(bot: Bot, user, history: list[dict]) -> None:
         log.exception("Не удалось переслать незавершённый диалог админу")
 
 
-@router.message(ChatMode.direct, F.text)
+@router.message(ChatMode.direct, F.text | F.photo | F.document | F.voice | F.video | F.audio | F.animation | F.video_note | F.sticker)
 async def chat_direct_relay(message: Message, bot: Bot) -> None:
     try:
         await relay_to_admin(bot, message, "Сообщение от клиента")
@@ -1491,7 +1564,12 @@ async def chat_direct_relay(message: Message, bot: Bot) -> None:
         log.exception("Не удалось переслать сообщение админу")
         await message.answer("Что-то пошло не так — попробуйте ещё раз чуть позже 🙏")
         return
-    await message.answer("Передал инженеру ✅ Он ответит здесь же.")
+    await message.answer("✅ Сообщение сохранено и поставлено в очередь инженеру. Он ответит здесь.")
+
+
+@router.message(ChatMode.active, F.photo | F.document | F.voice | F.video | F.audio | F.animation | F.video_note | F.sticker)
+async def chat_media_relay(message: Message, bot: Bot):
+    await chat_direct_relay(message, bot)
 
 
 # ── любой текст вне сценариев ────────────────────────────────────────────────
@@ -1506,28 +1584,79 @@ async def fallback(message: Message, state: FSMContext, bot: Bot) -> None:
     await show_menu(message)
 
 
+@router.message(StateFilter(None), F.photo | F.document | F.voice | F.video | F.audio | F.animation | F.video_note | F.sticker)
+async def fallback_attachment(message: Message, state: FSMContext, bot: Bot):
+    if message.from_user.id == ADMIN_CHAT_ID:
+        await message.answer("Выберите клиента через /admin → «Ответить», затем отправьте вложение.")
+        return
+    await state.set_state(ChatMode.direct)
+    await chat_direct_relay(message, bot)
+
+
+@router.message()
+async def unsupported_message(message: Message):
+    await message.answer("Используйте текст, фото, документ, видео или голосовое. /resume — продолжить, /cancel — отменить.")
+
+
 @router.callback_query()
 async def cb_stale(callback: CallbackQuery) -> None:
     # кнопка из старого сообщения, состояние уже другое — не оставляем спиннер
     await callback.answer("Эта кнопка уже неактуальна — /start 🙂")
 
 
-async def main() -> None:
-    bot = Bot(token=BOT_TOKEN)
-    dp = Dispatcher()
-    dp.include_router(router)
-    await bot.set_my_commands([
+async def configure_commands(bot: Bot) -> None:
+    commands = [
         BotCommand(command="start", description="Начать / оставить заявку"),
+        BotCommand(command="resume", description="Продолжить сохранённый диалог"),
         BotCommand(command="services", description="Услуги и цены"),
         BotCommand(command="faq", description="Частые вопросы"),
         BotCommand(command="ask", description="Обсудить задачу (ИИ-помощник)"),
         BotCommand(command="status", description="Мои заявки"),
         BotCommand(command="cancel", description="Отменить текущее действие"),
         BotCommand(command="help", description="Справка"),
-    ])
+    ]
+    await bot.set_my_commands(commands)
+    await bot.set_my_commands(commands, scope=BotCommandScopeAllPrivateChats())
+    await bot.set_my_commands(
+        [BotCommand(command="admin", description="Управление заявками"),
+         BotCommand(command="find", description="Поиск заявок"),
+         BotCommand(command="stats", description="Статистика"), *commands],
+        scope=BotCommandScopeChat(chat_id=ADMIN_CHAT_ID),
+    )
+
+
+async def main() -> None:
+    bot = Bot(token=BOT_TOKEN)
+    bot.session.middleware(SplitMessages())
+    dp = Dispatcher(storage=SQLiteStorage(store), events_isolation=SimpleEventIsolation())
+    dp.include_router(build_admin_router(store, ADMIN_CHAT_ID))
+    dp.include_router(router)
+    # Сбой установки меню не должен останавливать обслуживание сохранённой очереди.
+    try:
+        await configure_commands(bot)
+    except Exception:
+        log.exception("Не удалось обновить меню команд")
+    workers = [
+        asyncio.create_task(delivery_loop(store, bot)),
+        asyncio.create_task(maintenance_loop(store, ADMIN_CHAT_ID, BACKUP_DIR, BACKUP_KEEP,
+                                             REMINDER_REPEAT_MINUTES * 60)),
+    ]
     log.info("Бот запущен (БД заявок: %s)", LEADS_DB)
-    await dp.start_polling(bot)
+    try:
+        await dp.start_polling(bot, close_bot_session=False)
+    finally:
+        for worker in workers:
+            worker.cancel()
+        await asyncio.gather(*workers, return_exceptions=True)
+        await bot.session.close()
+        store.close()
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except (KeyboardInterrupt, SystemExit):
+        pass
+    except Exception:
+        log.exception("Бот остановлен из-за ошибки")
+        raise
