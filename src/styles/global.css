@@ -979,7 +979,7 @@ footer.flush { margin-top: 0; }
   gap: 80px;
   align-items: start;
 }
-.article { max-width: 720px; font-size: 1.02rem; counter-reset: sec; }
+.article { min-width: 0; max-width: 720px; overflow-wrap: anywhere; font-size: 1.02rem; counter-reset: sec; }
 .article h2 {
   font-size: 1.7rem;
   letter-spacing: -0.02em;
