@@ -116,6 +116,9 @@ try {
       await capture('home-services', 'Главная — направления DevOps', page.locator('.section').first());
       await capture('home-cases', 'Главная — результаты проектов', page.locator('#selected-cases'));
 
+      await visit('/cases/');
+      await capture('case-details', 'Кейсы — задачи, решения и стек', page.locator('.case-list'));
+
       await visit('/services/');
       await capture('services-hero', 'Услуги — первый экран и переходы к заказу');
       await capture('services-details', 'Услуги — новые описания', page.locator('#directions'));
