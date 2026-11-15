@@ -104,6 +104,8 @@ try {
           quality: 88,
           animations: 'disabled',
           caret: 'hide',
+          // A sticky header would otherwise cover content in tall section crops.
+          style: locator ? 'header { visibility: hidden !important; }' : undefined,
         });
         variant.shots.push({ filename, label });
         console.log(`Captured ${filename}`);
@@ -170,7 +172,7 @@ try {
   <main>
     <h1>OPSMITH · визуальное превью</h1>
     <p>Скриншоты собраны в Chromium на GitHub Actions. Компьютер и телефон, светлая и тёмная темы.
-      Раскройте нужный вариант ниже.</p>
+      Раскройте нужный вариант ниже. В отдельных снимках блоков закреплённая шапка скрыта, чтобы не перекрывать текст.</p>
     <p>Коммит <code>${escape(commit.slice(0, 7))}</code> · <a href="${escape(runUrl)}">Сборка и исходные изображения</a>.
       Это галерея снимков, а не опубликованная версия сайта.</p>
     ${sections.join('\n')}
