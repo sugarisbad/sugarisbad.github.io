@@ -1,5 +1,5 @@
 ---
-// Услуги и цены: hero + калькулятор заказа (полный прайс из pricing.ts).
+// Услуги и цены: hero, калькулятор заказа и описания направлений DevOps.
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Calculator from '../components/Calculator.astro';
@@ -13,7 +13,7 @@ interface Props {
 const { locale = 'ru' } = Astro.props;
 const dict = t(locale);
 
-// Каталог услуг с ценами: расширенные сниппеты с ценой в Яндексе и Google.
+// Каталог услуг с ценами для поисковиков.
 const offersLd = {
   '@context': 'https://schema.org',
   '@type': 'OfferCatalog',
@@ -39,6 +39,10 @@ const offersLd = {
       <span class="kicker fx">{dict.servicesPage.kicker}</span>
       <h1 class="h1 fx-1" set:html={dict.servicesPage.h1} />
       <p class="lead fx-2">{dict.servicesPage.sub}</p>
+      <div class="cta-row fx-3">
+        <a href="#calc" class="btn btn-primary">{dict.servicesPage.ctaCalc}</a>
+        <a href="#directions" class="btn btn-ghost">{dict.servicesPage.ctaDetails}</a>
+      </div>
       {locale === 'en' && (
         <p class="rate-note fx-2" id="rate-note" data-text={dict.servicesPage.rateNote}>{dict.servicesPage.rateNote}</p>
       )}
