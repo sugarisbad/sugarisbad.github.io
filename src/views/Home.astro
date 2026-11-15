@@ -84,22 +84,24 @@ const p = (s: string) => localeUrl(locale, s, base);
     </div>
   </section>
 
-  <section class="section">
+  <section class="section" id="selected-cases" aria-labelledby="selected-cases-title">
     <div class="wrap">
       <div class="sec-head-row">
         <div>
           <span class="kicker">{dict.home.casesKicker}</span>
-          <h2 class="h2" set:html={dict.home.casesH2} />
+          <h2 class="h2" id="selected-cases-title" set:html={dict.home.casesH2} />
         </div>
         <a href={p('cases/')} class="link-more">{dict.home.casesAll}</a>
       </div>
       <div class="tiles">
         {dict.home.casesPreview.map((c) => (
-          <div class="tile">
-            <b>{c.value}</b>
+          <article class="tile">
             <h3>{c.title}</h3>
             <p>{c.text}</p>
-          </div>
+            <a href={`${p('cases/')}#${c.id}`} class="link-more" aria-label={`${dict.home.casesRead}: ${c.title}`}>
+              {dict.home.casesRead}<span aria-hidden="true"> →</span>
+            </a>
+          </article>
         ))}
       </div>
     </div>

@@ -33,7 +33,7 @@ const botLink = `${contacts.botUrl}?start=src-cases${locale === 'en' ? '-en' : '
     <div class="wrap">
       <div class="case-list">
         {dict.casesPage.items.map((c) => (
-          <article class="case">
+          <article class="case" id={c.num}>
             <div class="case-main">
               <div class="case-top">
                 <span class="case-num">{c.num}</span>

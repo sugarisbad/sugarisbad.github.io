@@ -114,6 +114,7 @@ try {
       await visit('/');
       await capture('home-hero', 'Главная — первый экран');
       await capture('home-services', 'Главная — направления DevOps', page.locator('.section').first());
+      await capture('home-cases', 'Главная — результаты проектов', page.locator('#selected-cases'));
 
       await visit('/services/');
       await capture('services-hero', 'Услуги — первый экран и переходы к заказу');

@@ -71,10 +71,11 @@ export const en: Dict = {
     casesKicker: 'SELECTED WORK',
     casesH2: 'Running in production<br />right now',
     casesAll: 'All case studies →',
+    casesRead: 'Read case study',
     casesPreview: [
-      { value: '10', title: 'GPU rental platform', text: 'Node onboarding, job orchestration, metering and billing — ten services acting as one.' },
-      { value: '~1 min', title: 'A website that repairs itself', text: 'Complete server loss → new VPS, full stack and AI-generated content — no humans involved.' },
-      { value: '24/7', title: 'Hardware under watch', text: 'Dozens of devices under constant checks — we learn of failures before customers do.' },
+      { id: 'case_01', title: 'GPU rentals without manual accounting', text: 'The platform connects machines, assigns tasks and meters GPU hours. Usage charges are calculated automatically.' },
+      { id: 'case_02', title: 'A website that recovers after an outage', text: 'When a server is lost, the system provisions a new VPS, deploys the website and switches traffic. Recovery starts automatically.' },
+      { id: 'case_03', title: 'Hardware alerts delivered to Telegram', text: 'When a device fails, the on-call receives an alert with its severity. They can identify the affected device and follow the response runbook.' },
     ] as CasePreview[],
   },
 
