@@ -33,6 +33,31 @@ jobs:
       - name: Build Astro site
         run: npm run build
 
+      - name: Check public branding
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          import sys
+
+          # The existing order bot URL is explicitly kept by the site owner.
+          bot_url = re.compile(r"https://t\.me/sugarisbad_bot(?=[?\"'\s<)]|$)")
+          personal_names = re.compile(r"sugarisbad|danila|данила", re.IGNORECASE)
+          text_types = {".html", ".xml", ".txt", ".js", ".css", ".json", ".map", ".svg", ".webmanifest"}
+          failures = []
+          checked = 0
+          for path in Path("dist").rglob("*"):
+              if not path.is_file() or path.suffix not in text_types:
+                  continue
+              checked += 1
+              text = path.read_text(encoding="utf-8")
+              if personal_names.search(bot_url.sub("", text)):
+                  failures.append(path)
+                  print(f"::error file={path}::Personal name or handle remains in the generated site")
+          print(f"Checked {checked} generated text files; failures: {len(failures)}")
+          sys.exit(bool(failures))
+          PY
+
       - name: Upload site for review
         uses: actions/upload-artifact@v4
         with:

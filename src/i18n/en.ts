@@ -10,8 +10,6 @@ export const en: Dict = {
 
   seo: {
     siteName: 'OPSMITH — DevOps studio: servers, CI/CD, automation, self-hosted AI',
-    personName: 'Danila',
-    jobTitle: 'DevOps Engineer',
     ogImageAlt: 'OPSMITH — DevOps studio: servers, CI/CD, automation, self-hosted AI',
   },
 

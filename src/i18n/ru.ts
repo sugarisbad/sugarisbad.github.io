@@ -27,8 +27,6 @@ export const ru = {
 
   seo: {
     siteName: 'OPSMITH — DevOps-студия: серверы, CI/CD, автоматизация, self-hosted ИИ',
-    personName: 'Данила',
-    jobTitle: 'DevOps-инженер',
     ogImageAlt: 'OPSMITH — DevOps-студия: серверы, CI/CD, автоматизация, self-hosted ИИ',
   },
 

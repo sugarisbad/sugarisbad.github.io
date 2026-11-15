@@ -34,7 +34,7 @@ bot/                      Telegram-бот приёма заявок (см. bot/R
 
 Автоматически при сборке: sitemap с hreflang-связями (`/sitemap-index.xml`),
 canonical и `hreflang` на каждой странице, Open Graph + og:image, JSON-LD
-(Person, WebSite, FAQPage на /work), robots.txt, 404.
+(ProfessionalService, WebSite, FAQPage на /work), robots.txt, 404.
 
 Один раз руками:
 

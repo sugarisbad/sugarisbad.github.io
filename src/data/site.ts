@@ -4,8 +4,6 @@
 export const brand = 'OPSMITH';
 
 export const contacts = {
-  name: 'Данила',
-  username: 'sugarisbad',
   email: 'contact@opsmith.ru',
   // Бот приёма заявок (см. bot/README.md). Метки источника в payload /start:
   // src-home, src-cases, src-work, custom, calc-<коды>; EN-варианты — с суффиксом -en.

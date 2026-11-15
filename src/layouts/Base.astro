@@ -29,17 +29,7 @@ const urlEn = `${site}${localeUrl('en', path)}`;
 const canonical = locale === 'ru' ? urlRu : urlEn;
 const ogImage = `${site}${ogPath ?? '/og.jpg'}`;
 
-// Микроразметка: кто автор сайта и что это за сайт.
-const personLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Person',
-  name: dict.seo.personName,
-  alternateName: contacts.username,
-  jobTitle: dict.seo.jobTitle,
-  email: `mailto:${contacts.email}`,
-  url: `${site}/`,
-  knowsAbout: ['DevOps', 'Linux', 'Docker', 'Kubernetes', 'CI/CD', 'nginx', 'Monitoring', 'Self-hosted AI', 'Ollama'],
-};
+// Микроразметка сайта и бренда OPSMITH.
 const websiteLd = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
@@ -57,7 +47,6 @@ const orgLd = {
   logo: `${site}/icon-512.png`,
   image: ogImage,
   email: `mailto:${contacts.email}`,
-  founder: { '@type': 'Person', name: dict.seo.personName, jobTitle: dict.seo.jobTitle },
   priceRange: locale === 'ru' ? '3 600 ₽ – 192 000 ₽' : '$40 – $2,100',
   areaServed: 'Worldwide',
 };
@@ -152,7 +141,6 @@ const breadcrumbLd =
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
 
-    <script type="application/ld+json" set:html={JSON.stringify(personLd)} />
     <script type="application/ld+json" set:html={JSON.stringify(websiteLd)} />
     <script type="application/ld+json" set:html={JSON.stringify(orgLd)} />
     {breadcrumbLd && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)} />}
