@@ -40,3 +40,23 @@ jobs:
           path: dist/
           if-no-files-found: error
           retention-days: 7
+
+      - name: Install preview browser
+        run: |
+          npm install --prefix "$RUNNER_TEMP/opsmith-visual-preview" --no-package-lock --no-audit --no-fund playwright@1.65.1
+          "$RUNNER_TEMP/opsmith-visual-preview/node_modules/.bin/playwright" install --with-deps chromium
+
+      - name: Capture visual preview on GitHub runner
+        run: node scripts/visual-preview.mjs
+
+      - name: Upload visual preview
+        id: visual
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-preview
+          path: artifacts/visual-preview/
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Link visual preview
+        run: echo '[Download visual-preview — open preview.html inside the archive](${{ steps.visual.outputs.artifact-url }})' >> "$GITHUB_STEP_SUMMARY"
