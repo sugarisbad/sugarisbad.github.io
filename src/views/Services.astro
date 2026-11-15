@@ -47,5 +47,33 @@ const offersLd = {
 
   <Calculator locale={locale} />
 
+  <section class="section" id="directions" aria-labelledby="directions-title">
+    <div class="wrap">
+      <div class="svc-head">
+        <div>
+          <span class="kicker">{dict.servicesPage.directionsKicker}</span>
+          <h2 class="h2" id="directions-title" set:html={dict.servicesPage.directionsH2} />
+        </div>
+        <p class="lead">{dict.servicesPage.directionsLead}</p>
+      </div>
+      <div class="tiles service-details">
+        {dict.servicesPage.directions.map((service) => (
+          <article class="principle">
+            <span class="num">/ {service.num}</span>
+            <h3>{service.title}</h3>
+            <p>{service.text}</p>
+          </article>
+        ))}
+      </div>
+      <div class="svc-btns">
+        <a href="#calc" class="btn btn-primary">{dict.servicesPage.directionsCta}</a>
+      </div>
+    </div>
+  </section>
+
   <Footer locale={locale} flush />
 </Base>
+
+<style>
+  .service-details { row-gap: 2rem; }
+</style>

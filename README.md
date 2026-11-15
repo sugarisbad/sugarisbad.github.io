@@ -39,11 +39,12 @@ canonical и `hreflang` на каждой странице, Open Graph + og:imag
 Один раз руками:
 
 1. **Яндекс.Вебмастер** — <https://webmaster.yandex.ru>: добавить сайт
-   `https://sugarisbad.github.io`, подтвердить права мета-тегом (раскомментировать
-   `yandex-verification` в `src/layouts/Base.astro` и вставить код), затем
-   «Индексирование → Файлы Sitemap» → добавить `https://sugarisbad.github.io/sitemap-index.xml`.
+   `https://opsmith.ru`, проверить подтверждение прав (мета-тег
+   `yandex-verification` уже есть в `src/layouts/Base.astro`), затем
+   «Индексирование → Файлы Sitemap» → добавить `https://opsmith.ru/sitemap-index.xml`.
 2. **Google Search Console** — <https://search.google.com/search-console>: то же самое
-   с `google-site-verification`, затем «Sitemaps» → отправить `sitemap-index.xml`.
+   для `https://opsmith.ru` с уже установленным `google-site-verification`,
+   затем «Sitemaps» → отправить `sitemap-index.xml`.
 3. После деплоя проверить разметку: <https://validator.schema.org> и
    «Проверка ответа сервера» в Вебмастере.
 
