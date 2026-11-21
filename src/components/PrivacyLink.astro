@@ -1,0 +1,7 @@
+---
+import { localeUrl, type Locale } from '../i18n';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+---
+<p class="privacy-link"><a href={localeUrl(locale, 'privacy/')}>{locale === 'ru' ? 'Как мы обрабатываем данные заявки' : 'How we handle your enquiry'}</a></p>
+<style>.privacy-link { margin-top:1rem; font-size:.85rem; color:var(--muted); } a { text-decoration:underline; }</style>

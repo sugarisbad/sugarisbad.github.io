@@ -1,4 +1,5 @@
 ---
+import PrivacyLink from '../components/PrivacyLink.astro';
 // Кейсы: hero + 3 кейса-строки «таблицей» (метрики справа) + CTA.
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
@@ -69,6 +70,7 @@ const botLink = `${contacts.botUrl}?start=src-cases${locale === 'en' ? '-en' : '
         <a href={contacts.calendlyUrl} class="btn btn-ghost">{dict.casesPage.ctaCall}</a>
         <a href={p('services/')} class="btn btn-ghost">{dict.casesPage.ctaServices}</a>
       </div>
+      <PrivacyLink locale={locale} />
     </div>
   </section>
 

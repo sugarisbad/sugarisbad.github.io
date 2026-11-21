@@ -1,0 +1,61 @@
+---
+import { localeUrl, type Locale } from '../i18n';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const ru = locale === 'ru';
+---
+<aside id="analytics-choice" aria-labelledby="analytics-title" hidden>
+  <span class="kicker">OPSMITH / ANALYTICS</span>
+  <h2 id="analytics-title">{ru ? 'Разрешить аналитику?' : 'Allow analytics?'}</h2>
+  <p>{ru ? 'Яндекс Метрика использует cookie, а Вебвизор записывает действия на страницах. Можно отказаться — сайт будет работать.' : 'Yandex Metrica uses cookies and Webvisor records interactions on these pages. The site works without them.'}
+    <a href={localeUrl(locale, 'privacy/') + '#analytics'}>{ru ? 'Подробнее' : 'Details'}</a>
+  </p>
+  <div class="cta-row">
+    <button class="btn btn-ghost" data-choice="no">{ru ? 'Отклонить' : 'Decline'}</button>
+    <button class="btn btn-ghost" data-choice="yes">{ru ? 'Разрешить' : 'Allow'}</button>
+  </div>
+</aside>
+<script is:inline>
+  (() => {
+    const key = 'opsmith-analytics-v1';
+    const panel = document.getElementById('analytics-choice');
+    const settings = document.querySelector('[data-analytics-settings]');
+    let loaded = false;
+    function start() {
+      if (loaded) return;
+      loaded = true;
+      const ym = window.ym = window.ym || function () { (ym.a ||= []).push(arguments); };
+      ym.l = Date.now();
+      const script = document.createElement('script');
+      script.src = 'https://mc.yandex.ru/metrika/tag.js?id=110731753';
+      document.head.append(script);
+      ym(110731753, 'init', { webvisor: true, clickmap: true, trackLinks: true, accurateTrackBounce: true, ecommerce: 'dataLayer' });
+    }
+    let choice;
+    try { choice = localStorage.getItem(key); } catch {}
+    panel.hidden = choice === 'yes' || choice === 'no';
+    if (choice === 'yes') start();
+    if (settings) {
+      settings.hidden = false;
+      settings.onclick = () => { panel.hidden = false; panel.querySelector('button').focus(); };
+    }
+    panel.querySelectorAll('button').forEach(button => button.onclick = () => {
+      const next = button.dataset.choice;
+      try { localStorage.setItem(key, next); } catch {}
+      panel.hidden = true;
+      if (next === 'yes') start();
+      else if (loaded) location.reload();
+      settings?.focus({ preventScroll: true });
+    });
+    window.addEventListener('storage', e => {
+      if (e.key === key || e.key === null) location.reload();
+    });
+  })();
+</script>
+<style>
+  aside { position:fixed; z-index:100; bottom:1rem; right:1rem; width:min(27rem, calc(100% - 2rem)); max-height:70vh; overflow:auto; padding:1.25rem; border:1px solid var(--line2); background:var(--bg); color:var(--text); }
+  h2 { margin:.5rem 0; font-size:1.3rem; }
+  p { font-size:.9rem; line-height:1.6; }
+  a { text-decoration:underline; }
+  .cta-row { margin-top:1rem; }
+</style>

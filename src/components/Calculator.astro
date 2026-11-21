@@ -1,4 +1,5 @@
 ---
+import PrivacyLink from './PrivacyLink.astro';
 // Калькулятор заказа: чекбоксы по прайсу → стартовая сумма → deep-link в бота.
 // Выбор кодируется однобуквенными кодами в payload /start:
 // t.me/<bot>?start=calc-<коды> — бот расшифрует и приложит состав заказа к заявке.
@@ -150,6 +151,7 @@ const customLink = `${contacts.botUrl}?start=custom${locale === 'en' ? '-en' : '
         data-empty={calc.btnEmpty}
       >{calc.btnEmpty}</a>
       <a href={contacts.calendlyUrl} class="calc-call">{calc.btnCall}</a>
+      <PrivacyLink locale={locale} />
       <p class="calc-note"><span>{calc.note}</span> <span id="calc-rate-footnote" hidden>{dict.servicesPage.rateNoteFallback}</span></p>
     </aside>
   </div>

@@ -1,4 +1,5 @@
 ---
+import PrivacyLink from '../components/PrivacyLink.astro';
 // Статья блога: шапка с метой, тело + sticky-оглавление, CTA-карточка, prev/next.
 // Референс: design_handoff_blog_faq/Article RU.dc.html
 import { render, type CollectionEntry } from 'astro:content';
@@ -77,6 +78,7 @@ const postingLd = {
           <p>{entry.data.ctaText ?? dict.blogPage.ctaCardText}</p>
           <div class="cta-row">
             <a href={botLink} class="btn btn-primary">{dict.blogPage.ctaCardBot}</a>
+            <PrivacyLink locale={locale} />
             <a href={p('services/')} class="btn btn-ghost">{dict.blogPage.ctaCardCalc}</a>
           </div>
         </div>

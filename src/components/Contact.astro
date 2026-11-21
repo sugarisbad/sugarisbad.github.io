@@ -1,6 +1,7 @@
 ---
 // Контактная секция главной: бот (primary) + Calendly + почта.
 import { contacts } from '../data/site';
+import PrivacyLink from './PrivacyLink.astro';
 import { t, type Locale } from '../i18n';
 
 interface Props {
@@ -25,5 +26,6 @@ const botLink = `${contacts.botUrl}?start=${source}${locale === 'en' ? '-en' : '
       <a href={contacts.calendlyUrl} class="btn btn-ghost">{dict.contact.btnCall}</a>
       <a href={`mailto:${contacts.email}`} class="btn btn-ghost">{contacts.email}</a>
     </div>
+    <PrivacyLink locale={locale} />
   </div>
 </section>

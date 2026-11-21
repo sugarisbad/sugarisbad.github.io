@@ -4,6 +4,7 @@ import '@fontsource-variable/manrope';
 import '@fontsource-variable/jetbrains-mono';
 import '@fontsource-variable/space-grotesk';
 import '../styles/global.css';
+import Analytics from '../components/Analytics.astro';
 import { brand, contacts } from '../data/site';
 import { t, localeUrl, type Locale } from '../i18n';
 
@@ -145,30 +146,6 @@ const breadcrumbLd =
     <script type="application/ld+json" set:html={JSON.stringify(orgLd)} />
     {breadcrumbLd && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)} />}
 
-    <!-- Yandex.Metrika counter: загрузка отложена до load+idle, чтобы 89 KiB
-         tag.js и вебвизор не конкурировали с контентом за сеть и CPU -->
-    <script is:inline type="text/javascript">
-      (function () {
-        function initMetrika() {
-          (function(m,e,t,r,i,k,a){
-              m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-              m[i].l=1*new Date();
-              for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-              k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-          })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110731753', 'ym');
-
-          ym(110731753, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
-        }
-        function whenIdle() {
-          if ('requestIdleCallback' in window) requestIdleCallback(initMetrika, { timeout: 3000 });
-          else setTimeout(initMetrika, 1500);
-        }
-        if (document.readyState === 'complete') whenIdle();
-        else window.addEventListener('load', whenIdle);
-      })();
-    </script>
-    <noscript><div><img src="https://mc.yandex.ru/watch/110731753" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-    <!-- /Yandex.Metrika counter -->
 
     <slot name="head" />
   </head>
@@ -222,50 +199,7 @@ const breadcrumbLd =
     <div class="page">
       <slot />
     </div>
+    <Analytics locale={locale} />
 
-    <!-- Ненавязчивая подсказка версии на языке браузера клиента -->
-    <div class="lang-banner" id="lang-banner" hidden>
-      <span id="lang-banner-text"></span>
-      <a href="#" id="lang-banner-link"></a>
-      <button id="lang-banner-close" aria-label="Close">✕</button>
-    </div>
-
-    <script>
-      // Выбор языка: клик по переключателю запоминаем; посетителю с другим
-      // языком браузера один раз показываем подсказку (без авторедиректа —
-      // он вредит и поисковым роботам, и людям).
-      const LS = 'site-lang';
-      document.querySelectorAll<HTMLAnchorElement>('.lang-switch a').forEach((a) =>
-        a.addEventListener('click', () => localStorage.setItem(LS, a.dataset.lang ?? ''))
-      );
-      try {
-        const here = location.pathname === '/en' || location.pathname.startsWith('/en/') ? 'en' : 'ru';
-        const saved = localStorage.getItem(LS);
-        // ?lang-hint — принудительный показ плашки (для проверки вёрстки)
-        const force = new URLSearchParams(location.search).has('lang-hint');
-        let wants = saved || ((navigator.language || '').toLowerCase().startsWith('ru') ? 'ru' : 'en');
-        if (force) wants = here === 'ru' ? 'en' : 'ru';
-        if (wants !== here && (force || !sessionStorage.getItem('lang-hint'))) {
-          const other =
-            here === 'ru'
-              ? '/en' + (location.pathname === '/' ? '/' : location.pathname)
-              : location.pathname.replace(/^\/en\/?/, '/');
-          const banner = document.getElementById('lang-banner')!;
-          const text = document.getElementById('lang-banner-text')!;
-          const link = document.getElementById('lang-banner-link') as HTMLAnchorElement;
-          text.textContent = wants === 'en' ? 'This page is also available in English.' : 'Эта страница есть и на русском.';
-          link.textContent = wants === 'en' ? 'Switch to English →' : 'Открыть на русском →';
-          link.href = other;
-          link.addEventListener('click', () => localStorage.setItem(LS, wants));
-          banner.hidden = false;
-          banner.classList.add('show');
-          document.getElementById('lang-banner-close')?.addEventListener('click', () => {
-            banner.classList.remove('show');
-            banner.hidden = true;
-            sessionStorage.setItem('lang-hint', '1');
-          });
-        }
-      } catch {}
-    </script>
   </body>
 </html>

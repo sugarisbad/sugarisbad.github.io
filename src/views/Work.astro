@@ -1,4 +1,5 @@
 ---
+import PrivacyLink from '../components/PrivacyLink.astro';
 // Процесс: 5 шагов-строк с бейджем результата, 3 принципа-карточки, CTA.
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
@@ -118,6 +119,7 @@ const ctaButtons =
           <a href={b.href} class={`btn ${b.primary ? 'btn-primary' : 'btn-ghost'}`}>{b.label}</a>
         ))}
       </div>
+      <PrivacyLink locale={locale} />
     </div>
   </section>
 

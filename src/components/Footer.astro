@@ -20,7 +20,14 @@ const base = import.meta.env.BASE_URL;
     <span class="foot-links">
       <a href={`mailto:${contacts.email}`}>{contacts.email}</a>
       <a href={locale === 'ru' ? '/rss.xml' : '/en/rss.xml'}>RSS</a>
+      <a href={localeUrl(locale, 'privacy/')}>{locale === 'ru' ? 'Персональные данные' : 'Privacy policy'}</a>
+      <button hidden data-analytics-settings>{locale === 'ru' ? 'Настройки аналитики' : 'Analytics settings'}</button>
     </span>
     <span class="tag">{dict.footer.tagline}</span>
   </div>
 </footer>
+<style>
+  .foot, .foot-links { flex-wrap:wrap; }
+  button { background:none; color:inherit; font:inherit; padding:0; border:0; cursor:pointer; }
+  button:hover { color:var(--accent); }
+</style>

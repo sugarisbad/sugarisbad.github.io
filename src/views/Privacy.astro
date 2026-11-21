@@ -1,0 +1,56 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { contacts } from '../data/site';
+import type { Locale } from '../i18n';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const ru = locale === 'ru';
+const title = ru ? 'Политика обработки персональных данных' : 'Personal data policy';
+const description = ru ? 'Какие данные нужны для ответа на заявку, как работает аналитика и куда написать по поводу своих данных.' : 'How we handle enquiries, what analytics records and how to contact us about your data.';
+const operator = import.meta.env.PUBLIC_OPERATOR_DETAILS || 'opsmith';
+const sections = ru ? [
+  ['requests', 'Заявки и переписка', 'Чтобы ответить на вопрос и подготовить предложение, мы используем имя, обратный контакт и сведения о задаче. При обращении по почте это адрес отправителя, текст письма и вложения. Если вы просите подготовить договор, эти данные нужны для его заключения по вашей инициативе.'],
+  ['telegram', 'Заявка в Telegram', 'В заявке сохраняются Telegram ID, имя, username, описание задачи и выбранный способ связи. Телефон, почта и вложения необязательны. Бот сохраняет заявку в базе и передаёт её инженеру в Telegram. Не присылайте пароли, ключи доступа и чужие персональные данные.'],
+  ['booking', 'Запись на созвон', 'Кнопка записи открывает Calendly. Имя, адрес почты и время встречи вы указываете на стороне этого сервиса; OPSMITH использует сведения о записи для организации созвона. Если не хотите пользоваться Calendly, напишите по почте.'],
+  ['analytics', 'Cookie и Яндекс Метрика', 'Только после выбора «Разрешить» браузер подключает Яндекс Метрику. Сервис получает адрес страницы, источник перехода, технические сведения о браузере и устройстве и использует cookie. Карта кликов и Вебвизор помогают понять, куда нажимают посетители и как перемещаются по странице. Ваш выбор по аналитике сохраняется в хранилище браузера. Изменить выбор можно внизу страницы; удалить ранее созданные cookie — в настройках браузера.'],
+  ['retention', 'Хранение и защита', 'Срок обработки определяется целью: до завершения работы с обращением, исполнения договора или отзыва согласия, если нет другого законного основания. Для заявок ведутся резервные копии; административные команды бота доступны только назначенному аккаунту.'],
+  ['rights', 'Доступ, исправление и отзыв', 'Чтобы узнать, какие ваши данные обрабатываются, исправить их, запросить удаление или отозвать согласие, напишите по адресу ниже. Укажите канал обращения и номер заявки, если он есть. Не прикладывайте паспорт или другие документы без запроса.'],
+] : [
+  ['requests', 'Enquiries and email', 'We use your name, contact details and project description to answer your question and prepare a proposal. Email includes the sender address, message and attachments. If you ask us to prepare a contract, we use these details to take steps at your request.'],
+  ['telegram', 'Telegram enquiries', 'The bot stores your Telegram ID, name, username, project description and preferred contact method. Phone, email and attachments are optional. The bot saves the enquiry in a database and sends it to an engineer via Telegram. Do not include passwords, access keys or other people’s personal data.'],
+  ['booking', 'Booking a call', 'The booking link opens Calendly. You enter your name, email and meeting time on that service; OPSMITH uses the booking details to arrange the call. You can email us instead.'],
+  ['analytics', 'Cookies and Yandex Metrica', 'Your browser connects to Yandex Metrica only after you choose Allow. The service receives the page URL, referrer and technical browser and device information, and uses cookies. Click maps and Webvisor help us understand clicks and navigation. Your analytics choice is kept in browser storage. Change your choice in the footer; remove existing cookies in your browser settings.'],
+  ['retention', 'Retention and safeguards', 'Processing lasts until the enquiry is resolved, the contract is fulfilled or consent is withdrawn, unless another legal basis applies. Enquiries are backed up; bot administration commands are restricted to the designated account.'],
+  ['rights', 'Access, correction and withdrawal', 'To ask what data we hold, request correction or deletion, or withdraw consent, email us below. Specify the contact channel and enquiry number if available. Please do not attach identity documents unless requested.'],
+];
+---
+<Base title={`${title} — OPSMITH`} description={description} locale={locale} path="privacy/">
+  <Header locale={locale} path="privacy/" />
+  <main>
+    <div class="hero-page"><div class="wrap">
+      <span class="kicker">OPSMITH / PRIVACY</span>
+      <h1 class="h1">{title}</h1>
+      <p class="lead">{description}</p>
+    </div></div>
+    <div class="wrap legal">
+      <span class="kicker">{ru ? 'Оператор и контакт' : 'Operator and contact'}</span>
+      <p>{operator} · <a href={`mailto:${contacts.email}`}>{contacts.email}</a></p>
+      {sections.map(([id, heading, text], i) => <section id={id}>
+        <span class="kicker">/ 0{i + 1}</span>
+        <div><h2>{heading}</h2><p>{text}</p>
+          {id === 'rights' && <a href={`mailto:${contacts.email}`}>{contacts.email} →</a>}
+        </div>
+      </section>)}
+    </div>
+  </main>
+  <Footer locale={locale} />
+</Base>
+<style>
+  h1 { max-width:18ch; overflow-wrap:break-word; }
+  section { display:grid; grid-template-columns:auto minmax(0,70ch); gap:clamp(1rem,4vw,4rem); border-top:1px solid var(--line); padding:2rem 0; scroll-margin-top:6rem; }
+  h2 { font-size:clamp(1.35rem,3vw,2rem); }
+  .legal p { margin:.65rem 0 1.25rem; line-height:1.75; }
+  a { color:var(--accent); text-decoration:underline; }
+</style>

@@ -17,7 +17,7 @@ const dict = t(locale);
 const base = import.meta.env.BASE_URL;
 const p = (s: string) => localeUrl(locale, s, base);
 
-const ctaHref = cta === 'call' ? contacts.calendlyUrl : active ? `${p('')}#contact` : '#contact';
+const ctaHref = cta === 'call' ? contacts.calendlyUrl : path ? `${p('')}#contact` : '#contact';
 const ctaLabel = cta === 'call' ? dict.nav.call : dict.nav.contact;
 ---
 
