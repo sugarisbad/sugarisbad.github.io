@@ -4,6 +4,8 @@ import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Calculator from '../components/Calculator.astro';
 import Footer from '../components/Footer.astro';
+import { contacts } from '../data/site';
+import PrivacyLink from '../components/PrivacyLink.astro';
 import { PRICING } from '../data/pricing';
 import { t, type Locale } from '../i18n';
 
@@ -75,6 +77,21 @@ const offersLd = {
     </div>
   </section>
 
+  {locale === 'en' && (
+    <section class="cta-sec" id="deployment-recovery-review" aria-labelledby="review-heading">
+      <div class="wrap">
+        <span class="kicker">FOR WEB AGENCIES</span>
+        <h2 id="review-heading">Deployment and recovery review</h2>
+        <p class="lead">Before your next client launch, walk us through one application’s release pipeline, rollback steps and latest backup restore. A screen share is enough to start.</p>
+        <p class="lead">You get a written list of what could block a release or a recovery, which checks to run first, and who on your team can run them. We agree on scope and price before the review.</p>
+        <div class="cta-row">
+          <a href={contacts.calendlyUrl} class="btn btn-primary">Book a 30-minute scoping call</a>
+          <a href={`mailto:${contacts.email}?subject=Deployment%20and%20recovery%20review`} class="btn btn-ghost">Discuss the review by email</a>
+        </div>
+        <PrivacyLink locale={locale} />
+      </div>
+    </section>
+  )}
   <Footer locale={locale} flush />
 </Base>
 

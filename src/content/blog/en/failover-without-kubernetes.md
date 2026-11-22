@@ -49,7 +49,7 @@ monitor (external) ── catches down ──▶ standby
 total: minutes of downtime, pennies for standby
 ```
 
-The whole chain can be automated with a script — one of our case studies is a site that migrates itself to a fresh VPS with no human involved in about a minute.
+For an example of the second approach, see [how we restored a website on a fresh VPS and switched traffic after a server failure](/en/cases/#case_02). In that setup, recovery starts automatically rather than waiting for an engineer to respond.
 
 ## Checklist
 

@@ -46,6 +46,13 @@ const botLink = `${contacts.botUrl}?start=src-cases${locale === 'en' ? '-en' : '
               <div class="tags">
                 {c.stack.map((tag) => <span class="tag">{tag}</span>)}
               </div>
+              {locale === 'en' && c.num === 'case_02' && (
+                <div class="cta-row">
+                  <a class="btn btn-ghost" href={p('services/') + '#deployment-recovery-review'}>
+                    Book a deployment and recovery review →
+                  </a>
+                </div>
+              )}
             </div>
             <div class="case-side">
               {c.metrics.map((m) => (
